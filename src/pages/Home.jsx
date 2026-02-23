@@ -127,30 +127,50 @@ export default function Home() {
 
     return (
         <div className="page page-enter dash">
-            {/* ── ✨ Daily Discovery Card ── */}
+
+            {/* ── Blocco 1: Saluto + Mood Picker (Daily Ritual) ── */}
+            <section className="dash__greeting-mood">
+                <h2 className="dash__section-title dash__section-title--left">Ciao, {userName}!</h2>
+
+                <div className="dash__mood">
+                    {!moodSaved ? (
+                        <>
+                            <p className="dash__mood__label" style={{ marginTop: '0' }}>Come ti senti oggi?</p>
+                            <div className="dash__mood__options">
+                                {moods.map((m) => (
+                                    <button
+                                        key={m.label}
+                                        className={`dash__mood__btn ${selectedMood?.label === m.label ? 'dash__mood__btn--selected' : ''}`}
+                                        onClick={() => handleMood(m)}
+                                    >
+                                        <span className="dash__mood__emoji">{m.emoji}</span>
+                                        <span className="dash__mood__text">{m.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="dash__mood__saved">
+                            <span>{selectedMood.emoji}</span>
+                            <p>Grazie! Salvato per oggi.</p>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* ── Blocco 2: Card Hero — Scoperta del Giorno ── */}
             <div style={{ marginBottom: 'var(--space-xl)' }}>
                 <DailyDiscovery week={weeks} onShare={handleShare} />
             </div>
 
-            {/* ── Baby Section ── */}
-            <section className="dash__expect">
-                <h2 className="dash__section-title dash__section-title--left">Ciao, {userName}!</h2>
-
-                {/* Week Selector */}
-                <div className="dash__week-selector" ref={scrollRef}>
-                    {Array.from({ length: 42 }, (_, i) => i + 1).map((w) => {
-                        let stateClass = 'dash__week-circle--future';
-                        if (w < weeks) stateClass = 'dash__week-circle--past';
-                        if (w === weeks) stateClass = 'dash__week-circle--current';
-                        return (
-                            <div key={w} className={`dash__week-circle ${stateClass}`}>
-                                {w}
-                            </div>
-                        );
-                    })}
+            {/* ── Blocco 3: Settimana + Baby View + Progress + Task ── */}
+            <section className="dash__macro-card dash__macro-card--gradient-blue">
+                <div className="dash__macro-header">
+                    <div className="dash__macro-icon"><Activity size={20} /></div>
+                    <h2 className="dash__macro-title">Settimana {weeks}</h2>
                 </div>
 
-                {/* Vertical Baby View (Image top, text bottom) */}
+                {/* Baby View compatta */}
                 <div className="dash__baby-view" onClick={() => navigate('/baby')}>
                     <div className="dash__baby-view__visual">
                         <div className="dash__baby-view__blob"></div>
@@ -185,64 +205,11 @@ export default function Home() {
 
                 {/* Progress Bar */}
                 <ProgressBar weeks={weeks} totalWeeks={40} />
-            </section>
 
-            {/* ── Macro Card 2: Oggi per te (Quiz, Facts & Mood) ── */}
-            <section className="dash__macro-card dash__macro-card--gradient-green">
-                <div className="dash__macro-header">
-                    <div className="dash__macro-icon"><Target size={24} /></div>
-                    <h2 className="dash__macro-title">Oggi per te</h2>
-                </div>
-
-                {/* Did You Know Carousel */}
-                <div style={{ marginBottom: 'var(--space-xl)' }}>
-                    <DidYouKnow week={weeks} />
-                </div>
-
-                {/* Weekly Quiz */}
-                <div style={{ marginBottom: 'var(--space-xl)' }}>
-                    <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.1rem', marginTop: 'var(--space-md)' }}>Mettiti alla prova</h3>
-                    <WeeklyQuiz week={weeks} />
-                </div>
-
-                {/* Mood Check-in */}
-                <div className="dash__mood">
-                    {!moodSaved ? (
-                        <>
-                            <p className="dash__mood__label" style={{ marginTop: '0' }}>Come ti senti oggi?</p>
-                            <div className="dash__mood__options">
-                                {moods.map((m) => (
-                                    <button
-                                        key={m.label}
-                                        className={`dash__mood__btn ${selectedMood?.label === m.label ? 'dash__mood__btn--selected' : ''}`}
-                                        onClick={() => handleMood(m)}
-                                    >
-                                        <span className="dash__mood__emoji">{m.emoji}</span>
-                                        <span className="dash__mood__text">{m.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="dash__mood__saved">
-                            <span>{selectedMood.emoji}</span>
-                            <p>Grazie! Salvato per oggi.</p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* ── Macro Card 3: Cosa puoi fare (Checklist & Tips) ── */}
-            <section className="dash__macro-card dash__macro-card--gradient-yellow">
-                <div className="dash__macro-header">
-                    <div className="dash__macro-icon"><Lightbulb size={24} /></div>
-                    <h2 className="dash__macro-title">Cosa puoi fare</h2>
-                </div>
-
-                {/* Daily Checklist */}
-                <div className="dash__checklist-section">
+                {/* Cosa fare questa settimana */}
+                <div className="dash__checklist-section" style={{ marginTop: 'var(--space-lg)' }}>
                     <div className="dash__checklist-header">
-                        <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.1rem', marginBottom: 0 }}>Da fare: {completedCount}/{dailyTasks.length}</h3>
+                        <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.1rem', marginBottom: 0 }}>Cosa fare: {completedCount}/{dailyTasks.length}</h3>
                     </div>
                     <div className="dash__checklist">
                         {dailyTasks.map(task => {
@@ -264,13 +231,44 @@ export default function Home() {
                         })}
                     </div>
                 </div>
+            </section>
 
+            {/* ── Blocco 4: Oggi per te (Curiosità + Quiz Teaser) ── */}
+            <section className="dash__macro-card dash__macro-card--gradient-green">
+                <div className="dash__macro-header">
+                    <div className="dash__macro-icon"><Target size={20} /></div>
+                    <h2 className="dash__macro-title">Oggi per te</h2>
+                </div>
 
-                {/* Info Tips */}
-                <div className="dash__tips-section">
-                    <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.1rem' }}>Consigli per {isMamma ? 'la mamma' : 'il papà'}</h3>
+                {/* Did You Know Carousel */}
+                <div style={{ marginBottom: 'var(--space-lg)' }}>
+                    <DidYouKnow week={weeks} />
+                </div>
+
+                {/* Quiz Teaser (link, non inline) */}
+                <div
+                    className="dash__quiz-teaser"
+                    onClick={() => navigate('/article')}
+                >
+                    <span className="dash__quiz-teaser__emoji">🧠</span>
+                    <div className="dash__quiz-teaser__body">
+                        <span className="dash__quiz-teaser__title">Quiz della settimana {weeks}</span>
+                        <span className="dash__quiz-teaser__subtitle">3 domande per metterti alla prova</span>
+                    </div>
+                    <ChevronRight size={18} className="dash__tip__arrow" />
+                </div>
+            </section>
+
+            {/* ── Blocco 5: Consigli (max 2, per profilo attivo) ── */}
+            {tips.length > 0 && (
+                <section className="dash__macro-card dash__macro-card--gradient-yellow">
+                    <div className="dash__macro-header">
+                        <div className="dash__macro-icon"><Lightbulb size={20} /></div>
+                        <h2 className="dash__macro-title">Consigli per {isMamma ? 'te' : 'il papà'}</h2>
+                    </div>
+
                     <div className="dash__tips">
-                        {tips.map((tip) => (
+                        {tips.slice(0, 2).map((tip) => (
                             <div
                                 key={tip.id}
                                 className="dash__tip"
@@ -287,8 +285,8 @@ export default function Home() {
                             </div>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
         </div>
     );
 }

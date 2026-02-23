@@ -1,13 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Baby, BookOpen, Bell, LayoutTemplate } from 'lucide-react';
+import { Home, Baby, Compass } from 'lucide-react';
 import './TabBar.css';
 
 const tabs = [
     { path: '/home', icon: Home, label: 'Home' },
     { path: '/baby', icon: Baby, label: 'Bimbo' },
-    { path: '/article', icon: BookOpen, label: 'Leggi' },
-    { path: '/notifications', icon: Bell, label: 'Avvisi' },
-    { path: '/tools', icon: LayoutTemplate, label: 'Strumenti' },
+    { path: '/article', icon: Compass, label: 'Esplora' },
 ];
 
 export default function TabBar() {

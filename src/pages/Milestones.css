@@ -82,6 +82,13 @@
     border: 1px solid var(--color-border-light);
 }
 
+.miles-item--current {
+    background: var(--color-bg-elevated);
+    box-shadow: 0 0 0 2px #F48C95, var(--shadow-sm);
+    border: 1px solid transparent;
+    opacity: 1;
+}
+
 .miles-item--upcoming {
     opacity: 0.45;
 }

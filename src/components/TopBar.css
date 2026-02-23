@@ -26,6 +26,49 @@
     letter-spacing: -0.5px;
 }
 
+.topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.topbar__bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    padding: 0;
+}
+
+.topbar__bell:active {
+    background: var(--color-bg-subtle);
+}
+
+.topbar__bell-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #E03131;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 .topbar__profile {
     position: relative;
     display: flex;

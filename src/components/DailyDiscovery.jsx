@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Share2 } from 'lucide-react';
 import { dailyFacts } from '../data/discoveryData';
 import './DailyDiscovery.css';
 
@@ -31,6 +32,15 @@ export default function DailyDiscovery({ week = 24, onShare }) {
                 <span className="ddisco__particle ddisco__particle--5">✦</span>
             </div>
 
+            {/* Share icon (top-right, secondary) */}
+            <button
+                className="ddisco__share-icon"
+                onClick={(e) => { e.stopPropagation(); onShare?.(fact.shareText); }}
+                aria-label="Condividi"
+            >
+                <Share2 size={18} />
+            </button>
+
             <div className="ddisco__badge">✨ Scoperta del giorno</div>
 
             <div className="ddisco__emoji">{fact.emoji}</div>
@@ -39,13 +49,7 @@ export default function DailyDiscovery({ week = 24, onShare }) {
 
             <div className="ddisco__actions">
                 <button
-                    className="ddisco__share-btn"
-                    onClick={() => onShare?.(fact.shareText)}
-                >
-                    💌 Condividi con il partner
-                </button>
-                <button
-                    className="ddisco__dismiss-btn"
+                    className="ddisco__dismiss-btn ddisco__dismiss-btn--primary"
                     onClick={() => setDismissed(true)}
                 >
                     Ho capito ✓

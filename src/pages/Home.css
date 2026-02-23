@@ -87,6 +87,46 @@
     margin-bottom: var(--space-md);
 }
 
+/* ── Quiz Teaser ── */
+.dash__quiz-teaser {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-light);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dash__quiz-teaser:active {
+    background: var(--color-border-light);
+}
+
+.dash__quiz-teaser__emoji {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.dash__quiz-teaser__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dash__quiz-teaser__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.dash__quiz-teaser__subtitle {
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary);
+}
+
 /* Week Selector */
 .dash__week-selector {
     display: flex;

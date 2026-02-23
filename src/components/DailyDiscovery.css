@@ -140,36 +140,48 @@
     gap: var(--space-sm);
 }
 
-.ddisco__share-btn {
+/* Small share icon in top-right */
+.ddisco__share-icon {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    z-index: 2;
+}
+
+.ddisco__share-icon:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.ddisco__dismiss-btn--primary {
     flex: 1;
-    padding: 12px 16px;
+    padding: 14px 20px;
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1.5px solid rgba(244, 140, 149, 0.2);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: #D4725B;
-    transition: all 0.25s ease;
-}
-
-.ddisco__share-btn:active {
-    transform: scale(0.97);
-    background: rgba(255, 255, 255, 0.9);
-}
-
-.ddisco__dismiss-btn {
-    padding: 12px 16px;
-    background: transparent;
     border: 1.5px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
     transition: all 0.25s ease;
 }
 
-.ddisco__dismiss-btn:active {
+.ddisco__dismiss-btn--primary:active {
     transform: scale(0.97);
+    background: rgba(255, 255, 255, 0.95);
 }
