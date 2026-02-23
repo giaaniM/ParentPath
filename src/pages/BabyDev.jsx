@@ -1,66 +1,133 @@
-import { pregnancy, milestones } from '../data/mockData';
+import { useState } from 'react';
+import { ChevronDown, Lock, Baby, Footprints } from 'lucide-react';
+import { pregnancy, milestones, weeklyContent } from '../data/mockData';
 import ProgressBar from '../components/ProgressBar';
 import './BabyDev.css';
 import './Milestones.css';
 
 export default function BabyDev() {
     const progress = Math.round((pregnancy.currentWeek / pregnancy.totalWeeks) * 100);
+    const [weeklyOpen, setWeeklyOpen] = useState(false);
 
     return (
         <div className="page page-enter baby-page">
-            <h1 className="page-title">Il tuo bambino</h1>
-            <p className="page-subtitle">Settimana {pregnancy.currentWeek} di {pregnancy.totalWeeks}</p>
 
-            {/* Fetus 3D Render */}
-            <div className="baby-echo">
-                <div className="baby-echo__container">
-                    <div className="baby-echo__glow"></div>
-                    <img src="/baby-24w-alpha.png" alt="Baby" className="baby-echo__image" />
-                    <div className="baby-echo__pulse"></div>
-                    <div className="baby-echo__pulse baby-echo__pulse--delayed"></div>
-                </div>
-                <p className="baby-echo__comparison">
-                    {pregnancy.stats.sizeEmoji} {pregnancy.stats.sizeComparison}
-                </p>
-            </div>
+            <h2 className="baby-section-title baby-section-title--macro">Il nostro viaggio insieme</h2>
 
-            {/* Stats Row */}
-            <div className="baby-stats-row">
-                <div className="baby-stat-box">
-                    <span className="baby-stat-box__value">{pregnancy.stats.length}</span>
-                    <span className="baby-stat-box__label">Lunghezza</span>
-                </div>
-                <div className="baby-stat-box">
-                    <span className="baby-stat-box__value">{pregnancy.stats.weight}</span>
-                    <span className="baby-stat-box__label">Peso</span>
-                </div>
-                <div className="baby-stat-box">
-                    <span className="baby-stat-box__value">{progress}%</span>
-                    <span className="baby-stat-box__label">Progresso</span>
-                </div>
-            </div>
+            <div className="baby-phases">
+                {/* ── Active Phase: Gravidanza ── */}
+                <div className="baby-phase-card baby-phase-card--active">
 
-            {/* Progress Bar */}
-            <ProgressBar weeks={pregnancy.currentWeek} totalWeeks={pregnancy.totalWeeks} />
-
-            {/* Full Milestones Grid */}
-            <h2 className="baby-section-title">Tappe del percorso</h2>
-            <div className="miles-grid">
-                {milestones.map((milestone) => (
-                    <div
-                        key={milestone.id}
-                        className={`miles-item ${milestone.completed ? 'miles-item--completed' : 'miles-item--upcoming'}`}
-                    >
-                        <div className="miles-item__icon-wrap">
-                            <span className="miles-item__icon">{milestone.icon}</span>
-                            {milestone.completed && (
-                                <span className="miles-item__check">✓</span>
-                            )}
+                    {/* Phase Header */}
+                    <div className="baby-phase-header">
+                        <div className="baby-phase-icon">🤰</div>
+                        <div className="baby-phase-title">
+                            <h3>Gravidanza</h3>
+                            <span className="baby-phase-status">Fase attuale</span>
                         </div>
-                        <span className="miles-item__title">{milestone.title}</span>
-                        <span className="miles-item__week">Sett. {milestone.week}</span>
                     </div>
-                ))}
+
+                    {/* Phase Content (The actual BabyDev content) */}
+                    <div className="baby-phase-body">
+                        {/* Hero: Baby Visual */}
+                        <div className="baby-hero">
+                            <div className="baby-hero__visual">
+                                <div className="baby-hero__blob"></div>
+                                <img src="/baby-24w-alpha.png" alt="Baby" className="baby-hero__img" />
+                                <div className="baby-hero__pulse"></div>
+                                <div className="baby-hero__pulse baby-hero__pulse--delayed"></div>
+                            </div>
+
+                            <h1 className="baby-hero__name">
+                                {pregnancy.babyNickname} {pregnancy.sex === 'M' ? '♂️' : '♀️'}
+                            </h1>
+                            <p className="baby-hero__week">
+                                Settimana {pregnancy.currentWeek} di {pregnancy.totalWeeks}
+                            </p>
+                            <p className="baby-hero__comparison">
+                                {pregnancy.stats.sizeEmoji} {pregnancy.stats.sizeComparison}
+                            </p>
+                        </div>
+
+                        {/* Stats Row */}
+                        <div className="baby-stats-row">
+                            <div className="baby-stat-box">
+                                <span className="baby-stat-box__value">{pregnancy.stats.length}</span>
+                                <span className="baby-stat-box__label">Lunghezza</span>
+                            </div>
+                            <div className="baby-stat-box">
+                                <span className="baby-stat-box__value">{pregnancy.stats.weight}</span>
+                                <span className="baby-stat-box__label">Peso</span>
+                            </div>
+                            <div className="baby-stat-box">
+                                <span className="baby-stat-box__value">{progress}%</span>
+                                <span className="baby-stat-box__label">Progresso</span>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <ProgressBar weeks={pregnancy.currentWeek} totalWeeks={pregnancy.totalWeeks} />
+
+                        {/* Collapsible Weekly Info Block */}
+                        <button
+                            className={`baby__weekly-toggle ${weeklyOpen ? 'baby__weekly-toggle--open' : ''}`}
+                            onClick={() => setWeeklyOpen(!weeklyOpen)}
+                        >
+                            <span className="baby__weekly-toggle__label">📖 Questa settimana ({pregnancy.currentWeek})</span>
+                            <ChevronDown
+                                size={20}
+                                className={`baby__weekly-toggle__icon ${weeklyOpen ? 'baby__weekly-toggle__icon--open' : ''}`}
+                            />
+                        </button>
+                        <div className={`baby__weekly-info ${weeklyOpen ? 'baby__weekly-info--open' : ''}`}>
+                            <p className="baby__weekly-info__text">
+                                {weeklyContent.hero.subtitle}
+                            </p>
+                        </div>
+
+                        {/* Milestones */}
+                        <h2 className="baby-section-title">Tappe del percorso</h2>
+                        <div className="miles-grid">
+                            {milestones.map((milestone) => (
+                                <div
+                                    key={milestone.id}
+                                    className={`miles-item ${milestone.completed ? 'miles-item--completed' : 'miles-item--upcoming'}`}
+                                >
+                                    <div className="miles-item__icon-wrap">
+                                        <span className="miles-item__icon">{milestone.icon}</span>
+                                        {milestone.completed && (
+                                            <span className="miles-item__check">✓</span>
+                                        )}
+                                    </div>
+                                    <span className="miles-item__title">{milestone.title}</span>
+                                    <span className="miles-item__week">Sett. {milestone.week}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Future Phase: Primi Mesi ── */}
+                <div className="baby-phase-card baby-phase-card--locked">
+                    <div className="baby-phase-header">
+                        <div className="baby-phase-icon"><Baby size={28} /></div>
+                        <div className="baby-phase-title">
+                            <h3>Primi Mesi (0-6)</h3>
+                            <span className="baby-phase-status"><Lock size={12} /> Prossimamente</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Future Phase: Primi Passi ── */}
+                <div className="baby-phase-card baby-phase-card--locked">
+                    <div className="baby-phase-header">
+                        <div className="baby-phase-icon"><Footprints size={28} /></div>
+                        <div className="baby-phase-title">
+                            <h3>I Primi Passi (1-3 anni)</h3>
+                            <span className="baby-phase-status"><Lock size={12} /> Prossimamente</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -1,0 +1,175 @@
+/* ─── Daily Discovery Card ─── */
+.ddisco {
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ddisco--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ── Floating Particles ── */
+.ddisco__particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ddisco__particle {
+    position: absolute;
+    font-size: 14px;
+    opacity: 0.2;
+    animation: dDiscoFloat 6s ease-in-out infinite;
+}
+
+.ddisco__particle--1 {
+    top: 10%;
+    right: 15%;
+    animation-delay: 0s;
+    color: #F48C95;
+}
+
+.ddisco__particle--2 {
+    top: 30%;
+    right: 8%;
+    animation-delay: 1.2s;
+    font-size: 20px;
+    color: #D4725B;
+}
+
+.ddisco__particle--3 {
+    bottom: 20%;
+    right: 25%;
+    animation-delay: 2.4s;
+    color: #F48C95;
+}
+
+.ddisco__particle--4 {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0.8s;
+    font-size: 18px;
+    color: #D4A95B;
+}
+
+.ddisco__particle--5 {
+    bottom: 30%;
+    left: 15%;
+    animation-delay: 3s;
+    color: #5B8FD4;
+}
+
+@keyframes dDiscoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-8px) rotate(5deg);
+    }
+
+    50% {
+        transform: translateY(-4px) rotate(-3deg);
+    }
+
+    75% {
+        transform: translateY(-10px) rotate(2deg);
+    }
+}
+
+.ddisco__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #D4725B;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-md);
+}
+
+.ddisco__emoji {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+    animation: ddiscoEmojiBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+
+@keyframes ddiscoEmojiBounce {
+    from {
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.ddisco__title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.ddisco__text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-lg);
+}
+
+.ddisco__actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.ddisco__share-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(244, 140, 149, 0.2);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: #D4725B;
+    transition: all 0.25s ease;
+}
+
+.ddisco__share-btn:active {
+    transform: scale(0.97);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.ddisco__dismiss-btn {
+    padding: 12px 16px;
+    background: transparent;
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    transition: all 0.25s ease;
+}
+
+.ddisco__dismiss-btn:active {
+    transform: scale(0.97);
+}

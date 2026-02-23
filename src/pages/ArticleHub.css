@@ -25,8 +25,9 @@
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-base) var(--space-lg);
     box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-lg);
 }
 
 .hub-search__icon {
@@ -39,7 +40,7 @@
     flex: 1;
     border: none;
     background: transparent;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-md);
     color: var(--color-text);
     outline: none;
 }
@@ -63,13 +64,13 @@
 }
 
 .hub-category {
-    padding: var(--space-xs) var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
     border-radius: var(--radius-full);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
     white-space: nowrap;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -84,12 +85,12 @@
 .hub-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-md);
 }
 
 .hub-card {
     background: var(--color-bg-elevated);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xs);
     border: 1px solid var(--color-border-light);
     cursor: pointer;
@@ -101,15 +102,15 @@
 }
 
 .hub-card__content {
-    padding: var(--space-md) var(--space-base);
+    padding: var(--space-lg);
 }
 
 .hub-card__meta {
     display: flex;
-    gap: 4px;
-    margin-bottom: 6px;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
+    gap: 6px;
+    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
 }
 
 .hub-card__category {
@@ -121,10 +122,10 @@
 }
 
 .hub-card__title {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
     color: var(--color-text-primary);
 }
 
@@ -137,8 +138,8 @@
 .hub-card__author {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.65rem;
+    gap: 6px;
+    font-size: var(--font-size-xs);
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.5px;

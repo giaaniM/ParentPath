@@ -1,0 +1,183 @@
+/* ─── Did You Know ─── */
+.dyk {
+    margin-bottom: var(--space-xl);
+}
+
+.dyk__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.dyk__section-title {
+    font-size: 1.3rem;
+    font-weight: var(--font-weight-bold);
+    color: #1A1A1A;
+}
+
+.dyk__counter {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-subtle);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+}
+
+/* ── Card ── */
+.dyk__card {
+    position: relative;
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl) var(--space-lg);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: pan-y;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: dykCardIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes dykCardIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dyk__card--swipe-left {
+    animation: dykSwipeLeft 0.3s ease forwards;
+}
+
+.dyk__card--swipe-right {
+    animation: dykSwipeRight 0.3s ease forwards;
+}
+
+@keyframes dykSwipeLeft {
+    to {
+        transform: translateX(-100%) rotate(-8deg);
+        opacity: 0;
+    }
+}
+
+@keyframes dykSwipeRight {
+    to {
+        transform: translateX(100%) rotate(8deg);
+        opacity: 0;
+    }
+}
+
+/* Shimmer */
+.dyk__card-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: dykShimmer 3s ease-in-out infinite;
+}
+
+@keyframes dykShimmer {
+    0% {
+        left: -50%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
+.dyk__card-emoji {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.dyk__card-text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-lg);
+}
+
+.dyk__card-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.dyk__like-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+}
+
+.dyk__like-btn:active,
+.dyk__like-btn--liked {
+    transform: scale(1.15);
+}
+
+.dyk__share-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    transition: all 0.25s ease;
+}
+
+.dyk__share-btn:active {
+    transform: scale(0.97);
+}
+
+/* ── Dots ── */
+.dyk__dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: var(--space-md);
+}
+
+.dyk__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #D1D1D1;
+    border: none;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.dyk__dot--active {
+    background: #F48C95;
+    width: 20px;
+    border-radius: 4px;
+}
+
+.dyk__hint {
+    text-align: center;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-sm);
+}

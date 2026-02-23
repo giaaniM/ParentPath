@@ -107,7 +107,10 @@
 
   /* ─── Layout ─── */
   --max-width: 430px;
+  --top-bar-height: 60px;
   --tab-bar-height: 88px;
+  --bottom-safe: env(safe-area-inset-bottom, 20px);
+  --top-safe: env(safe-area-inset-top, 0px);
   --status-bar-height: env(safe-area-inset-top, 0px);
   --bottom-safe: env(safe-area-inset-bottom, 0px);
 }

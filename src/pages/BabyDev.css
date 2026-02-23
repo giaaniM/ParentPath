@@ -1,73 +1,49 @@
+/* ─── Baby Development Page ─── */
 .baby-page {
     padding: var(--space-lg) var(--space-lg);
+    padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
 }
 
-/* Ecography */
-.baby-echo {
+/* ── Hero: Baby Visual (consistent with Home) ── */
+.baby-hero {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: var(--space-lg);
+    text-align: center;
+    margin-bottom: var(--space-xl);
 }
 
-.baby-echo__container {
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(44, 107, 90, 0.1) 0%, transparent 70%);
+.baby-hero__visual {
+    width: 220px;
+    height: 220px;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: var(--space-md);
-    position: relative;
+    margin-bottom: var(--space-lg);
 }
 
-.baby-echo__glow {
+.baby-hero__blob {
     position: absolute;
-    width: 140px;
-    height: 140px;
-    background: var(--color-accent-papa);
-    border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.15;
-    z-index: 0;
-    animation: gentleGlow 4s ease-in-out infinite alternate;
+    width: 180px;
+    height: 200px;
+    background: #F1CEC0;
+    border-radius: 50% 60% 50% 40%;
+    transform: rotate(10deg);
+    opacity: 0.6;
 }
 
-.baby-echo__image {
-    width: 180px;
-    height: 180px;
+.baby-hero__img {
+    width: 190px;
+    height: 190px;
     object-fit: contain;
     z-index: 1;
-    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.15));
-    animation: floatingBabyRender 6s ease-in-out infinite;
+    position: relative;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+    animation: babyFloat 6s ease-in-out infinite;
 }
 
-.baby-echo__pulse {
-    position: absolute;
-    border: 1px solid var(--color-primary);
-    border-radius: 50%;
-    z-index: 0;
-    animation: ecoPulse 3s ease-out infinite;
-}
-
-.baby-echo__pulse--delayed {
-    animation-delay: 1.5s;
-}
-
-@keyframes gentleGlow {
-    0% {
-        opacity: 0.1;
-        transform: scale(0.9);
-    }
-
-    100% {
-        opacity: 0.25;
-        transform: scale(1.1);
-    }
-}
-
-@keyframes floatingBabyRender {
+@keyframes babyFloat {
 
     0%,
     100% {
@@ -79,7 +55,21 @@
     }
 }
 
-@keyframes ecoPulse {
+.baby-hero__pulse {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border: 1px solid #F48C95;
+    border-radius: 50%;
+    z-index: 0;
+    animation: heroPulse 3s ease-out infinite;
+}
+
+.baby-hero__pulse--delayed {
+    animation-delay: 1.5s;
+}
+
+@keyframes heroPulse {
     0% {
         width: 160px;
         height: 160px;
@@ -93,65 +83,30 @@
     }
 }
 
-.baby-echo__comparison {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
-    font-weight: var(--font-weight-medium);
+.baby-hero__name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #D4725B;
+    margin-bottom: var(--space-xs);
+}
+
+.baby-hero__week {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semibold);
+    color: #6B6B6B;
+    margin-bottom: var(--space-sm);
+}
+
+.baby-hero__comparison {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    background: #FDF1E8;
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
 }
 
 /* Stats */
-/* Stats removed as they moved to home */
-
-/* Progress */
-.baby-progress {
-    padding: var(--space-base);
-    background: var(--color-bg-elevated);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-xs);
-    border: 1px solid var(--color-border-light);
-    margin-bottom: var(--space-lg);
-}
-
-.baby-progress__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-sm);
-}
-
-.baby-progress__title {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-semibold);
-}
-
-.baby-progress__percent {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-}
-
-.baby-progress__bar {
-    height: 6px;
-    background: var(--color-bg-subtle);
-    border-radius: var(--radius-full);
-    overflow: hidden;
-    margin-bottom: var(--space-sm);
-}
-
-.baby-progress__fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-accent-papa));
-    border-radius: var(--radius-full);
-    transition: width var(--transition-slow);
-}
-
-.baby-progress__label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
-    text-align: center;
-}
-
-/* Stats Row */
 .baby-stats-row {
     display: flex;
     gap: var(--space-sm);
@@ -161,98 +116,183 @@
 .baby-stat-box {
     flex: 1;
     background: var(--color-bg-elevated);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg) var(--space-md);
     text-align: center;
     border: 1px solid var(--color-border-light);
 }
 
 .baby-stat-box__value {
     display: block;
-    font-size: var(--font-size-lg);
+    font-size: 1.3rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
+    color: #D4725B;
 }
 
 .baby-stat-box__label {
     display: block;
     font-size: var(--font-size-xs);
     color: var(--color-text-tertiary);
-    margin-top: 2px;
+    margin-top: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.05em;
+    font-weight: var(--font-weight-semibold);
 }
 
-/* Section Title */
 .baby-section-title {
-    font-size: var(--font-size-lg);
+    font-size: 1.4rem;
     font-weight: var(--font-weight-bold);
     text-align: center;
-    margin-bottom: var(--space-lg);
-    margin-top: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    margin-top: var(--space-xl);
+    color: #1A1A1A;
 }
 
-/* Upcoming */
-.baby-upcoming {
-    margin-bottom: var(--space-lg);
-}
-
-.baby-upcoming__title {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--space-md);
-}
-
-.baby-upcoming__list {
+/* ── Baby Macro Phases ── */
+.baby-phases {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xxl);
 }
 
-.baby-upcoming__item {
+.baby-phase-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border-light);
+    transition: transform var(--transition-base);
+    overflow: hidden;
+}
+
+.baby-phase-card--active {
+    border-color: #F48C95;
+}
+
+.baby-phase-card--locked {
+    opacity: 0.6;
+    background: var(--color-bg-subtle);
+    box-shadow: none;
+    border: 1px dashed var(--color-border);
+    padding: var(--space-lg);
+}
+
+.baby-phase-header {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg-elevated);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-xs);
-    border: 1px solid var(--color-border-light);
+    padding: var(--space-lg);
 }
 
-.baby-upcoming__icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-sm);
-    background: var(--color-primary-light);
-    color: var(--color-primary);
+.baby-phase-card--active .baby-phase-header {
+    background: linear-gradient(to right, #FFF5F6, var(--color-bg-elevated));
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.baby-phase-icon {
+    font-size: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-xs);
     flex-shrink: 0;
 }
 
-.baby-upcoming__info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.baby-phase-card--active .baby-phase-icon {
+    border: 2px solid #F48C95;
 }
 
-.baby-upcoming__name {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
+.baby-phase-card--locked .baby-phase-icon {
+    color: var(--color-text-tertiary);
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
 }
 
-.baby-upcoming__week {
+.baby-phase-title h3 {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-bold);
+    color: #1A1A1A;
+    margin-bottom: 4px;
+}
+
+.baby-phase-status {
     font-size: var(--font-size-sm);
     color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-.baby-upcoming__weeks-away {
-    font-size: var(--font-size-sm);
-    color: var(--color-primary);
-    font-weight: var(--font-weight-medium);
-    white-space: nowrap;
+.baby-phase-card--active .baby-phase-status {
+    color: #D4725B;
+    font-weight: var(--font-weight-bold);
+}
+
+.baby-phase-body {
+    padding: var(--space-lg);
+}
+
+/* ── Collapsible Weekly Info ── */
+.baby__weekly-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px var(--space-lg);
+    margin-top: var(--space-md);
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-lg);
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.baby__weekly-toggle--open {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.baby__weekly-toggle__label {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: #1A1A1A;
+}
+
+.baby__weekly-toggle__icon {
+    color: #9A9A9A;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+}
+
+.baby__weekly-toggle__icon--open {
+    transform: rotate(180deg);
+}
+
+.baby__weekly-info {
+    background: var(--color-bg-subtle);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-left: 4px solid #F48C95;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        padding 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 0 var(--space-lg);
+}
+
+.baby__weekly-info--open {
+    max-height: 400px;
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.baby__weekly-info__text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
 }

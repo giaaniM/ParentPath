@@ -101,26 +101,26 @@ textarea {
 
 .page {
     width: 100%;
-    padding: var(--space-lg) var(--space-lg);
-    padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
-    min-height: 100dvh;
-    box-sizing: border-box;
+    min-height: 100vh;
+    padding: calc(var(--top-bar-height) + var(--top-safe) + var(--space-xl)) var(--space-lg) calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
+    background: var(--color-bg);
 }
 
 /* ── Consistent Page Headers ── */
 .page-title {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
     font-weight: var(--font-weight-bold);
     text-align: center;
     letter-spacing: var(--letter-spacing-tight);
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    color: #1A1A1A;
 }
 
 .page-subtitle {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-md);
     color: var(--color-text-secondary);
     text-align: center;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-xl);
 }
 
 .page-enter {
@@ -138,6 +138,7 @@ textarea {
         transform: translateY(0);
     }
 }
+
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {

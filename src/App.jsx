@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import TabBar from './components/TabBar';
-import Onboarding from './pages/Onboarding';
+import TopBar from './components/TopBar';
+import AnimatedOnboarding from './pages/AnimatedOnboarding';
 import Home from './pages/Home';
 import BabyDev from './pages/BabyDev';
 import ArticleHub from './pages/ArticleHub';
@@ -17,8 +18,9 @@ function AppContent() {
 
   return (
     <div className="app-shell">
+      {!hideTabBar && <TopBar />}
       <Routes>
-        <Route path="/" element={<Onboarding />} />
+        <Route path="/" element={<AnimatedOnboarding />} />
         <Route path="/home" element={<Home />} />
         <Route path="/baby" element={<BabyDev />} />
         <Route path="/article" element={<ArticleHub />} />
