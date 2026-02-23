@@ -1,0 +1,71 @@
+/* TipDetail Page */
+.tip-detail {
+    padding: var(--space-lg);
+    padding-bottom: calc(60px + var(--bottom-safe));
+}
+
+.tip-detail__back {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    margin-bottom: var(--space-xl);
+    padding: 0;
+}
+
+.tip-detail__badge {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-md);
+}
+
+.tip-detail__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: 1.2;
+    margin-bottom: var(--space-xl);
+}
+
+.tip-detail__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.tip-detail__paragraph {
+    font-size: var(--font-size-md);
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+}
+
+.tip-detail__callout {
+    display: flex;
+    gap: var(--space-md);
+    background: var(--color-accent-medical-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-base);
+    border-left: 3px solid var(--color-primary);
+}
+
+.tip-detail__callout-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.tip-detail__callout p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+}
