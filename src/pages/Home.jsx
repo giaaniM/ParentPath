@@ -2,27 +2,32 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { weeklyContent, pregnancy } from '../data/mockData';
 import { useUser } from '../context/UserContext';
-import { ChevronRight, Sparkles, Stethoscope, ShoppingBag, ClipboardCheck, Heart, CheckCircle2, Circle, Target, Lightbulb, Activity } from 'lucide-react';
+import {
+    ChevronRight, Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
+    Heart, CheckCircle2, Circle, Target, Lightbulb, Activity,
+    SmilePlus, Smile, Meh, Frown, Coffee
+} from 'lucide-react';
 import ProgressBar from '../components/ProgressBar';
 import DailyDiscovery from '../components/DailyDiscovery';
 import DidYouKnow from '../components/DidYouKnow';
-import WeeklyQuiz from '../components/WeeklyQuiz';
 import './Home.css';
 
+// Using lucide-react icons instead of emojis for a sleeker look
 const MOODS = [
-    { emoji: '😴', label: 'Stanca' },
-    { emoji: '😊', label: 'Bene' },
-    { emoji: '🤩', label: 'Ottima' },
-    { emoji: '😰', label: 'Ansiosa' },
-    { emoji: '🤢', label: 'Nausea' },
+    { id: 'tired', icon: <Coffee strokeWidth={2.5} size={28} />, color: '#D4A95B', label: 'Stanca' },
+    { id: 'good', icon: <Smile strokeWidth={2.5} size={28} />, color: '#3DAB96', label: 'Bene' },
+    { id: 'great', icon: <SmilePlus strokeWidth={2.5} size={28} />, color: '#5B8FD4', label: 'Ottima' },
+    { id: 'anxious', icon: <Meh strokeWidth={2.5} size={28} />, color: '#D4725B', label: 'Ansiosa' },
+    { id: 'sick', icon: <Frown strokeWidth={2.5} size={28} />, color: '#9A9A9A', label: 'Nausea' },
 ];
 const MOODS_PAPA = [
-    { emoji: '😌', label: 'Sereno' },
-    { emoji: '😊', label: 'Bene' },
-    { emoji: '🤩', label: 'Euforico' },
-    { emoji: '😰', label: 'Ansioso' },
-    { emoji: '😴', label: 'Stanco' },
+    { id: 'chill', icon: <Smile strokeWidth={2.5} size={28} />, color: '#5B8FD4', label: 'Sereno' },
+    { id: 'good', icon: <SmilePlus strokeWidth={2.5} size={28} />, color: '#3DAB96', label: 'Bene' },
+    { id: 'excited', icon: <Sparkles strokeWidth={2.5} size={28} />, color: '#D4A95B', label: 'Euforico' },
+    { id: 'anxious', icon: <Meh strokeWidth={2.5} size={28} />, color: '#D4725B', label: 'Ansioso' },
+    { id: 'tired', icon: <Coffee strokeWidth={2.5} size={28} />, color: '#9A9A9A', label: 'Stanco' },
 ];
+
 const ICON_MAP = {
     'Sviluppo': <Sparkles size={22} />,
     'Da fare': <ClipboardCheck size={22} />,
@@ -39,7 +44,6 @@ const getTrimester = (w) => {
 };
 
 // ── Dynamic Daily Tasks ──
-// Rotates tasks based on the day of the year so checklist feels fresh daily
 const MAMMA_TASK_POOL = [
     'Prendi le vitamine prenatali',
     "Bevi 2 litri d'acqua",
@@ -103,7 +107,6 @@ export default function Home() {
     const moods = isMamma ? MOODS : MOODS_PAPA;
     const dailyTasks = useMemo(() => getDailyTasks(isMamma), [isMamma]);
 
-    // Count completed
     const completedCount = Object.values(checkedTasks).filter(Boolean).length;
 
     useEffect(() => {
@@ -139,11 +142,13 @@ export default function Home() {
                             <div className="dash__mood__options">
                                 {moods.map((m) => (
                                     <button
-                                        key={m.label}
-                                        className={`dash__mood__btn ${selectedMood?.label === m.label ? 'dash__mood__btn--selected' : ''}`}
+                                        key={m.id}
+                                        className={`dash__mood__btn ${selectedMood?.id === m.id ? 'dash__mood__btn--selected' : ''}`}
                                         onClick={() => handleMood(m)}
                                     >
-                                        <span className="dash__mood__emoji">{m.emoji}</span>
+                                        <span className="dash__mood__emoji" style={{ color: selectedMood?.id === m.id ? 'var(--color-primary)' : m.color }}>
+                                            {m.icon}
+                                        </span>
                                         <span className="dash__mood__text">{m.label}</span>
                                     </button>
                                 ))}
@@ -151,7 +156,7 @@ export default function Home() {
                         </>
                     ) : (
                         <div className="dash__mood__saved">
-                            <span>{selectedMood.emoji}</span>
+                            <span style={{ color: selectedMood.color }}>{selectedMood.icon}</span>
                             <p>Grazie! Salvato per oggi.</p>
                         </div>
                     )}
@@ -159,18 +164,18 @@ export default function Home() {
             </section>
 
             {/* ── Blocco 2: Card Hero — Scoperta del Giorno ── */}
-            <div style={{ marginBottom: 'var(--space-xl)' }}>
+            <div style={{ marginBottom: 'var(--space-lg)' }}>
                 <DailyDiscovery week={weeks} onShare={handleShare} />
             </div>
 
-            {/* ── Blocco 3: Settimana + Baby View + Progress + Task ── */}
+            {/* ── Blocco 3: Settimana + Baby View + Progress ── */}
+            {/* Rimosso il task checklist da questa macro-card per unificarlo nei Consigli sotto */}
             <section className="dash__macro-card dash__macro-card--gradient-blue">
                 <div className="dash__macro-header">
                     <div className="dash__macro-icon"><Activity size={20} /></div>
                     <h2 className="dash__macro-title">Settimana {weeks}</h2>
                 </div>
 
-                {/* Baby View compatta */}
                 <div className="dash__baby-view" onClick={() => navigate('/baby')}>
                     <div className="dash__baby-view__visual">
                         <div className="dash__baby-view__blob"></div>
@@ -180,36 +185,32 @@ export default function Home() {
                     <div className="dash__baby-view__info">
                         <div className="dash__baby-view__header">
                             <h3 className="dash__baby-view__name">
-                                {pregnancy.babyNickname} {pregnancy.sex === 'M' ? '♂️' : '♀️'}
+                                {pregnancy.babyNickname}
                             </h3>
                             <span className="dash__baby-view__week">Sett {weeks} · {getTrimester(weeks)}° Trim</span>
                         </div>
 
                         <div className="dash__baby-view__comparison">
-                            <span className="dash__baby-view__comparison-emoji">{pregnancy.stats.sizeEmoji}</span>
+                            <span className="dash__baby-view__comparison-emoji" style={{ fontSize: '1.2rem' }}>{pregnancy.stats.sizeEmoji}</span>
                             <span>{pregnancy.stats.sizeComparison}</span>
-                        </div>
-
-                        <div className="dash__baby-view__stats">
-                            <div className="dash__baby-view__stat">
-                                <span className="dash__baby-view__stat-label">Lunghezza</span>
-                                <span className="dash__baby-view__stat-value">{pregnancy.stats.length}</span>
-                            </div>
-                            <div className="dash__baby-view__stat">
-                                <span className="dash__baby-view__stat-label">Peso</span>
-                                <span className="dash__baby-view__stat-value">{pregnancy.stats.weight}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Progress Bar */}
                 <ProgressBar weeks={weeks} totalWeeks={40} />
+            </section>
 
-                {/* Cosa fare questa settimana */}
-                <div className="dash__checklist-section" style={{ marginTop: 'var(--space-lg)' }}>
+            {/* ── Blocco 4: Oggi per te (Consigli/Task Unificati + Card Curiosità) ── */}
+            <section className="dash__macro-card dash__macro-card--gradient-green">
+                <div className="dash__macro-header">
+                    <div className="dash__macro-icon"><Target size={20} /></div>
+                    <h2 className="dash__macro-title">Oggi per te</h2>
+                </div>
+
+                {/* Cosa fare questa settimana (Spostato qui e snellito) */}
+                <div className="dash__checklist-section">
                     <div className="dash__checklist-header">
-                        <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.1rem', marginBottom: 0 }}>Cosa fare: {completedCount}/{dailyTasks.length}</h3>
+                        <h3 className="dash__section-title dash__section-title--left" style={{ fontSize: '1.05rem', marginBottom: 0 }}>Da fare: {completedCount}/{dailyTasks.length}</h3>
                     </div>
                     <div className="dash__checklist">
                         {dailyTasks.map(task => {
@@ -221,9 +222,9 @@ export default function Home() {
                                     onClick={() => toggleTask(task.id)}
                                 >
                                     {isChecked ? (
-                                        <CheckCircle2 className="dash__checklist-icon dash__checklist-icon--checked" size={26} />
+                                        <CheckCircle2 className="dash__checklist-icon dash__checklist-icon--checked" size={24} />
                                     ) : (
-                                        <Circle className="dash__checklist-icon" size={26} />
+                                        <Circle className="dash__checklist-icon" size={24} />
                                     )}
                                     <span className="dash__checklist-text">{task.text}</span>
                                 </button>
@@ -231,17 +232,9 @@ export default function Home() {
                         })}
                     </div>
                 </div>
-            </section>
-
-            {/* ── Blocco 4: Oggi per te (Curiosità + Quiz Teaser) ── */}
-            <section className="dash__macro-card dash__macro-card--gradient-green">
-                <div className="dash__macro-header">
-                    <div className="dash__macro-icon"><Target size={20} /></div>
-                    <h2 className="dash__macro-title">Oggi per te</h2>
-                </div>
 
                 {/* Did You Know Carousel */}
-                <div style={{ marginBottom: 'var(--space-lg)' }}>
+                <div style={{ marginBottom: 'var(--space-md)', marginTop: 'var(--space-lg)' }}>
                     <DidYouKnow week={weeks} />
                 </div>
 
@@ -250,7 +243,9 @@ export default function Home() {
                     className="dash__quiz-teaser"
                     onClick={() => navigate('/article')}
                 >
-                    <span className="dash__quiz-teaser__emoji">🧠</span>
+                    <span className="dash__quiz-teaser__emoji">
+                        <Lightbulb color="#D4A95B" size={24} strokeWidth={2.5} />
+                    </span>
                     <div className="dash__quiz-teaser__body">
                         <span className="dash__quiz-teaser__title">Quiz della settimana {weeks}</span>
                         <span className="dash__quiz-teaser__subtitle">3 domande per metterti alla prova</span>
@@ -259,12 +254,12 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ── Blocco 5: Consigli (max 2, per profilo attivo) ── */}
+            {/* ── Blocco 5: Consigli Generici (max 2, per profilo attivo) ── */}
             {tips.length > 0 && (
                 <section className="dash__macro-card dash__macro-card--gradient-yellow">
                     <div className="dash__macro-header">
-                        <div className="dash__macro-icon"><Lightbulb size={20} /></div>
-                        <h2 className="dash__macro-title">Consigli per {isMamma ? 'te' : 'il papà'}</h2>
+                        <div className="dash__macro-icon"><Heart size={20} /></div>
+                        <h2 className="dash__macro-title">Articoli e Consigli</h2>
                     </div>
 
                     <div className="dash__tips">

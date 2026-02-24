@@ -1,7 +1,9 @@
 /* ─── Baby Development Page ─── */
 .baby-page {
-    padding: var(--space-lg) var(--space-lg);
-    padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
+    padding: var(--space-md) var(--space-md);
+    /* lg to md */
+    padding-bottom: calc(var(--tab-bar-height) + var(--space-lg) + var(--bottom-safe));
+    /* xl to lg */
 }
 
 /* ── Hero: Baby Visual (consistent with Home) ── */
@@ -10,23 +12,29 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    /* xl to lg */
 }
 
 .baby-hero__visual {
-    width: 220px;
-    height: 220px;
+    width: 160px;
+    /* 220 to 160 */
+    height: 160px;
+    /* 220 to 160 */
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
+    /* lg to md */
 }
 
 .baby-hero__blob {
     position: absolute;
-    width: 180px;
-    height: 200px;
+    width: 140px;
+    /* 180 to 140 */
+    height: 150px;
+    /* 200 to 150 */
     background: #F1CEC0;
     border-radius: 50% 60% 50% 40%;
     transform: rotate(10deg);
@@ -34,12 +42,14 @@
 }
 
 .baby-hero__img {
-    width: 190px;
-    height: 190px;
+    width: 145px;
+    /* 190 to 145 */
+    height: 145px;
+    /* 190 to 145 */
     object-fit: contain;
     z-index: 1;
     position: relative;
-    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
     animation: babyFloat 6s ease-in-out infinite;
 }
 
@@ -51,14 +61,16 @@
     }
 
     50% {
-        transform: translateY(-8px) rotate(2deg);
+        transform: translateY(-6px) rotate(2deg);
     }
 }
 
 .baby-hero__pulse {
     position: absolute;
-    width: 160px;
-    height: 160px;
+    width: 130px;
+    /* 160 to 130 */
+    height: 130px;
+    /* 160 to 130 */
     border: 1px solid #F48C95;
     border-radius: 50%;
     z-index: 0;
@@ -71,38 +83,43 @@
 
 @keyframes heroPulse {
     0% {
-        width: 160px;
-        height: 160px;
+        width: 130px;
+        height: 130px;
         opacity: 0.4;
     }
 
     100% {
-        width: 250px;
-        height: 250px;
+        width: 200px;
+        height: 200px;
         opacity: 0;
     }
 }
 
 .baby-hero__name {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    /* 1.8 to 1.5 */
     font-weight: 800;
     color: #D4725B;
     margin-bottom: var(--space-xs);
 }
 
 .baby-hero__week {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    /* 1.1 to 0.95 */
     font-weight: var(--font-weight-semibold);
     color: #6B6B6B;
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    /* sm to xs */
 }
 
 .baby-hero__comparison {
-    font-size: 1.05rem;
+    font-size: 0.9rem;
+    /* 1.05 to 0.9 */
     font-weight: 600;
     color: #1A1A1A;
     background: #FDF1E8;
-    padding: 8px 18px;
+    padding: 6px 14px;
+    /* 8 18 to 6 14 */
     border-radius: var(--radius-full);
 }
 
@@ -110,41 +127,50 @@
 .baby-stats-row {
     display: flex;
     gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
+    /* lg to md */
 }
 
 .baby-stat-box {
     flex: 1;
     background: var(--color-bg-elevated);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg) var(--space-md);
+    border-radius: var(--radius-md);
+    /* lg to md */
+    padding: var(--space-md) var(--space-sm);
+    /* lg md to md sm */
     text-align: center;
     border: 1px solid var(--color-border-light);
 }
 
 .baby-stat-box__value {
     display: block;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+    /* 1.3 to 1.1 */
     font-weight: var(--font-weight-bold);
     color: #D4725B;
 }
 
 .baby-stat-box__label {
     display: block;
-    font-size: var(--font-size-xs);
+    font-size: 0.65rem;
+    /* xs to smaller */
     color: var(--color-text-tertiary);
-    margin-top: 4px;
+    margin-top: 2px;
+    /* 4 to 2 */
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: var(--font-weight-semibold);
 }
 
 .baby-section-title {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
+    /* 1.4 to 1.25 */
     font-weight: var(--font-weight-bold);
     text-align: center;
-    margin-bottom: var(--space-xl);
-    margin-top: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    /* xl to lg */
+    margin-top: var(--space-lg);
+    /* xl to lg */
     color: #1A1A1A;
 }
 
@@ -152,16 +178,20 @@
 .baby-phases {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    margin-bottom: var(--space-xxl);
+    gap: var(--space-sm);
+    /* md to sm */
+    margin-bottom: var(--space-xl);
+    /* xxl to xl */
 }
 
 .baby-phase-card {
     display: flex;
     flex-direction: column;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
+    /* xl to lg */
     background: var(--color-bg-elevated);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    /* Sm shadow softened */
     border: 1px solid var(--color-border-light);
     transition: transform var(--transition-base);
     overflow: hidden;
@@ -169,6 +199,8 @@
 
 .baby-phase-card--active {
     border-color: #F48C95;
+    box-shadow: 0 4px 16px rgba(244, 140, 149, 0.15);
+    /* More visible highlight */
 }
 
 .baby-phase-card--locked {
@@ -176,14 +208,17 @@
     background: var(--color-bg-subtle);
     box-shadow: none;
     border: 1px dashed var(--color-border);
-    padding: var(--space-lg);
+    padding: var(--space-md);
+    /* lg to md */
 }
 
 .baby-phase-header {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-lg);
+    gap: var(--space-sm);
+    /* md to sm */
+    padding: var(--space-md);
+    /* lg to md */
 }
 
 .baby-phase-card--active .baby-phase-header {
@@ -192,14 +227,17 @@
 }
 
 .baby-phase-icon {
-    font-size: 2rem;
+    font-size: 1.6rem;
+    /* 2.0 to 1.6 */
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    /* 60 to 48 */
+    height: 48px;
     background: white;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-md);
+    /* full to md */
     box-shadow: var(--shadow-xs);
     flex-shrink: 0;
 }
@@ -213,17 +251,21 @@
     background: transparent;
     box-shadow: none;
     border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
 }
 
 .baby-phase-title h3 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
+    /* 1.15 to 1.05 */
     font-weight: var(--font-weight-bold);
     color: #1A1A1A;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    /* 4 to 2 */
 }
 
 .baby-phase-status {
-    font-size: var(--font-size-sm);
+    font-size: 0.75rem;
+    /* sm to smaller */
     color: var(--color-text-tertiary);
     font-weight: var(--font-weight-medium);
     display: flex;
@@ -237,7 +279,31 @@
 }
 
 .baby-phase-body {
-    padding: var(--space-lg);
+    padding: var(--space-md);
+    /* lg to md */
+}
+
+/* ── Progress Bar ── */
+.baby-phase-card .baby__progress-container {
+    width: 100%;
+    height: 8px;
+    /* Increased from 6px if it was tiny, or ensure standard */
+    background: var(--color-bg-subtle);
+    /* Gray background instead of white */
+    border-radius: var(--radius-full);
+    margin-top: var(--space-sm);
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* Inner shadow for depth */
+}
+
+.baby-phase-card .baby__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F48C95 0%, #D4725B 100%);
+    /* Colored track */
+    border-radius: var(--radius-full);
+    transition: width 1s ease-out;
 }
 
 /* ── Collapsible Weekly Info ── */
@@ -246,21 +312,25 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 14px var(--space-lg);
-    margin-top: var(--space-md);
+    padding: 12px var(--space-md);
+    /* 14 lg to 12 md */
+    margin-top: var(--space-sm);
+    /* md to sm */
     background: var(--color-bg-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
+    /* lg to md */
     border: none;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
 .baby__weekly-toggle--open {
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .baby__weekly-toggle__label {
-    font-size: var(--font-size-md);
+    font-size: 0.95rem;
+    /* md modified */
     font-weight: var(--font-weight-semibold);
     color: #1A1A1A;
 }
@@ -277,22 +347,24 @@
 
 .baby__weekly-info {
     background: var(--color-bg-subtle);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
     border-left: 4px solid #F48C95;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
         padding 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    padding: 0 var(--space-lg);
+    padding: 0 var(--space-md);
 }
 
 .baby__weekly-info--open {
     max-height: 400px;
-    padding: var(--space-md) var(--space-lg) var(--space-lg);
+    padding: var(--space-sm) var(--space-md) var(--space-md);
 }
 
 .baby__weekly-info__text {
-    font-size: var(--font-size-base);
+    font-size: 0.95rem;
+    /* base modified */
     color: var(--color-text-secondary);
-    line-height: var(--line-height-relaxed);
+    line-height: var(--line-height-normal);
+    /* relaxed to normal */
 }
