@@ -1,4 +1,5 @@
 .article-page {
+    padding-top: max(60px, calc(env(safe-area-inset-top) + 20px));
     padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
 }
 

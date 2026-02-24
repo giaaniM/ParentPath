@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
 @import './design-tokens.css';
 
 /* ─── Reset ─── */
@@ -45,9 +45,8 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-regular);
-    line-height: var(--line-height-normal);
     color: var(--color-text-primary);
-    background-color: var(--color-bg);
+    background-color: var(--page-bg);
     min-height: 100dvh;
     overflow-x: hidden;
 }
@@ -95,15 +94,15 @@ textarea {
     /* symmetric, does not affect padding */
     min-height: 100dvh;
     position: relative;
-    background: var(--color-bg);
+    background: var(--page-bg);
     overflow-x: hidden;
 }
 
 .page {
     width: 100%;
     min-height: 100vh;
-    padding: calc(var(--top-bar-height) + var(--top-safe) + var(--space-xl)) var(--space-lg) calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
-    background: var(--color-bg);
+    padding: calc(env(safe-area-inset-top, 0px) + 90px) 0 calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
+    background: var(--page-bg);
 }
 
 /* ── Consistent Page Headers ── */
@@ -137,6 +136,139 @@ textarea {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ─── V3 Animations & Classes ─── */
+@keyframes riseUp {
+    from {
+        opacity: 0;
+        transform: translateY(28px)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(.9)
+    }
+
+    60% {
+        transform: scale(1.02)
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0)
+    }
+
+    50% {
+        transform: translateY(-8px)
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes blobMove {
+
+    0%,
+    100% {
+        border-radius: 60% 40% 55% 45% / 55% 45% 55% 45%
+    }
+
+    33% {
+        border-radius: 40% 60% 45% 55% / 45% 55% 45% 55%
+    }
+
+    66% {
+        border-radius: 55% 45% 60% 40% / 60% 40% 50% 50%
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.05)
+    }
+}
+
+/* Opacity wrapper keeps them hidden before animation fires */
+.ru {
+    animation: riseUp 0.42s cubic-bezier(.22, .68, 0, 1.2) both;
+    opacity: 0;
+}
+
+.po {
+    animation: popIn 0.48s cubic-bezier(.22, .68, 0, 1.2) both;
+    opacity: 0;
+}
+
+.fi {
+    animation: fadeIn 0.32s ease both;
+    opacity: 0;
+}
+
+.d1 {
+    animation-delay: .06s
+}
+
+.d2 {
+    animation-delay: .12s
+}
+
+.d3 {
+    animation-delay: .18s
+}
+
+.d4 {
+    animation-delay: .24s
+}
+
+.d5 {
+    animation-delay: .30s
+}
+
+.d6 {
+    animation-delay: .36s
+}
+
+.d7 {
+    animation-delay: .42s
+}
+
+.d8 {
+    animation-delay: .48s
 }
 
 

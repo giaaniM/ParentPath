@@ -1,144 +1,142 @@
 import { useState } from 'react';
-import { ChevronDown, Lock, Baby, Footprints } from 'lucide-react';
-import { pregnancy, milestones, weeklyContent } from '../data/mockData';
+import { Baby, Footprints, ChevronRight } from 'lucide-react';
+import { pregnancy, milestones } from '../data/mockData';
 import { useUser } from '../context/UserContext';
-import ProgressBar from '../components/ProgressBar';
 import './BabyDev.css';
-import './Milestones.css';
 
 export default function BabyDev() {
     const { getWeeksPregnant, getDueDate } = useUser();
     const currentWeek = getWeeksPregnant();
-    const progress = Math.round((currentWeek / pregnancy.totalWeeks) * 100);
-    const [weeklyOpen, setWeeklyOpen] = useState(false);
+    const percent = Math.min(100, Math.round((currentWeek / pregnancy.totalWeeks) * 100));
     const dueDate = getDueDate();
-    const dueDateStr = dueDate ? dueDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }) : null;
+    const dueDateStr = dueDate ? dueDate.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' }) : null;
+
+    // Hardcoded "Cosa succede" data based on V3 prototype for this week
+    const weeklyEvents = [
+        { id: 1, type: 'dev', icon: '🧠', label: 'Sviluppo', desc: 'Il cervello entra in fase REM, sogna!' },
+        { id: 2, type: 'dev', icon: '👂', label: 'Sviluppo', desc: 'Sente la tua voce e reagisce ai suoni' },
+        { id: 3, type: 'new', icon: '👁️', label: 'Novità', desc: 'Apre e chiude gli occhi — ci vede già!' },
+    ];
 
     return (
-        <div className="page page-enter baby-page">
+        <div className="page baby-page">
 
-            <h2 className="baby-section-title baby-section-title--macro">Il nostro viaggio insieme</h2>
+            {/* HERO CARD — clean mesh */}
+            <div className="bimbo-hero-wrap fi">
+                <div className="bimbo-hero-card">
+                    <div className="bimbo-hero-bg"></div>
+                    <div className="bimbo-hero-grid"></div>
 
-            <div className="baby-phases">
-                {/* ── Active Phase: Gravidanza ── */}
-                <div className="baby-phase-card baby-phase-card--active">
-
-                    {/* Phase Header */}
-                    <div className="baby-phase-header">
-                        <div className="baby-phase-icon">🤰</div>
-                        <div className="baby-phase-title">
-                            <h3>Gravidanza</h3>
-                            <span className="baby-phase-status">Fase attuale</span>
-                        </div>
-                    </div>
-
-                    {/* Phase Content (The actual BabyDev content) */}
-                    <div className="baby-phase-body">
-                        {/* Hero: Baby Visual */}
-                        <div className="baby-hero">
-                            <div className="baby-hero__visual">
-                                <div className="baby-hero__blob"></div>
-                                <img src="/baby-24w-alpha.png" alt="Baby" className="baby-hero__img" />
-                                <div className="baby-hero__pulse"></div>
-                                <div className="baby-hero__pulse baby-hero__pulse--delayed"></div>
-                            </div>
-
-                            <h1 className="baby-hero__name">
+                    <div className="bimbo-hero-inner">
+                        <div className="bhc-left">
+                            <div className="bhc-eyebrow">Il nostro viaggio</div>
+                            <div className="bhc-name">
                                 {pregnancy.babyNickname} {pregnancy.sex === 'M' ? '♂️' : '♀️'}
-                            </h1>
-                            <p className="baby-hero__week">
-                                Settimana {currentWeek} di {pregnancy.totalWeeks}
-                            </p>
-                            <p className="baby-hero__comparison">
-                                {pregnancy.stats.sizeEmoji} {pregnancy.stats.sizeComparison}
-                            </p>
-                        </div>
-
-                        {/* Stats Row */}
-                        <div className="baby-stats-row">
-                            <div className="baby-stat-box">
-                                <span className="baby-stat-box__value">{pregnancy.stats.length}</span>
-                                <span className="baby-stat-box__label">Lunghezza</span>
                             </div>
-                            <div className="baby-stat-box">
-                                <span className="baby-stat-box__value">{pregnancy.stats.weight}</span>
-                                <span className="baby-stat-box__label">Peso</span>
-                            </div>
-                            <div className="baby-stat-box">
-                                <span className="baby-stat-box__value">{progress}%</span>
-                                <span className="baby-stat-box__label">Progresso</span>
-                            </div>
+                            <div className="bhc-week">Settimana {currentWeek} · {Math.ceil(currentWeek / 13)}° Trimestre</div>
+                            <div className="bhc-fruit">{pregnancy.stats.sizeEmoji} Grande come {pregnancy.stats.sizeComparison.toLowerCase()}</div>
                         </div>
-
-                        {/* Progress Bar */}
-                        <ProgressBar weeks={currentWeek} totalWeeks={pregnancy.totalWeeks} />
-
-                        {/* Collapsible Weekly Info Block */}
-                        <button
-                            className={`baby__weekly-toggle ${weeklyOpen ? 'baby__weekly-toggle--open' : ''}`}
-                            onClick={() => setWeeklyOpen(!weeklyOpen)}
-                        >
-                            <span className="baby__weekly-toggle__label">📖 Questa settimana ({currentWeek})</span>
-                            <ChevronDown
-                                size={20}
-                                className={`baby__weekly-toggle__icon ${weeklyOpen ? 'baby__weekly-toggle__icon--open' : ''}`}
-                            />
-                        </button>
-                        <div className={`baby__weekly-info ${weeklyOpen ? 'baby__weekly-info--open' : ''}`}>
-                            <p className="baby__weekly-info__text">
-                                {weeklyContent.hero.subtitle}
-                            </p>
-                        </div>
-
-                        {/* Milestones */}
-                        <h2 className="baby-section-title">Tappe del percorso</h2>
-                        <div className="miles-grid">
-                            {milestones.map((milestone) => {
-                                const isCurrent = milestone.week === currentWeek;
-                                const isPast = milestone.completed;
-                                const stateClass = isPast ? 'miles-item--completed' : isCurrent ? 'miles-item--current' : 'miles-item--upcoming';
-                                return (
-                                    <div
-                                        key={milestone.id}
-                                        className={`miles-item ${stateClass}`}
-                                    >
-                                        <div className="miles-item__icon-wrap">
-                                            <span className="miles-item__icon">{milestone.icon}</span>
-                                            {isPast && (
-                                                <span className="miles-item__check">✓</span>
-                                            )}
-                                        </div>
-                                        <span className="miles-item__title">{milestone.title}</span>
-                                        <span className="miles-item__week">Sett. {milestone.week}</span>
-                                    </div>
-                                );
-                            })}
+                        <div className="bhc-right">
+                            <div className="bhc-num">
+                                <div className="bhc-num-val">{currentWeek}</div>
+                                <div className="bhc-num-lbl">Settimana</div>
+                            </div>
+                            <div className="bhc-emoji">{pregnancy.stats.sizeEmoji}</div>
                         </div>
                     </div>
-                </div>
 
-                {/* ── Future Phase: Primi Mesi ── */}
-                <div className="baby-phase-card baby-phase-card--locked">
-                    <div className="baby-phase-header">
-                        <div className="baby-phase-icon"><Baby size={28} /></div>
-                        <div className="baby-phase-title">
-                            <h3>Primi Mesi (0-6)</h3>
-                            <span className="baby-phase-status"><Lock size={12} /> {dueDateStr ? `Disponibile da ${dueDateStr}` : 'Disponibile dopo il parto'}</span>
+                    <div className="bhc-stats">
+                        <div className="bhc-stat">
+                            <div className="bhc-stat-v">{pregnancy.stats.length}</div>
+                            <div className="bhc-stat-l">Lunghezza</div>
+                        </div>
+                        <div className="bhc-stat">
+                            <div className="bhc-stat-v">{pregnancy.stats.weight}</div>
+                            <div className="bhc-stat-l">Peso</div>
+                        </div>
+                        <div className="bhc-stat">
+                            <div className="bhc-stat-v">{percent}%</div>
+                            <div className="bhc-stat-l">Percorso</div>
                         </div>
                     </div>
-                </div>
 
-                {/* ── Future Phase: Primi Passi ── */}
-                <div className="baby-phase-card baby-phase-card--locked">
-                    <div className="baby-phase-header">
-                        <div className="baby-phase-icon"><Footprints size={28} /></div>
-                        <div className="baby-phase-title">
-                            <h3>I Primi Passi (1-3 anni)</h3>
-                            <span className="baby-phase-status"><Lock size={12} /> Disponibile dopo il parto</span>
+                    <div className="bhc-prg">
+                        <div className="bhc-prg-track">
+                            <div className="bhc-prg-fill" style={{ width: `${percent}%` }}></div>
+                        </div>
+                        <div className="bhc-prg-txt">
+                            <span>Inizio</span>
+                            <span>{40 - currentWeek} sett. al parto</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* QUESTA SETTIMANA */}
+            <div className="qsett ru d1">
+                <div className="qsett-hd">
+                    <div className="qsett-tt">🫀 Cosa succede questa settimana</div>
+                    <div className="qsett-cta">Tutto ›</div>
+                </div>
+                {weeklyEvents.map(ev => (
+                    <div key={ev.id} className="qsr">
+                        <div className={`qsr-ic ${ev.type}`}>{ev.icon}</div>
+                        <div className="qsr-t">
+                            <div className="qsr-lb">{ev.label}</div>
+                            <div className="qsr-d">{ev.desc}</div>
+                        </div>
+                        <div className="qsr-ar">
+                            <ChevronRight size={20} />
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* MILESTONE */}
+            <div className="mile-card ru d2">
+                <div className="mile-tt">Tappe del percorso</div>
+                <div className="mile-grid">
+                    {milestones.map((milestone) => {
+                        const isCurrent = milestone.week === currentWeek;
+                        const isPast = milestone.week < currentWeek || milestone.completed;
+                        const stateClass = isPast ? 'done' : isCurrent ? 'now' : 'lock';
+
+                        return (
+                            <div key={milestone.id} className={`mile ${stateClass}`}>
+                                {isPast && <div className="mile-ck"></div>}
+                                <div className="mile-ic">
+                                    {/* Using string emoji if no icon prop, this is just a fallback for the new prototype look */}
+                                    {milestone.icon || '👶'}
+                                </div>
+                                <div className="mile-lb">{milestone.title}</div>
+                                <div className="mile-wk">
+                                    Sett. {milestone.week} {isCurrent ? '←' : ''}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* NEXT PHASES (LOCKED) */}
+            <div className="nxph ru d3">
+                <div className="nxph-ic">👶</div>
+                <div className="nxph-t">
+                    <div className="nxph-n">Primi Mesi (0–6)</div>
+                    <div className="nxph-w">Disponibile {dueDateStr ? `da ${dueDateStr}` : 'dopo il parto'}</div>
+                </div>
+                <span>🔒</span>
+            </div>
+
+            <div className="nxph ru d4" style={{ marginBottom: 0 }}>
+                <div className="nxph-ic">👣</div>
+                <div className="nxph-t">
+                    <div className="nxph-n">I Primi Passi (1–3 anni)</div>
+                    <div className="nxph-w">Disponibile dopo il parto</div>
+                </div>
+                <span>🔒</span>
+            </div>
+
         </div>
     );
 }

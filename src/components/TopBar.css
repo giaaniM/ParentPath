@@ -1,71 +1,87 @@
 /* ── Global TopBar ── */
 .topbar {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--top-bar-height, 60px);
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    z-index: 100;
+    top: max(16px, env(safe-area-inset-top));
+    left: 24px;
+    right: 24px;
+    max-width: calc(var(--max-width, 600px) - 48px);
+    margin: 0 auto;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 var(--space-lg);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(15, 32, 53, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+}
+
+.topbar__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar__logo-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: cover;
 }
 
 .topbar__logo-text {
-    font-size: 1.2rem;
+    font-family: var(--font-family-sans);
+    font-size: 21px;
     font-weight: 800;
-    background: linear-gradient(135deg, #F48C95, #D4725B);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--midnight);
     letter-spacing: -0.5px;
 }
 
 .topbar__actions {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 8px;
 }
 
 .topbar__bell {
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: transparent;
+    background: var(--border);
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-secondary);
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: transform .15s;
     padding: 0;
 }
 
 .topbar__bell:active {
-    background: var(--color-bg-subtle);
+    transform: scale(.88);
 }
 
 .topbar__bell-badge {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #E03131;
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
+    top: -3px;
+    right: -3px;
+    min-width: 17px;
+    height: 17px;
+    background: var(--blush);
+    border: 2px solid var(--ivory);
+    font-size: 9px;
+    color: var(--midnight);
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 9px;
+    padding: 0 3px;
     line-height: 1;
 }
 
@@ -76,25 +92,23 @@
 }
 
 .topbar__avatar {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: var(--color-bg-subtle);
-    border: 2px solid transparent;
+    background: var(--border);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 16px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform .15s;
     padding: 0;
 }
 
 .topbar__avatar:active,
 .topbar__avatar--active {
-    transform: scale(0.95);
-    border-color: #F48C95;
-    background: white;
+    transform: scale(.88);
 }
 
 /* ── Dropdown Menu ── */

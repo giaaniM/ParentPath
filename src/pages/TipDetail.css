@@ -1,6 +1,7 @@
 /* TipDetail Page */
 .tip-detail {
     padding: var(--space-lg);
+    padding-top: max(60px, calc(env(safe-area-inset-top) + 20px));
     padding-bottom: calc(60px + var(--bottom-safe));
 }
 

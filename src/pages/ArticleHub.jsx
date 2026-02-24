@@ -9,78 +9,71 @@ export default function ArticleHub() {
     const currentWeek = getWeeksPregnant();
 
     return (
-        <div className="page page-enter hub-page">
-            <div className="esplora-section">
-                <div style={{ padding: '8px 4px 0', fontFamily: "'Fraunces', serif", fontSize: '24px', color: 'var(--color-text-primary)', marginBottom: '16px', fontWeight: '600' }}>
-                    Esplora
+        <div className="page hub-page">
+            <div className="es-wrap">
+                <div className="es-hl ru">Esplora</div>
+                <div className="es-sub ru d1">Guide, strumenti e quiz per la sett. {currentWeek}</div>
+
+                <div className="es-g ru d1">Guide questa settimana</div>
+                <div className="es-card ru d2" onClick={() => navigate('/article/1')}>
+                    <div className="es-ic blue">📖</div>
+                    <div className="es-txt">
+                        <div className="es-t">Cosa succede nel corpo</div>
+                        <div className="es-s">5 min · Sett. {currentWeek}</div>
+                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
+                </div>
+                <div className="es-card ru d3" onClick={() => navigate('/article/2')}>
+                    <div className="es-ic coral">🍎</div>
+                    <div className="es-txt">
+                        <div className="es-t">Nutrizione nel 3° trimestre</div>
+                        <div className="es-s">Cosa mangiare, cosa evitare</div>
+                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
+                </div>
+                <div className="es-card ru d4" onClick={() => navigate('/article/3')}>
+                    <div className="es-ic green">💤</div>
+                    <div className="es-txt">
+                        <div className="es-t">Dormire bene al 7° mese</div>
+                        <div className="es-s">Posizioni e consigli pratici</div>
+                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
 
-                <div className="esplora-title">Guide settimana {currentWeek}</div>
-                <div className="esplora-cards">
-                    <div className="esplora-card" onClick={() => navigate('/article/1')}>
-                        <div className="ec-icon ec-bg-blue">📖</div>
-                        <div className="ec-text">
-                            <div className="ec-title">Cosa succede nel corpo questa settimana</div>
-                            <div className="ec-sub">5 min di lettura</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
+                <div className="es-g ru d2">Strumenti</div>
+                <div className="es-card ru d3" onClick={() => navigate('/tools')}>
+                    <div className="es-ic gold">📋</div>
+                    <div className="es-txt">
+                        <div className="es-t">Checklist esami gravidanza</div>
+                        <div className="es-s">3 esami in sospeso</div>
                     </div>
-                    <div className="esplora-card" onClick={() => navigate('/article/2')}>
-                        <div className="ec-icon ec-bg-coral">🍎</div>
-                        <div className="ec-text">
-                            <div className="ec-title">Nutrizione nel 3° trimestre</div>
-                            <div className="ec-sub">Cosa mangiare e cosa evitare</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
+                    <div className="es-arr"><ChevronRight size={20} /></div>
+                </div>
+                <div className="es-card ru d4" onClick={() => navigate('/tools')}>
+                    <div className="es-ic blue">🧮</div>
+                    <div className="es-txt">
+                        <div className="es-t">Calcola data del parto</div>
+                        <div className="es-s">Basato sull'ultima mestruazione</div>
                     </div>
-                    <div className="esplora-card" onClick={() => navigate('/article/3')}>
-                        <div className="ec-icon ec-bg-green">💤</div>
-                        <div className="ec-text">
-                            <div className="ec-title">Come dormire bene</div>
-                            <div className="ec-sub">Posizioni e consigli pratici</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
-                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
 
-                <div className="esplora-title">Strumenti</div>
-                <div className="esplora-cards">
-                    <div className="esplora-card" onClick={() => navigate('/tools')}>
-                        <div className="ec-icon ec-bg-gold">📋</div>
-                        <div className="ec-text">
-                            <div className="ec-title">Checklist esami gravidanza</div>
-                            <div className="ec-sub">3 esami in sospeso</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
+                <div className="es-g ru d3">Quiz</div>
+                <div className="es-card hl ru d4">
+                    <div className="es-ic coral">🧠</div>
+                    <div className="es-txt">
+                        <div className="es-t">Quiz settimana {currentWeek}</div>
+                        <div className="es-s">3 domande · Non ancora completato</div>
                     </div>
-                    <div className="esplora-card" onClick={() => navigate('/tools')}>
-                        <div className="ec-icon ec-bg-blue">🧮</div>
-                        <div className="ec-text">
-                            <div className="ec-title">Calcola data del parto</div>
-                            <div className="ec-sub">Stima basata sull'ultima mestruazione</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
-                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
-
-                <div className="esplora-title">Quiz & Apprendimento</div>
-                <div className="esplora-cards">
-                    <div className="esplora-card" style={{ border: '1.5px solid #F48C95', background: 'rgba(244, 140, 149, 0.08)' }}>
-                        <div className="ec-icon ec-bg-coral">🧠</div>
-                        <div className="ec-text">
-                            <div className="ec-title" style={{ color: '#E8457E' }}>Quiz settimana {currentWeek}</div>
-                            <div className="ec-sub">3 domande · Non ancora completato</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" style={{ color: '#E8457E' }} />
+                <div className="es-card ru d5">
+                    <div className="es-ic lav">🏆</div>
+                    <div className="es-txt">
+                        <div className="es-t">I tuoi risultati</div>
+                        <div className="es-s">12 quiz · 🔥 streak 8 settimane</div>
                     </div>
-                    <div className="esplora-card">
-                        <div className="ec-icon ec-bg-green">🏆</div>
-                        <div className="ec-text">
-                            <div className="ec-title">I tuoi risultati</div>
-                            <div className="ec-sub">12 quiz completati · 8 streak</div>
-                        </div>
-                        <ChevronRight size={18} className="ec-arrow" />
-                    </div>
+                    <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
 
             </div>

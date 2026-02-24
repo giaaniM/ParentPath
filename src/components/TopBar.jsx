@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { User, Settings, Shield, LogOut, Bell } from 'lucide-react';
+import { User, Settings, Shield, LogOut, Bell, Baby } from 'lucide-react';
 import './TopBar.css';
 
 export default function TopBar() {
@@ -29,8 +29,9 @@ export default function TopBar() {
 
     return (
         <div className="topbar">
-            {/* Left side could hold a logo or remain empty */}
+            {/* Left side: Premium Logo */}
             <div className="topbar__logo">
+                <img src="/logo.png" alt="ParentPath Logo" className="topbar__logo-img" />
                 <div className="topbar__logo-text">ParentPath</div>
             </div>
 

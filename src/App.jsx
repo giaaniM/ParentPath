@@ -14,11 +14,11 @@ import './styles/global.css';
 
 function AppContent() {
   const location = useLocation();
-  const hideTabBar = location.pathname === '/' || location.pathname === '/tip';
+  const hideGlobalBars = location.pathname === '/';
 
   return (
     <div className="app-shell">
-      {!hideTabBar && <TopBar />}
+      {!hideGlobalBars && <TopBar />}
       <Routes>
         <Route path="/" element={<AnimatedOnboarding />} />
         <Route path="/home" element={<Home />} />
@@ -30,7 +30,7 @@ function AppContent() {
         <Route path="/tip" element={<TipDetail />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {!hideTabBar && <TabBar />}
+      {!hideGlobalBars && <TabBar />}
     </div>
   );
 }
