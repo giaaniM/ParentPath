@@ -4,8 +4,11 @@ import { weeklyContent, pregnancy } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
-    Heart, SmilePlus, Smile, Meh, Frown, Coffee
+    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight
 } from 'lucide-react';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { App as CapacitorApp } from '@capacitor/app';
 import './Home.css';
 
 // Using lucide-react icons instead of emojis for a sleeker look
@@ -71,6 +74,9 @@ function getDailyTasks(isMamma) {
     ];
 }
 
+// Used to make sure we only trigger the welcome push once per session
+let hasTriggeredWelcomePush = false;
+
 export default function Home() {
     const navigate = useNavigate();
     const { userName, isMamma, getWeeksPregnant } = useUser();
@@ -83,11 +89,51 @@ export default function Home() {
         task1: false, task2: false, task3: false,
     });
 
-    const toggleTask = (taskId) => {
+    // Simulate opening from a push or registering a push
+    const scheduleWelcomePush = async () => {
+        if (hasTriggeredWelcomePush) return;
+        hasTriggeredWelcomePush = true;
+
+        try {
+            // Request permissions first (required on iOS and Android 13+)
+            const permStatus = await LocalNotifications.requestPermissions();
+            if (permStatus.display === 'granted') {
+                await LocalNotifications.schedule({
+                    notifications: [
+                        {
+                            title: "Ciao " + userName + "! 👋",
+                            body: "Il tuo bimbo ti aspetta. Entra per vedere com'è cresciuto! 👶",
+                            id: 1,
+                            schedule: { at: new Date(Date.now() + 4000) }, // Fire in 4 seconds
+                            sound: null,
+                            attachments: null,
+                            actionTypeId: "",
+                            extra: null
+                        }
+                    ]
+                });
+            }
+        } catch (e) {
+            console.log("Not running in a native context or push failed", e);
+        }
+    };
+
+    // Trigger on background
+    useMemo(() => {
+        CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+            if (!isActive) {
+                scheduleWelcomePush();
+            }
+        });
+    }, []);
+
+    const toggleTask = async (taskId) => {
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
         setCheckedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }));
     };
 
-    const handleMood = (mood) => {
+    const handleMood = async (mood) => {
+        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
         setSelectedMood(mood);
         setTimeout(() => setMoodSaved(true), 800);
     };
@@ -149,7 +195,7 @@ export default function Home() {
                 <div className="hc-mesh"></div>
                 <div className="hc-grid"></div>
 
-                <div className="hc-arr">→</div>
+                <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
                 <div className="hc-eyebrow">Settimana {weeks}</div>
                 <div className="hc-title">Piccolo sta formando i ricordi</div>
                 <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>

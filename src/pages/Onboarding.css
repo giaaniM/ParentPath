@@ -82,7 +82,7 @@
     background: var(--color-bg-elevated);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-sm);
-    border: 2px solid transparent;
+    border: 2px solid var(--color-border);
     cursor: pointer;
     transition: all var(--transition-fast);
 }

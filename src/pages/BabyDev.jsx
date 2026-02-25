@@ -21,53 +21,55 @@ export default function BabyDev() {
     return (
         <div className="page baby-page">
 
-            {/* HERO CARD — clean mesh */}
-            <div className="bimbo-hero-wrap fi">
-                <div className="bimbo-hero-card">
-                    <div className="bimbo-hero-bg"></div>
-                    <div className="bimbo-hero-grid"></div>
+            {/* HERO CARD V4 */}
+            <div className="bd-hero fi">
+                <div className="bd-eyebrow">IL NOSTRO VIAGGIO INSIEME</div>
 
-                    <div className="bimbo-hero-inner">
-                        <div className="bhc-left">
-                            <div className="bhc-eyebrow">Il nostro viaggio</div>
-                            <div className="bhc-name">
-                                {pregnancy.babyNickname} {pregnancy.sex === 'M' ? '♂️' : '♀️'}
-                            </div>
-                            <div className="bhc-week">Settimana {currentWeek} · {Math.ceil(currentWeek / 13)}° Trimestre</div>
-                            <div className="bhc-fruit">{pregnancy.stats.sizeEmoji} Grande come {pregnancy.stats.sizeComparison.toLowerCase()}</div>
-                        </div>
-                        <div className="bhc-right">
-                            <div className="bhc-num">
-                                <div className="bhc-num-val">{currentWeek}</div>
-                                <div className="bhc-num-lbl">Settimana</div>
-                            </div>
-                            <div className="bhc-emoji">{pregnancy.stats.sizeEmoji}</div>
-                        </div>
+                <div className="bd-circle">
+                    <img src="/pregnant-fetus.webp" alt="Fetus" className="bd-fetus" style={{ animation: 'float 6s ease-in-out infinite' }} />
+                </div>
+
+                <div className="bd-name">
+                    {pregnancy.babyNickname} <span>{pregnancy.sex === 'M' ? '♂' : '♀'}</span>
+                </div>
+
+                <div className="bd-sub">
+                    Settimana {currentWeek} · {Math.ceil(currentWeek / 13)}° Trimestre · Gravidanza
+                </div>
+
+                <div className="bd-pill">
+                    <span className="bd-pill-em">{pregnancy.stats.sizeEmoji}</span>
+                    <span className="bd-pill-tx">Grande come {pregnancy.stats.sizeComparison.toLowerCase()}</span>
+                </div>
+
+                <div className="bd-stats-grid">
+                    <div className="bd-stat-box">
+                        <div className="bd-sv">{pregnancy.stats.length}</div>
+                        <div className="bd-sl">LUNGHEZZA</div>
                     </div>
-
-                    <div className="bhc-stats">
-                        <div className="bhc-stat">
-                            <div className="bhc-stat-v">{pregnancy.stats.length}</div>
-                            <div className="bhc-stat-l">Lunghezza</div>
-                        </div>
-                        <div className="bhc-stat">
-                            <div className="bhc-stat-v">{pregnancy.stats.weight}</div>
-                            <div className="bhc-stat-l">Peso</div>
-                        </div>
-                        <div className="bhc-stat">
-                            <div className="bhc-stat-v">{percent}%</div>
-                            <div className="bhc-stat-l">Percorso</div>
-                        </div>
+                    <div className="bd-stat-box">
+                        <div className="bd-sv">{pregnancy.stats.weight}</div>
+                        <div className="bd-sl">PESO</div>
                     </div>
+                    <div className="bd-stat-box">
+                        <div className="bd-sv">{percent}%</div>
+                        <div className="bd-sl">PERCORSO</div>
+                    </div>
+                </div>
 
-                    <div className="bhc-prg">
-                        <div className="bhc-prg-track">
-                            <div className="bhc-prg-fill" style={{ width: `${percent}%` }}></div>
-                        </div>
-                        <div className="bhc-prg-txt">
-                            <span>Inizio</span>
-                            <span>{40 - currentWeek} sett. al parto</span>
-                        </div>
+                <div className="bd-prog-card">
+                    <div className="bd-prog-head">
+                        <span>Inizio</span>
+                        <span>Oggi</span>
+                        <span>Sett. 40</span>
+                    </div>
+                    <div className="bd-slider-wrap">
+                        <div className="bd-slider-bg"></div>
+                        <div className="bd-slider-fill" style={{ width: `${percent}%` }}></div>
+                        <div className="bd-slider-thumb" style={{ left: `${percent}%` }}>{currentWeek}</div>
+                    </div>
+                    <div className="bd-prog-footer">
+                        Hai completato il <strong>{percent}%</strong>. Mancano <strong>{40 - currentWeek} settimane</strong>!
                     </div>
                 </div>
             </div>

@@ -34,7 +34,7 @@ export default function Notifications() {
     };
 
     return (
-        <div className="page page-enter">
+        <div className="page notif-page page-enter">
             <header className="notif-header">
                 <h1 className="notif-header__title">Notifiche</h1>
                 <span className="notif-header__badge">

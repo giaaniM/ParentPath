@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import './AnimatedOnboarding.css';
 
 export default function AnimatedOnboarding() {
@@ -18,8 +19,14 @@ export default function AnimatedOnboarding() {
 
     const [loadingProgress, setLoadingProgress] = useState(0);
 
-    const handleNext = () => setStep(s => s + 1);
-    const handleBack = () => setStep(s => s - 1);
+    const handleNext = async () => {
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        setStep(s => s + 1);
+    }
+    const handleBack = async () => {
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        setStep(s => s - 1);
+    }
 
     const canProceed = () => {
         if (step === 1) return !!role && name.trim().length > 0;
@@ -98,7 +105,10 @@ export default function AnimatedOnboarding() {
                                 <p className="aonb__subtitle">Scegli il tuo ruolo per le info più adatte a te.</p>
 
                                 <div className="aonb__role-cards">
-                                    <div className={`aonb__role-card ${role === 'mamma' ? 'aonb__role-card--selected' : ''}`} onClick={() => setRole('mamma')}>
+                                    <div className={`aonb__role-card ${role === 'mamma' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setRole('mamma');
+                                    }}>
                                         <div className="aonb__role-icon">🤰</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Futura Mamma</div>
@@ -106,7 +116,10 @@ export default function AnimatedOnboarding() {
                                         </div>
                                         {role === 'mamma' && <CheckCircle2 size={24} color="var(--aqua)" />}
                                     </div>
-                                    <div className={`aonb__role-card ${role === 'papa' ? 'aonb__role-card--selected' : ''}`} onClick={() => setRole('papa')}>
+                                    <div className={`aonb__role-card ${role === 'papa' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setRole('papa');
+                                    }}>
                                         <div className="aonb__role-icon">👨</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Futuro Papà</div>
@@ -114,7 +127,10 @@ export default function AnimatedOnboarding() {
                                         </div>
                                         {role === 'papa' && <CheckCircle2 size={24} color="var(--aqua)" />}
                                     </div>
-                                    <div className={`aonb__role-card ${role === 'entrambi' ? 'aonb__role-card--selected' : ''}`} onClick={() => setRole('entrambi')}>
+                                    <div className={`aonb__role-card ${role === 'entrambi' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setRole('entrambi');
+                                    }}>
                                         <div className="aonb__role-icon">👫</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Lo usiamo insieme</div>
@@ -147,13 +163,22 @@ export default function AnimatedOnboarding() {
                                 <div className="aonb__input-group" style={{ marginTop: 24 }}>
                                     <label className="aonb__label">Sesso</label>
                                     <div className="aonb__sex-pills">
-                                        <div className={`aonb__sex-pill ${babySex === 'M' ? 'aonb__sex-pill--selected' : ''}`} onClick={() => setBabySex('M')}>
+                                        <div className={`aonb__sex-pill ${babySex === 'M' ? 'aonb__sex-pill--selected' : ''}`} onClick={async () => {
+                                            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                            setBabySex('M');
+                                        }}>
                                             Maschietto 👦
                                         </div>
-                                        <div className={`aonb__sex-pill ${babySex === 'F' ? 'aonb__sex-pill--selected' : ''}`} onClick={() => setBabySex('F')}>
+                                        <div className={`aonb__sex-pill ${babySex === 'F' ? 'aonb__sex-pill--selected' : ''}`} onClick={async () => {
+                                            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                            setBabySex('F');
+                                        }}>
                                             Femminuccia 👧
                                         </div>
-                                        <div className={`aonb__sex-pill ${babySex === 'surprise' ? 'aonb__sex-pill--selected' : ''}`} onClick={() => setBabySex('surprise')}>
+                                        <div className={`aonb__sex-pill ${babySex === 'surprise' ? 'aonb__sex-pill--selected' : ''}`} onClick={async () => {
+                                            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                            setBabySex('surprise');
+                                        }}>
                                             Sorpresa 🎁
                                         </div>
                                     </div>
@@ -168,12 +193,18 @@ export default function AnimatedOnboarding() {
                                 <p className="aonb__subtitle">Ci adatteremo perfettamente al momento esatto  in cui vi trovate.</p>
 
                                 <div className="aonb__role-cards" style={{ marginBottom: 24 }}>
-                                    <div className={`aonb__role-card ${status === 'gravidanza' ? 'aonb__role-card--selected' : ''}`} onClick={() => setStatus('gravidanza')}>
+                                    <div className={`aonb__role-card ${status === 'gravidanza' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setStatus('gravidanza');
+                                    }}>
                                         <div className="aonb__role-icon">🤰</div>
                                         <div className="aonb__role-text"><div className="aonb__role-label">Siamo in gravidanza</div></div>
                                         {status === 'gravidanza' && <CheckCircle2 size={24} color="var(--aqua)" />}
                                     </div>
-                                    <div className={`aonb__role-card ${status === 'nato' ? 'aonb__role-card--selected' : ''}`} onClick={() => setStatus('nato')}>
+                                    <div className={`aonb__role-card ${status === 'nato' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setStatus('nato');
+                                    }}>
                                         <div className="aonb__role-icon">🍼</div>
                                         <div className="aonb__role-text"><div className="aonb__role-label">Il bimbo è già nato</div></div>
                                         {status === 'nato' && <CheckCircle2 size={24} color="var(--aqua)" />}
@@ -194,14 +225,20 @@ export default function AnimatedOnboarding() {
                                 <p className="aonb__subtitle">ParentPath è progettato per condividere insieme info e progressi della gravidanza.</p>
 
                                 <div className="aonb__role-cards">
-                                    <div className={`aonb__role-card ${invitePartner === 'si' ? 'aonb__role-card--selected' : ''}`} onClick={() => setInvitePartner('si')}>
+                                    <div className={`aonb__role-card ${invitePartner === 'si' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setInvitePartner('si');
+                                    }}>
                                         <div className="aonb__role-icon" style={{ background: 'var(--aqua2)' }}>💌</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Voglio invitarlo ora</div>
                                             <div className="aonb__role-desc">Invia link di affiliazione</div>
                                         </div>
                                     </div>
-                                    <div className={`aonb__role-card ${invitePartner === 'no' ? 'aonb__role-card--selected' : ''}`} onClick={() => setInvitePartner('no')}>
+                                    <div className={`aonb__role-card ${invitePartner === 'no' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
+                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+                                        setInvitePartner('no');
+                                    }}>
                                         <div className="aonb__role-icon" style={{ background: 'var(--border)' }}>👤</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Lo farò più tardi</div>

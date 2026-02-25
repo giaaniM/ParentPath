@@ -6,29 +6,34 @@
 
 .greeting {
     font-family: var(--font-family-serif);
-    font-size: 28px;
+    font-size: 24px;
     color: var(--midnight);
     font-weight: 600;
-    margin-bottom: 24px;
+    margin: 0 20px 20px;
 }
 
 /* ── MOOD ── */
 .mood-lbl {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--stone);
-    margin-bottom: 12px;
+    margin: 0 20px 10px;
     text-transform: uppercase;
     letter-spacing: .5px;
 }
 
 .mood-strip {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     overflow-x: auto;
-    margin: -10px -20px 24px;
-    padding: 10px 20px 20px;
+    margin-bottom: 20px;
+    padding: 4px 0 16px 20px;
     scrollbar-width: none;
+}
+
+.mood-strip::after {
+    content: "";
+    flex: 0 0 10px;
 }
 
 .mood-strip::-webkit-scrollbar {
@@ -39,12 +44,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: var(--white);
-    padding: 14px 16px;
-    border-radius: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
     border: 1px solid var(--border);
-    min-width: 76px;
+    min-width: 68px;
     cursor: pointer;
     flex-shrink: 0;
     transition: all .2s;
@@ -82,12 +87,12 @@
 /* ── DISCOVERY STRIP ── */
 .disc-strip {
     background: var(--night);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 14px;
+    padding: 14px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 32px;
+    gap: 12px;
+    margin: 0 20px 28px;
     box-shadow: 0 12px 24px rgba(24, 39, 56, .15);
     position: relative;
     overflow: hidden;
@@ -155,15 +160,15 @@
 
 /* ── HERO CARD (HOME) ── */
 .hc {
-    background: var(--midnight);
-    border-radius: 24px;
-    min-height: 280px;
+    background: linear-gradient(135deg, var(--midnight) 0%, #1a365d 100%);
+    border-radius: 20px;
+    min-height: 240px;
     position: relative;
     overflow: hidden;
-    padding: 24px;
-    margin-bottom: 32px;
+    padding: 20px;
+    margin: 0 20px 28px;
     color: var(--white);
-    box-shadow: 0 20px 40px rgba(13, 27, 42, .2);
+    box-shadow: 0 12px 32px rgba(13, 27, 42, .15);
     cursor: pointer;
 }
 
@@ -172,38 +177,23 @@
     transition: transform 0.1s;
 }
 
-.hc-mesh {
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 100% 0%, var(--aqua) 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, var(--slate) 0%, transparent 50%);
-    opacity: .4;
-}
 
-.hc-grid {
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
-    background-size: 20px 20px;
-}
 
 .hc-arr {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, .1);
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, .15);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 16px;
+    color: var(--white);
+    transition: all 0.2s;
 }
 
 .hc-eyebrow {
@@ -219,11 +209,11 @@
 .hc-title {
     position: relative;
     font-family: var(--font-family-serif);
-    font-size: 26px;
+    font-size: 21px;
     font-weight: 600;
-    line-height: 1.2;
-    width: 70%;
-    margin-bottom: 24px;
+    line-height: 1.25;
+    width: 60%;
+    margin-bottom: 20px;
 }
 
 .hc-prg {
@@ -252,24 +242,24 @@
 
 .hc-img {
     position: absolute;
-    bottom: 0px;
-    right: -20px;
-    width: 220px;
+    top: 35px;
+    right: -10px;
+    width: 155px;
     height: auto;
     pointer-events: none;
 }
 
 .hc-badge {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    bottom: 14px;
+    left: 14px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     background: rgba(255, 255, 255, 0.85);
     padding: 6px 12px;
     border-radius: 100px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--night);
     backdrop-filter: blur(8px);
@@ -280,10 +270,10 @@
 /* ── TASKS ── */
 .tw {
     background: var(--white);
-    border-radius: 20px;
+    border-radius: 18px;
     border: 1px solid var(--border);
     padding: 4px;
-    margin-bottom: 32px;
+    margin: 0 20px 28px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .02);
 }
 
@@ -295,7 +285,7 @@
 }
 
 .tw-tit {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--midnight);
 }
@@ -346,9 +336,9 @@
 .t-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 16px;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
     margin-bottom: 4px;
     transition: all .2s;
     cursor: pointer;
@@ -373,7 +363,7 @@
 }
 
 .t-txt {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--slate);
     transition: all .2s;
@@ -407,12 +397,12 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 16px;
+    margin: 0 20px 14px;
     padding: 0 4px;
 }
 
 .sec-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
     color: var(--midnight);
 }
@@ -427,11 +417,16 @@
 /* ── OGGI ROW ── */
 .oggi-row {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     overflow-x: auto;
     scrollbar-width: none;
-    margin: 0 -20px 32px;
-    padding: 0 20px 8px;
+    margin-bottom: 28px;
+    padding: 0 0 8px 20px;
+}
+
+.oggi-row::after {
+    content: "";
+    flex: 0 0 10px;
 }
 
 .oggi-row::-webkit-scrollbar {
@@ -439,12 +434,12 @@
 }
 
 .og-card {
-    min-width: 140px;
-    border-radius: 20px;
-    padding: 16px;
+    min-width: 130px;
+    border-radius: 18px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -474,7 +469,7 @@
 }
 
 .og-tit {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--midnight);
     line-height: 1.2;
@@ -489,11 +484,16 @@
 /* ── CONSIGLI ROW ── */
 .consigli-row {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     overflow-x: auto;
     scrollbar-width: none;
-    margin: 0 -20px 32px;
-    padding: 0 20px 8px;
+    margin-bottom: 28px;
+    padding: 0 0 8px 20px;
+}
+
+.consigli-row::after {
+    content: "";
+    flex: 0 0 6px;
 }
 
 .consigli-row::-webkit-scrollbar {
@@ -501,11 +501,11 @@
 }
 
 .cons-card {
-    min-width: 240px;
-    max-width: 280px;
+    min-width: 220px;
+    max-width: 260px;
     background: var(--white);
-    border-radius: 20px;
-    padding: 20px;
+    border-radius: 18px;
+    padding: 18px;
     border: 1px solid var(--border);
     box-shadow: 0 8px 16px rgba(0, 0, 0, .02);
     cursor: pointer;
@@ -532,10 +532,10 @@
 }
 
 .cons-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--midnight);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     line-height: 1.25;
 }
 
@@ -549,13 +549,13 @@
 .qb {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     background: linear-gradient(135deg, var(--gold2), #FFECA1);
-    padding: 20px;
-    border-radius: 20px;
+    padding: 16px;
+    border-radius: 18px;
     cursor: pointer;
     box-shadow: 0 8px 16px rgba(232, 184, 75, 0.1);
-    margin-bottom: 32px;
+    margin: 0 20px 28px;
 }
 
 .qb:active {
@@ -572,10 +572,10 @@
 }
 
 .qb-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
     color: var(--midnight);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .qb-sub {
@@ -597,12 +597,12 @@
 .mood-saved-badge {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     background: var(--aqua3);
     border: 1px solid var(--aqua2);
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 24px;
+    border-radius: 18px;
+    padding: 14px;
+    margin: 0 20px 24px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(61, 191, 184, .15);
     transition: transform 0.1s;
