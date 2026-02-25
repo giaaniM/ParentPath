@@ -39,6 +39,7 @@ html {
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     -webkit-overflow-scrolling: touch;
+    background-color: var(--white);
 }
 
 body {
@@ -46,7 +47,7 @@ body {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-regular);
     color: var(--color-text-primary);
-    background-color: var(--page-bg);
+    background-color: var(--white);
     min-height: 100dvh;
     overflow-x: hidden;
 }
@@ -55,6 +56,7 @@ body {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+    background-color: var(--white);
 }
 
 a {
@@ -94,7 +96,7 @@ textarea {
     /* symmetric, does not affect padding */
     min-height: 100dvh;
     position: relative;
-    background: var(--page-bg);
+    background: var(--white);
     overflow-x: hidden;
 }
 
@@ -107,12 +109,12 @@ textarea {
 
 /* ── Consistent Page Headers ── */
 .page-title {
-    font-size: 1.5rem;
-    font-weight: var(--font-weight-bold);
+    font-size: 20px;
+    font-weight: 800;
     text-align: center;
     letter-spacing: var(--letter-spacing-tight);
-    margin-bottom: var(--space-sm);
-    color: #1A1A1A;
+    margin-bottom: var(--space-xs);
+    color: var(--midnight);
 }
 
 .page-subtitle {

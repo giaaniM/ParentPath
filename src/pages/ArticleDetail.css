@@ -3,6 +3,8 @@
     padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
     padding-left: 20px;
     padding-right: 20px;
+    background-color: #FDFAF7;
+    min-height: 100dvh;
 }
 
 /* Top Bar */

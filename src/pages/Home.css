@@ -158,18 +158,18 @@
     position: relative;
 }
 
-/* ── HERO CARD (HOME) ── */
+/* ── HERO CARD (HOME) — warm ivory, coerente con BabyDev ── */
 .hc {
-    background: linear-gradient(135deg, var(--midnight) 0%, #1a365d 100%);
-    border-radius: 20px;
-    min-height: 240px;
+    background: linear-gradient(160deg, #FDE8EC 0%, #FFF4F0 55%, #FDFAF7 100%);
+    border-radius: 24px;
+    min-height: 220px;
     position: relative;
     overflow: hidden;
-    padding: 20px;
+    padding: 22px 20px 68px;
     margin: 0 20px 28px;
-    color: var(--white);
-    box-shadow: 0 12px 32px rgba(13, 27, 42, .15);
     cursor: pointer;
+    border: 1px solid rgba(230, 122, 107, 0.12);
+    box-shadow: 0 8px 28px rgba(230, 122, 107, 0.10);
 }
 
 .hc:active {
@@ -177,97 +177,95 @@
     transition: transform 0.1s;
 }
 
-
-
 .hc-arr {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 38px;
-    height: 38px;
-    background: rgba(255, 255, 255, .15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    top: 18px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    background: rgba(230, 122, 107, 0.12);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
+    color: #E67A6B;
     transition: all 0.2s;
+    z-index: 2;
 }
 
 .hc-eyebrow {
     position: relative;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--aqua);
+    font-size: 11px;
+    font-weight: 800;
+    color: #E67A6B;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     margin-bottom: 8px;
 }
 
 .hc-title {
     position: relative;
     font-family: var(--font-family-serif);
-    font-size: 21px;
+    font-size: 22px;
     font-weight: 600;
     line-height: 1.25;
-    width: 60%;
-    margin-bottom: 20px;
+    color: var(--midnight);
+    width: 58%;
+    margin-bottom: 18px;
 }
 
 .hc-prg {
     position: relative;
-    width: 140px;
+    width: 130px;
     height: 6px;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(230, 122, 107, 0.15);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .hc-prg-fill {
     height: 100%;
-    background: var(--aqua);
+    background: linear-gradient(90deg, #F4A191, #E67A6B);
     border-radius: 8px;
     transition: width 0.8s ease-out;
 }
 
 .hc-prg-lb {
     position: relative;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--stone2);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--stone);
 }
 
 .hc-img {
     position: absolute;
-    top: 35px;
-    right: -10px;
-    width: 155px;
+    top: 20px;
+    right: -12px;
+    width: 160px;
     height: auto;
     pointer-events: none;
+    filter: drop-shadow(0 8px 20px rgba(230, 122, 107, 0.2));
 }
 
 .hc-badge {
     position: absolute;
-    bottom: 14px;
-    left: 14px;
+    bottom: 16px;
+    left: 16px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 8px 14px;
     border-radius: 100px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--night);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--midnight);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(230, 122, 107, 0.12);
 }
 
-/* ── TASKS ── */
+
 .tw {
     background: var(--white);
     border-radius: 18px;

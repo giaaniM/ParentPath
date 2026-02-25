@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Baby, Footprints, ChevronRight } from 'lucide-react';
-import { pregnancy, milestones } from '../data/mockData';
+import { pregnancy, milestones, getWeekData } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import './BabyDev.css';
 
@@ -11,12 +11,15 @@ export default function BabyDev() {
     const dueDate = getDueDate();
     const dueDateStr = dueDate ? dueDate.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' }) : null;
 
-    // Hardcoded "Cosa succede" data based on V3 prototype for this week
-    const weeklyEvents = [
-        { id: 1, type: 'dev', icon: '🧠', label: 'Sviluppo', desc: 'Il cervello entra in fase REM, sogna!' },
-        { id: 2, type: 'dev', icon: '👂', label: 'Sviluppo', desc: 'Sente la tua voce e reagisce ai suoni' },
-        { id: 3, type: 'new', icon: '👁️', label: 'Novità', desc: 'Apre e chiude gli occhi — ci vede già!' },
-    ];
+    // Dynamic weekly events from dataset
+    const weekData = getWeekData(currentWeek);
+    const weeklyEvents = (weekData.events || []).map((desc, i) => ({
+        id: i + 1,
+        type: i === 0 ? 'dev' : i === 1 ? 'dev' : 'new',
+        icon: i === 0 ? '🧠' : i === 1 ? '👂' : '👁️',
+        label: i < 2 ? 'Sviluppo' : 'Novità',
+        desc,
+    }));
 
     return (
         <div className="page baby-page">
@@ -25,8 +28,8 @@ export default function BabyDev() {
             <div className="bd-hero fi">
                 <div className="bd-eyebrow">IL NOSTRO VIAGGIO INSIEME</div>
 
-                <div className="bd-circle">
-                    <img src="/pregnant-fetus.webp" alt="Fetus" className="bd-fetus" style={{ animation: 'float 6s ease-in-out infinite' }} />
+                <div className={`bd-circle ${pregnancy.sex === 'M' ? 'bd-circle--boy' : ''}`}>
+                    <img src="/baby-24w.png" alt="Fetus" className="bd-fetus" style={{ animation: 'float 6s ease-in-out infinite' }} />
                 </div>
 
                 <div className="bd-name">
@@ -34,12 +37,12 @@ export default function BabyDev() {
                 </div>
 
                 <div className="bd-sub">
-                    Settimana {currentWeek} · {Math.ceil(currentWeek / 13)}° Trimestre · Gravidanza
+                    {weekData.subtitle}
                 </div>
 
                 <div className="bd-pill">
                     <span className="bd-pill-em">{pregnancy.stats.sizeEmoji}</span>
-                    <span className="bd-pill-tx">Grande come {pregnancy.stats.sizeComparison.toLowerCase()}</span>
+                    <span className="bd-pill-tx">Grande come {weekData.sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}</span>
                 </div>
 
                 <div className="bd-stats-grid">

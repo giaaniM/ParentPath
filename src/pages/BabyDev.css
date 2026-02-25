@@ -9,8 +9,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 20px 32px;
-    background: linear-gradient(180deg, #FDE8EC 0%, var(--page-bg) 180px);
+    padding: 16px 20px 40px;
+    background: linear-gradient(0deg, #FFD4C2 0%, rgba(255, 212, 194, 0.5) 30%, rgba(255, 212, 194, 0) 100%);
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    margin-bottom: 24px;
 }
 
 .bd-eyebrow {
@@ -27,6 +30,7 @@
     width: 140px;
     height: 140px;
     border-radius: 50%;
+    /* Default girl/surprise: warm peach */
     background: radial-gradient(circle, #F8A79E 0%, #EFA7A6 60%, rgba(248, 167, 158, 0.4) 100%);
     box-shadow: 0 12px 32px rgba(248, 167, 158, 0.3);
     display: flex;
@@ -35,20 +39,18 @@
     margin-bottom: 32px;
 }
 
-.bd-circle::after {
-    content: '';
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(248, 167, 158, 0.2) 0%, transparent 60%);
-    z-index: 0;
+/* Boy circle theme (Celeste) */
+.bd-circle--boy {
+    background: radial-gradient(circle, #ADD8E6 0%, #9BC6E5 60%, rgba(173, 216, 230, 0.4) 100%);
+    box-shadow: 0 12px 32px rgba(173, 216, 230, 0.3);
 }
 
 .bd-fetus {
     position: relative;
     z-index: 2;
-    width: 120px;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+    width: 140px;
+    /* Scale up slightly to fill circle nicely */
+    object-fit: contain;
 }
 
 .bd-name {
@@ -68,10 +70,21 @@
 }
 
 .bd-sub {
-    font-size: 13px;
-    color: var(--stone);
+    font-size: 13.5px;
+    color: var(--midnight);
+    opacity: 0.85;
+    font-style: italic;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(248, 167, 158, 0.15);
+    text-align: center;
+    line-height: 1.5;
+    width: 100%;
+    max-width: 340px;
 }
 
 .bd-pill {

@@ -1,5 +1,6 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Home, Baby, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './TabBar.css';
 
 const tabs = [
@@ -10,30 +11,41 @@ const tabs = [
 
 export default function TabBar() {
     const location = useLocation();
+    const navigate = useNavigate();
 
     if (location.pathname === '/' || location.pathname === '/onboarding') {
         return null;
     }
 
+    const activeIndex = tabs.findIndex(t => location.pathname.startsWith(t.path));
+
     return (
         <nav className="tabbar">
             <div className="tabbar__inner">
-                {tabs.map((tab) => (
-                    <NavLink
-                        key={tab.path}
-                        to={tab.path}
-                        className={({ isActive }) =>
-                            `tabbar__tab ${isActive ? 'tabbar__tab--active' : ''}`
-                        }
-                    >
-                        <tab.icon
-                            size={22}
-                            strokeWidth={1.8}
-                            className="tabbar__icon"
-                        />
-                        <span className="tabbar__label">{tab.label}</span>
-                    </NavLink>
-                ))}
+                {/* Sliding pill background */}
+                {activeIndex >= 0 && (
+                    <div
+                        className="tabbar__pill"
+                        style={{ transform: `translateX(${activeIndex * 100}%)` }}
+                    />
+                )}
+                {tabs.map((tab, i) => {
+                    const isActive = i === activeIndex;
+                    return (
+                        <button
+                            key={tab.path}
+                            className={`tabbar__tab ${isActive ? 'tabbar__tab--active' : ''}`}
+                            onClick={() => navigate(tab.path)}
+                        >
+                            <tab.icon
+                                size={isActive ? 20 : 22}
+                                strokeWidth={isActive ? 2.2 : 1.6}
+                                className="tabbar__icon"
+                            />
+                            <span className="tabbar__label">{tab.label}</span>
+                        </button>
+                    );
+                })}
             </div>
         </nav>
     );

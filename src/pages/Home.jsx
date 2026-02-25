@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { weeklyContent, pregnancy } from '../data/mockData';
+import { weeklyContent, pregnancy, getWeekData } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
@@ -185,7 +185,12 @@ export default function Home() {
                 <div className="disc-ic">✨</div>
                 <div className="disc-t">
                     <div className="disc-t-h">Scoperta del giorno</div>
-                    <div className="disc-t-s">Il tuo bimbo ora può sognare, proprio come te.</div>
+                    <div className="disc-t-s">
+                        {!isMamma
+                            ? getWeekData(weeks).papaTip
+                            : getWeekData(weeks).mamaTip
+                        }
+                    </div>
                 </div>
                 <div className="disc-x" onClick={() => setHideDiscovery(true)}>✕</div>
             </div>
@@ -197,14 +202,14 @@ export default function Home() {
 
                 <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
                 <div className="hc-eyebrow">Settimana {weeks}</div>
-                <div className="hc-title">Piccolo sta formando i ricordi</div>
+                <div className="hc-title">{getWeekData(weeks).heroTitle}</div>
                 <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>
                 <div className="hc-prg-lb">{percent}% del percorso</div>
 
                 <img src="/baby-24w-alpha.png" alt="Baby" className="hc-img" style={{ animation: 'float 6s ease-in-out infinite' }} />
 
                 <div className="hc-badge">
-                    <span>{pregnancy.stats.sizeEmoji}</span> Grande come {pregnancy.stats.sizeComparison.toLowerCase()}
+                    <span>{getWeekData(weeks).sizeEmoji}</span> Grande come {getWeekData(weeks).sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}
                 </div>
             </div>
 

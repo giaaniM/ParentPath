@@ -8,6 +8,7 @@
     align-items: center;
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 /* Base Top padding for all steps except 0 */
@@ -129,13 +130,13 @@
     background: var(--midnight);
     color: var(--white);
     border: none;
-    padding: 20px;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: 800;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 12px 24px rgba(15, 32, 53, .25);
+    box-shadow: 0 8px 20px rgba(15, 32, 53, .15);
 }
 
 .aonb__btn-primary:active {
@@ -148,9 +149,9 @@
     color: var(--midnight);
     border: none;
     padding: 16px;
-    font-size: 15px;
-    font-weight: 700;
-    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
     cursor: pointer;
     opacity: 0.8;
 }
@@ -160,8 +161,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: max(48px, calc(env(safe-area-inset-top) + 24px)) 24px 32px;
-    background: var(--page-bg);
+    padding: max(48px, calc(env(safe-area-inset-top) + 24px)) 20px 32px;
+    background: #FFFFFF;
     animation: riseUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     height: 100%;
 }
@@ -223,19 +224,19 @@
 
 .aonb__title {
     font-family: var(--font-family-serif);
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--midnight);
     line-height: 1.15;
-    margin-bottom: 12px;
-    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
 }
 
 .aonb__subtitle {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--stone);
     line-height: 1.5;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
 /* Role Cards */
@@ -248,13 +249,13 @@
 .aonb__role-card {
     display: flex;
     align-items: center;
-    padding: 20px;
-    background: var(--page-bg);
-    border: 2px solid transparent;
-    border-radius: 20px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 16px;
     cursor: pointer;
-    transition: 0.2s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .aonb__role-card:active {
@@ -264,12 +265,12 @@
 .aonb__role-card--selected {
     background: var(--aqua3);
     border-color: var(--aqua);
-    box-shadow: 0 12px 24px rgba(61, 191, 184, .15);
+    box-shadow: 0 8px 16px rgba(61, 191, 184, .12);
 }
 
 .aonb__role-icon {
-    font-size: 28px;
-    width: 48px;
+    font-size: 24px;
+    width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,13 +282,13 @@
 }
 
 .aonb__role-label {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--midnight);
 }
 
 .aonb__role-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--stone);
     margin-top: 2px;
 }
@@ -307,14 +308,14 @@
 
 .aonb__input {
     width: 100%;
-    padding: 20px;
-    background: var(--page-bg);
-    border: 2px solid transparent;
-    border-radius: 20px;
-    font-size: 18px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
     color: var(--midnight);
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
     transition: 0.2s;
     font-family: var(--font-family-sans);
 }
@@ -327,32 +328,36 @@
 .aonb__input:focus {
     outline: none;
     border-color: var(--aqua);
-    box-shadow: 0 0 0 4px var(--aqua3);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px var(--aqua3);
 }
 
 /* Sex Pills */
 .aonb__sex-pills {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .aonb__sex-pill {
-    padding: 18px;
-    background: var(--page-bg);
-    border-radius: 20px;
+    padding: 16px;
+    background: #FFFFFF;
+    border-radius: 12px;
     text-align: center;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--midnight);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    border: 2px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
 }
 
 .aonb__sex-pill--selected {
     background: var(--aqua3);
     border-color: var(--aqua);
+    color: var(--aqua);
+    font-weight: 700;
 }
 
 /* Standard Bottom Actions */
@@ -366,13 +371,13 @@
     width: 100%;
     background: var(--midnight);
     color: var(--white);
-    padding: 20px;
+    padding: 18px;
     border: none;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: 800;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 12px 24px rgba(15, 32, 53, .2);
+    box-shadow: 0 8px 20px rgba(15, 32, 53, .15);
     transition: 0.2s;
 }
 
@@ -394,7 +399,7 @@
     align-items: center;
     justify-content: center;
     background: var(--page-bg);
-    padding: 40px;
+    padding: 40px 20px;
     text-align: center;
 }
 

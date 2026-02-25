@@ -1,83 +1,103 @@
 :root {
-  /* ─── Colors (V3 Palette) ─── */
-  --midnight: #0D1B2A;
-  --night: #182738;
-  --slate: #2D4A6B;
-  --blush: #F2C4CE;
-  --blush2: #FDE8EC;
-  --blush3: #FFF4F6;
-  --aqua: #3DBFB8;
-  --aqua2: #CBF0EE;
-  --aqua3: #EBF9F9;
-  --gold: #E8B84B;
-  --gold2: #FFF4DA;
-  --sage: #5BAD8F;
-  --sage2: #D0EEDF;
-  --sage3: #F0FAF5;
-  --ivory: #FFFFFF;
-  --page-bg: #F4F7F9;
-  --white: #FFFFFF;
-  --ink: #0F1923;
-  --ink2: #1E2D3D;
-  --stone: #7A8FA6;
-  --stone2: #B8C8D8;
-  --border: #E8EEF4;
+  /* ─── Base Palette (Internal use only, do not use in components directly) ─── */
+  --_midnight: #0D1B2A;
+  --_night: #182738;
+  --_slate: #2D4A6B;
 
-  /* ─── Backwards Compatibility Aliases ─── */
-  --color-bg: var(--ivory);
-  --color-bg-elevated: var(--white);
-  --color-bg-subtle: var(--border);
-  --color-bg-overlay: rgba(13, 27, 42, 0.6);
+  --_peach: #FFB8A1;
+  --_peach-light: #FFD4C2;
+  --_peach-subtle: #FFF0E5;
 
-  --color-text-primary: var(--ink);
-  --color-text-secondary: var(--stone);
-  --color-text-tertiary: var(--stone2);
-  --color-text-inverse: var(--white);
+  --_aqua: #3DBFB8;
+  --_aqua2: #CBF0EE;
 
-  --color-primary: var(--aqua);
-  --color-primary-light: var(--aqua3);
-  --color-primary-dark: var(--slate);
+  --_sage: #5BAD8F;
+  --_sage-light: #D0EEDF;
 
-  --color-secondary: var(--midnight);
-  --color-secondary-light: var(--night);
+  --_gold: #E8B84B;
+  --_gold-light: #FFF4DA;
 
-  --color-accent-mamma: var(--blush);
-  --color-accent-mamma-light: var(--blush3);
-  --color-accent-papa: var(--aqua);
-  --color-accent-papa-light: var(--aqua3);
-  --color-accent-partner: var(--gold);
-  --color-accent-partner-light: var(--gold2);
-  --color-accent-medical: var(--slate);
-  --color-accent-medical-light: #F4F7FA;
+  --_blush: #F2C4CE;
+  --_blush2: #FDE8EC;
 
-  --color-border: var(--border);
-  --color-border-light: rgba(232, 238, 244, 0.5);
+  --_white: #FFFFFF;
+  --_page-bg: #F4F7F9;
 
-  --color-success: var(--sage);
+  --_ink: #0F1923;
+  --_stone: #7A8FA6;
+  --_stone-light: #B8C8D8;
+
+  --_border: #E8EEF4;
+
+  /* ─── Semantic Colors (USE THESE IN COMPONENTS) ─── */
+  /* Primary: The main brand color (Peach) */
+  --color-primary: var(--_peach);
+  --color-primary-light: var(--_peach-light);
+  --color-primary-subtle: var(--_peach-subtle);
+
+  /* Secondary: High contrast interactions (Midnight) */
+  --color-secondary: var(--_midnight);
+  --color-secondary-light: var(--_night);
+
+  /* Tertiary: Accents and alternatives (Aqua) */
+  --color-tertiary: var(--_aqua);
+  --color-tertiary-light: var(--_aqua2);
+
+  /* Accent Roles (Retained for specific contexts) */
+  --color-accent-mamma: var(--_blush);
+  --color-accent-mamma-light: var(--_blush2);
+  --color-accent-partner: var(--_gold);
+  --color-accent-partner-light: var(--_gold-light);
+
+  /* Status */
+  --color-success: var(--_sage);
+  --color-success-base: var(--_sage-light);
   --color-error: #D45B5B;
+
+  /* ─── Text Colors ─── */
+  --color-text-primary: var(--_ink);
+  --color-text-secondary: var(--_stone);
+  --color-text-tertiary: var(--_stone-light);
+  --color-text-inverse: var(--_white);
+  --color-text-brand: var(--_midnight);
+  /* Specific for headers needing midnight blue */
+
+  /* ─── Backgrounds ─── */
+  --bg-main: var(--_page-bg);
+  /* App background */
+  --bg-surface: var(--_white);
+  /* Cards, panels */
+  --bg-subtle: var(--_border);
+  /* Highlighted areas, hover states */
+  --bg-inverse: var(--_midnight);
+  /* Dark backgrounds */
+
+  /* ─── Borders ─── */
+  --color-border: var(--_border);
+  --color-border-light: rgba(232, 238, 244, 0.5);
 
   /* ─── Typography ─── */
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-family-serif: 'Lora', serif;
 
-  --font-size-xs: 0.6875rem;
-  /* 11px */
-  --font-size-sm: 0.75rem;
-  /* 12px */
-  --font-size-base: 0.8125rem;
-  /* 13px */
-  --font-size-md: 0.9375rem;
-  /* 15px */
-  --font-size-lg: 1.0625rem;
-  /* 17px */
-  --font-size-xl: 1.25rem;
-  /* 20px */
-  --font-size-xxl: 1.5rem;
-  /* 24px */
-  --font-size-2xl: 1.5rem;
-  /* 24px */
-  --font-size-3xl: 2rem;
-  /* 32px */
+  /* Standard Apple Human Interface Guidelines / Material 3 Font Sizes */
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  /* body text */
+  --font-size-md: 15px;
+  /* subheadline */
+  --font-size-lg: 16px;
+  /* callout / button text */
+  --font-size-xl: 18px;
+  /* headline */
+  --font-size-xxl: 22px;
+  /* title 2 */
+  --font-size-2xl: 22px;
+  /* title 2 */
+  --font-size-3xl: 28px;
+  /* title 1 */
+
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
