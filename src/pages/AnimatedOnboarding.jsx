@@ -111,7 +111,7 @@ export default function AnimatedOnboarding() {
                                     }}>
                                         <div className="aonb__role-icon">🤰</div>
                                         <div className="aonb__role-text">
-                                            <div className="aonb__role-label">Futura Mamma</div>
+                                            <div className="aonb__role-label">Mamma</div>
                                             <div className="aonb__role-desc">Percorso personalizzato mamma</div>
                                         </div>
                                         {role === 'mamma' && <CheckCircle2 size={24} color="var(--aqua)" />}
@@ -122,7 +122,7 @@ export default function AnimatedOnboarding() {
                                     }}>
                                         <div className="aonb__role-icon">👨</div>
                                         <div className="aonb__role-text">
-                                            <div className="aonb__role-label">Futuro Papà</div>
+                                            <div className="aonb__role-label">Papà</div>
                                             <div className="aonb__role-desc">Consigli mirati per papà</div>
                                         </div>
                                         {role === 'papa' && <CheckCircle2 size={24} color="var(--aqua)" />}

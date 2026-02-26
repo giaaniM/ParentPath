@@ -1,0 +1,54 @@
+.ey-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    background: var(--white);
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(15, 32, 53, 0.05);
+    margin: 20px 20px 40px;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.ey-icon-wrap {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--aqua2), var(--blush2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--midnight);
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(64, 193, 178, 0.2);
+}
+
+.ey-title {
+    font-family: var(--font-family-serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--midnight);
+    margin-bottom: 12px;
+}
+
+.ey-subtitle {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--stone);
+    margin-bottom: 24px;
+}
+
+.ey-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-subtle, #F7F5F2);
+    border: 1px dashed var(--stone);
+    color: var(--midnight);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}

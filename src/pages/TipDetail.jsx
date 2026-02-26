@@ -15,12 +15,6 @@ export default function TipDetail() {
 
     return (
         <div className="page page-enter tip-detail">
-            {/* Back header */}
-            <button className="tip-detail__back" onClick={() => navigate(-1)}>
-                <ArrowLeft size={20} />
-                <span>{tip.category}</span>
-            </button>
-
             {/* Category badge */}
             <div className="tip-detail__badge" style={{ background: tip.bg, color: tip.color }}>
                 {tip.category}

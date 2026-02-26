@@ -14,11 +14,7 @@ export default function ArticleDetail() {
         <div className="page page-enter article-page">
             {/* Back Bar */}
             <header className="article-topbar">
-                <button className="article-topbar__back" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={20} />
-                </button>
                 <span className="article-topbar__category">{article.category}</span>
-                <div className="article-topbar__spacer" />
             </header>
 
             {/* Article Header */}

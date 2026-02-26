@@ -12,6 +12,89 @@
     margin: 0 20px 20px;
 }
 
+/* ── MACRO PROGRESS INDICATOR ── */
+.home-macro-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    margin: 0 20px 32px;
+}
+
+.hm-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.hm-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--stone);
+    transition: all 0.3s ease;
+}
+
+.hm-step span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--stone);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.hm-step.active .hm-dot {
+    background: var(--midnight);
+    border-color: var(--midnight);
+    color: var(--white);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(13, 27, 42, 0.15);
+}
+
+.hm-step.active span {
+    color: var(--midnight);
+}
+
+.hm-step.done .hm-dot {
+    background: var(--aqua);
+    border-color: var(--aqua);
+    color: var(--white);
+}
+
+.hm-step.done span {
+    color: var(--midnight);
+}
+
+.hm-step.locked {
+    opacity: 0.5;
+}
+
+.hm-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 -10px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    transition: background 0.3s ease;
+}
+
+.hm-line.done {
+    background: var(--aqua);
+}
+
 /* ── MOOD ── */
 .mood-lbl {
     font-size: 13px;
@@ -265,6 +348,16 @@
     border: 1px solid rgba(230, 122, 107, 0.12);
 }
 
+.hc-primi-mesi {
+    background: linear-gradient(135deg, #FFEFD5, #FFDFBA);
+    border-color: #F8D1A3;
+}
+
+.hc-primi-mesi .hc-title {
+    color: var(--midnight);
+    font-size: 20px;
+    width: 100%;
+}
 
 .tw {
     background: var(--white);

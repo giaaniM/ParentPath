@@ -1,0 +1,40 @@
+.sticky-back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--midnight);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sticky-back-btn.scrolled {
+    background: var(--white);
+    top: 12px;
+    box-shadow: 0 4px 12px rgba(15, 32, 53, 0.08);
+    border: 1px solid var(--border);
+    transform: scale(0.9);
+}
+
+.sticky-back-btn:active {
+    transform: scale(0.9) translateY(2px);
+}
+
+/* Adjust for Safe Area on Notch devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .sticky-back-btn {
+        top: calc(20px + env(safe-area-inset-top));
+    }
+
+    .sticky-back-btn.scrolled {
+        top: calc(12px + env(safe-area-inset-top));
+    }
+}

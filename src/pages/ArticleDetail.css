@@ -1,5 +1,5 @@
 .article-page {
-    padding-top: max(60px, calc(env(safe-area-inset-top) + 20px));
+    padding-top: max(80px, calc(env(safe-area-inset-top) + 60px));
     padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
     padding-left: 20px;
     padding-right: 20px;
@@ -11,21 +11,10 @@
 .article-topbar {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-md);
     margin-bottom: var(--space-lg);
     padding: var(--space-sm) 0;
-}
-
-.article-topbar__back {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    background: var(--color-bg-subtle);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-primary);
-    transition: all var(--transition-fast);
 }
 
 .article-topbar__back:hover {

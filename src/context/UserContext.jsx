@@ -9,6 +9,10 @@ export function UserProvider({ children }) {
     const [conceptionDate, setConceptionDate] = useState(null);
     const [onboardingDone, setOnboardingDone] = useState(false);
 
+    // New Feature States
+    const [babyStatus, setBabyStatus] = useState('gravidanza'); // 'gravidanza' | 'nato'
+    const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
+
     const completeOnboarding = ({ role, name, baby, conception }) => {
         setUserRole(role);
         setUserName(name);
@@ -46,12 +50,27 @@ export function UserProvider({ children }) {
         return due;
     };
 
+    const addDiaryEntry = (weekNum, text, type = 'note') => {
+        setDiaryEntries(prev => ({
+            ...prev,
+            [weekNum]: [...(prev[weekNum] || []), { id: Date.now().toString(), text, type }]
+        }));
+    };
+
+    const removeDiaryEntry = (weekNum, entryId) => {
+        setDiaryEntries(prev => ({
+            ...prev,
+            [weekNum]: (prev[weekNum] || []).filter(e => e.id !== entryId)
+        }));
+    };
+
     const isMamma = userRole === 'mamma';
     const isPapa = userRole === 'papa';
 
     return (
         <UserContext.Provider value={{
             userRole, userName, babyName, conceptionDate, onboardingDone,
+            babyStatus, setBabyStatus, diaryEntries, addDiaryEntry, removeDiaryEntry,
             isMamma, isPapa,
             completeOnboarding, devLogin,
             getWeeksPregnant, getWeeksRemaining, getDueDate,

@@ -1,22 +1,8 @@
 /* TipDetail Page */
 .tip-detail {
     padding: var(--space-lg);
-    padding-top: max(60px, calc(env(safe-area-inset-top) + 20px));
+    padding-top: max(80px, calc(env(safe-area-inset-top) + 60px));
     padding-bottom: calc(60px + var(--bottom-safe));
-}
-
-.tip-detail__back {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    margin-bottom: var(--space-xl);
-    padding: 0;
 }
 
 .tip-detail__badge {

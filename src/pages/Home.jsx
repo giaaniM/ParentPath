@@ -79,7 +79,9 @@ let hasTriggeredWelcomePush = false;
 
 export default function Home() {
     const navigate = useNavigate();
-    const { userName, isMamma, getWeeksPregnant } = useUser();
+    const { userName, isMamma, getWeeksPregnant, babyStatus } = useUser();
+    const isNato = babyStatus === 'nato';
+
     const [selectedMood, setSelectedMood] = useState(null);
     const [moodSaved, setMoodSaved] = useState(false);
     const [hideDiscovery, setHideDiscovery] = useState(false);
@@ -152,6 +154,24 @@ export default function Home() {
             {/* GREETING */}
             <div className="greeting fi">Ciao {userName}! 👋</div>
 
+            {/* MACRO PROGRESS INDICATOR */}
+            <div className="home-macro-progress fi">
+                <div className={`hm-step ${!isNato ? 'active' : 'done'}`}>
+                    <div className="hm-dot">1</div>
+                    <span>Gravidanza</span>
+                </div>
+                <div className={`hm-line ${isNato ? 'done' : ''}`}></div>
+                <div className={`hm-step ${isNato ? 'active' : ''}`}>
+                    <div className="hm-dot">2</div>
+                    <span>Primi Mesi</span>
+                </div>
+                <div className="hm-line"></div>
+                <div className="hm-step locked">
+                    <div className="hm-dot">3</div>
+                    <span>1-3 Anni</span>
+                </div>
+            </div>
+
             {/* MOOD STRIP */}
             {!moodSaved ? (
                 <>
@@ -186,32 +206,44 @@ export default function Home() {
                 <div className="disc-t">
                     <div className="disc-t-h">Scoperta del giorno</div>
                     <div className="disc-t-s">
-                        {!isMamma
-                            ? getWeekData(weeks).papaTip
-                            : getWeekData(weeks).mamaTip
+                        {isNato
+                            ? "Goditi i primi momenti post-parto, la mamma ha bisogno di riposo e comprensione."
+                            : (!isMamma ? getWeekData(weeks).papaTip : getWeekData(weeks).mamaTip)
                         }
                     </div>
                 </div>
                 <div className="disc-x" onClick={() => setHideDiscovery(true)}>✕</div>
             </div>
 
-            {/* HERO CARD */}
-            <div className="hc ru d4" onClick={() => navigate('/baby')}>
-                <div className="hc-mesh"></div>
-                <div className="hc-grid"></div>
+            {/* HERO CARD GRAVIDANZA OR PRIMI MESI */}
+            {!isNato ? (
+                <div className="hc ru d4" onClick={() => navigate('/baby')}>
+                    <div className="hc-mesh"></div>
+                    <div className="hc-grid"></div>
 
-                <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
-                <div className="hc-eyebrow">Settimana {weeks}</div>
-                <div className="hc-title">{getWeekData(weeks).heroTitle}</div>
-                <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>
-                <div className="hc-prg-lb">{percent}% del percorso</div>
+                    <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
+                    <div className="hc-eyebrow">Settimana {weeks}</div>
+                    <div className="hc-title">{getWeekData(weeks).heroTitle}</div>
+                    <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>
+                    <div className="hc-prg-lb">{percent}% del percorso</div>
 
-                <img src="/baby-24w-alpha.png" alt="Baby" className="hc-img" style={{ animation: 'float 6s ease-in-out infinite' }} />
+                    <img src="/baby-24w-alpha.png" alt="Baby" className="hc-img" style={{ animation: 'float 6s ease-in-out infinite' }} />
 
-                <div className="hc-badge">
-                    <span>{getWeekData(weeks).sizeEmoji}</span> Grande come {getWeekData(weeks).sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}
+                    <div className="hc-badge">
+                        <span>{getWeekData(weeks).sizeEmoji}</span> Grande come {getWeekData(weeks).sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="hc ru d4 hc-primi-mesi" onClick={() => navigate('/baby')}>
+                    <div className="hc-mesh"></div>
+                    <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
+                    <div className="hc-eyebrow">Primi Mesi (0-6)</div>
+                    <div className="hc-title">Benvenuto al mondo! 🎉</div>
+                    <div className="hc-prg-lb" style={{ marginTop: '12px', fontSize: '14px', lineHeight: '1.4', paddingRight: '40px' }}>
+                        La sezione "Primi Anni" è in arrivo. Tocca qui per andare alla sezione Bimbo.
+                    </div>
+                </div>
+            )}
 
             {/* DA FARE QUESTA SETTIMANA */}
             <div className="tw ru d5">
