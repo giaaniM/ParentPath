@@ -336,8 +336,8 @@ export const weeklyContent = {
       tip: 'Il seggiolino auto è obbligatorio per il ritorno a casa dall\'ospedale: non rimandarlo all\'ultimo.',
     },
     {
-      id: 'bond-papa',
-      category: 'Sviluppo',
+      id: 'health-papa',
+      category: 'Salute',
       color: '#D4A95B',
       bg: '#FAF3E8',
       preview: 'I polmoni si preparano a respirare',

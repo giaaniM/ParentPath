@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Baby, Footprints, ChevronRight, Sparkles, X } from 'lucide-react';
+import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye } from 'lucide-react';
 import { pregnancy, milestones, getWeekData } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import EarlyYears from '../components/EarlyYears';
@@ -17,7 +17,7 @@ export default function BabyDev() {
     const weeklyEvents = (weekData.events || []).map((desc, i) => ({
         id: i + 1,
         type: i === 0 ? 'dev' : i === 1 ? 'dev' : 'new',
-        icon: i === 0 ? '🧠' : i === 1 ? '👂' : '👁️',
+        icon: i === 0 ? <Brain size={24} /> : i === 1 ? <Ear size={24} /> : <Eye size={24} />,
         label: i < 2 ? 'Sviluppo' : 'Novità',
         desc,
     }));
@@ -70,7 +70,6 @@ export default function BabyDev() {
             <div className={`bd-pregnancy-wrap ${isNato ? 'bd-collapsed' : ''}`}>
                 {/* HERO CARD V4 */}
                 <div className="bd-hero fi">
-                    <div className="bd-eyebrow">IL NOSTRO VIAGGIO INSIEME</div>
 
                     <div className={`bd-circle ${pregnancy.sex === 'M' ? 'bd-circle--boy' : ''}`}>
                         <img src="/baby-24w.png" alt="Fetus" className="bd-fetus" style={{ animation: 'float 6s ease-in-out infinite' }} />

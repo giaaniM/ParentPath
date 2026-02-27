@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Brain } from 'lucide-react';
 import { weeklyQuizzes } from '../data/discoveryData';
 import './WeeklyQuiz.css';
 
@@ -26,7 +27,9 @@ export default function WeeklyQuiz({ week = 24 }) {
     return (
         <div className="wquiz">
             <div className="wquiz__header">
-                <span className="wquiz__badge">🧠 Quiz settimanale</span>
+                <span className="wquiz__badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Brain size={14} /> Quiz settimanale
+                </span>
             </div>
 
             <div className={`wquiz__card ${revealed ? (isCorrect ? 'wquiz__card--correct' : 'wquiz__card--wrong') : ''}`}>

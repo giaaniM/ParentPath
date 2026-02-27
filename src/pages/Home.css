@@ -260,6 +260,27 @@
     transition: transform 0.1s;
 }
 
+.hc-edit {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--midnight);
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.hc-edit:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: scale(1.05);
+}
+
 .hc-arr {
     position: absolute;
     top: 18px;
@@ -355,8 +376,54 @@
 
 .hc-primi-mesi .hc-title {
     color: var(--midnight);
-    font-size: 20px;
-    width: 100%;
+    font-size: 26px;
+    width: 70%;
+    margin-bottom: 12px;
+}
+
+.hc-primi-mesi .hc-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #A0522D;
+}
+
+.wip-pill {
+    background: var(--midnight);
+    color: var(--white);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.hc-nato-icon {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-size: 80px;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.1));
+    opacity: 1;
+    z-index: 1;
+    pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+
+    50% {
+        transform: translateY(-60%) translateX(5px);
+    }
 }
 
 .tw {
@@ -505,71 +572,14 @@
     cursor: pointer;
 }
 
-/* ── OGGI ROW ── */
-.oggi-row {
+/* ── FEED CARDS (ARTICOLI E STRUMENTI) ── */
+.consigli-row {
     display: flex;
-    gap: 10px;
+    gap: 16px;
     overflow-x: auto;
     scrollbar-width: none;
     margin-bottom: 28px;
     padding: 0 0 8px 20px;
-}
-
-.oggi-row::after {
-    content: "";
-    flex: 0 0 10px;
-}
-
-.oggi-row::-webkit-scrollbar {
-    display: none;
-}
-
-.og-card {
-    min-width: 130px;
-    border-radius: 18px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.og-card:active {
-    transform: scale(0.96);
-    transition: transform 0.1s;
-}
-
-.og-card.blue {
-    background: #E8F2FA;
-}
-
-.og-card.blush {
-    background: var(--blush3);
-}
-
-.og-card.sage {
-    background: var(--sage3);
-}
-
-.og-ic-wrap {
-    font-size: 24px;
-    margin-bottom: 4px;
-    color: var(--midnight);
-}
-
-.og-tit {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--midnight);
-    line-height: 1.2;
-}
-
-.og-sub {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--stone);
 }
 
 /* ── CONSIGLI ROW ── */
@@ -592,48 +602,99 @@
 }
 
 .cons-card {
-    min-width: 220px;
-    max-width: 260px;
-    background: var(--white);
-    border-radius: 18px;
-    padding: 18px;
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, .02);
+    min-width: 160px;
+    max-width: 180px;
+    min-height: 212px;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
     cursor: pointer;
-    transition: transform 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
 }
 
 .cons-card:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .04);
 }
 
+.cons-layer {
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    color: var(--white);
+}
+
+/* Colored overlays specific to category */
+
+
 .cons-cat {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
-    color: var(--slate);
     text-transform: uppercase;
     letter-spacing: .5px;
-    margin-bottom: 12px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    width: max-content;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    color: var(--midnight);
+}
+
+/* Category Pill Colors */
+.cat-health {
+    background: #E8F2FA;
+}
+
+/* Light Blue */
+.cat-todo {
+    background: #EBDFFD;
+}
+
+/* Light Lavender */
+.cat-development {
+    background: #FFF4F0;
+}
+
+/* Light Peach */
+.cat-shopping {
+    background: var(--sage3);
+}
+
+/* Light Mint */
+
+.cons-bottom {
+    margin-top: auto;
+    /* Pushes content to the bottom */
+    display: flex;
+    flex-direction: column;
 }
 
 .cons-ic-wrap {
-    font-size: 32px;
-    margin-bottom: 12px;
-    color: var(--slate);
+    font-size: 28px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .cons-title {
     font-size: 15px;
-    font-weight: 700;
-    color: var(--midnight);
+    font-weight: 800;
     margin-bottom: 4px;
     line-height: 1.25;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 .cons-dur {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--stone);
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.9;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* ── QUIZ BANNER ── */

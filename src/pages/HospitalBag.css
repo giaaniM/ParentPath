@@ -1,0 +1,152 @@
+/* HospitalBag.css */
+.bag-page {
+    padding-top: max(80px, calc(env(safe-area-inset-top) + 60px));
+    padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
+    padding-left: 20px;
+    padding-right: 20px;
+    background: #FDFAF7;
+}
+
+.bag-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 24px;
+}
+
+.bag-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--midnight);
+    text-align: center;
+}
+
+.bag-progress-wrap {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(15, 32, 53, 0.04);
+}
+
+.bag-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.bag-progress-info strong {
+    font-size: 16px;
+    color: var(--aqua);
+    font-weight: 800;
+}
+
+.bag-progress-info span {
+    font-size: 13px;
+    color: var(--stone);
+    font-weight: 600;
+}
+
+.bag-progress-bar {
+    height: 8px;
+    background: var(--color-bg-subtle);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bag-progress-fill {
+    height: 100%;
+    background: var(--aqua);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bag-subtitle {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--stone2);
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 10px;
+}
+
+.bag-group {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.bag-group-head {
+    background: var(--color-bg-subtle);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.bag-group-head h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--midnight);
+}
+
+.bag-group-head span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--stone);
+    background: var(--white);
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.bag-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.bag-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.bag-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-bg-subtle);
+}
+
+.bag-item:active {
+    background: var(--color-bg-subtle);
+}
+
+.bag-item-ck {
+    color: var(--stone);
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.bag-item.done .bag-item-ck {
+    color: var(--aqua);
+}
+
+.bag-item-lb {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--slate);
+    transition: color 0.2s, text-decoration 0.2s;
+}
+
+.bag-item.done .bag-item-lb {
+    color: var(--stone);
+    text-decoration: line-through;
+}

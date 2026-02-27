@@ -1,0 +1,116 @@
+.ep-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 32, 53, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.3s ease;
+}
+
+.ep-modal {
+    background: var(--white);
+    width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
+    position: relative;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
+    animation: riseUp 0.3s ease;
+}
+
+.ep-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg-subtle);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+}
+
+.ep-title {
+    font-family: var(--font-family-serif);
+    font-size: 24px;
+    color: var(--midnight);
+    margin-bottom: 24px;
+}
+
+.ep-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ep-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+}
+
+.ep-hint {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    margin-top: 6px;
+}
+
+.ep-input {
+    width: 100%;
+    padding: 16px;
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--midnight);
+    outline: none;
+    transition: var(--transition-base);
+}
+
+.ep-input:focus {
+    border-color: var(--aqua);
+    background: #FFF;
+}
+
+.ep-role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.ep-role-btn {
+    padding: 14px 0;
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    transition: all 0.2s;
+}
+
+.ep-role-btn.active {
+    background: var(--aqua2);
+    border-color: var(--aqua);
+    color: var(--midnight);
+}
+
+.ep-save-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 18px;
+    background: var(--midnight);
+    color: var(--white);
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+}

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, BookOpen, Apple, Moon, ShoppingBag, Calculator, Brain, Trophy } from 'lucide-react';
 import './ArticleHub.css';
 
 export default function ArticleHub() {
@@ -16,7 +16,7 @@ export default function ArticleHub() {
 
                 <div className="es-g ru d1">Guide questa settimana</div>
                 <div className="es-card ru d2" onClick={() => navigate('/article/1')}>
-                    <div className="es-ic blue">📖</div>
+                    <div className="es-ic blue"><BookOpen size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">Cosa succede nel corpo</div>
                         <div className="es-s">5 min · Sett. {currentWeek}</div>
@@ -24,7 +24,7 @@ export default function ArticleHub() {
                     <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
                 <div className="es-card ru d3" onClick={() => navigate('/article/2')}>
-                    <div className="es-ic coral">🍎</div>
+                    <div className="es-ic coral"><Apple size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">Nutrizione nel 3° trimestre</div>
                         <div className="es-s">Cosa mangiare, cosa evitare</div>
@@ -32,7 +32,7 @@ export default function ArticleHub() {
                     <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
                 <div className="es-card ru d4" onClick={() => navigate('/article/3')}>
-                    <div className="es-ic green">💤</div>
+                    <div className="es-ic green"><Moon size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">Dormire bene al 7° mese</div>
                         <div className="es-s">Posizioni e consigli pratici</div>
@@ -41,16 +41,16 @@ export default function ArticleHub() {
                 </div>
 
                 <div className="es-g ru d2">Strumenti</div>
-                <div className="es-card ru d3" onClick={() => navigate('/tools')}>
-                    <div className="es-ic gold">📋</div>
+                <div className="es-card ru d3" onClick={() => navigate('/tools/hospital-bag')}>
+                    <div className="es-ic gold"><ShoppingBag size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
-                        <div className="es-t">Checklist esami gravidanza</div>
-                        <div className="es-s">3 esami in sospeso</div>
+                        <div className="es-t">Valigia Parto & Corredino</div>
+                        <div className="es-s">Checklist interattiva</div>
                     </div>
                     <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
-                <div className="es-card ru d4" onClick={() => navigate('/tools')}>
-                    <div className="es-ic blue">🧮</div>
+                <div className="es-card ru d4" onClick={() => navigate('/tools/due-date')}>
+                    <div className="es-ic blue"><Calculator size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">Calcola data del parto</div>
                         <div className="es-s">Basato sull'ultima mestruazione</div>
@@ -60,7 +60,7 @@ export default function ArticleHub() {
 
                 <div className="es-g ru d3">Quiz</div>
                 <div className="es-card hl ru d4">
-                    <div className="es-ic coral">🧠</div>
+                    <div className="es-ic coral"><Brain size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">Quiz settimana {currentWeek}</div>
                         <div className="es-s">3 domande · Non ancora completato</div>
@@ -68,7 +68,7 @@ export default function ArticleHub() {
                     <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
                 <div className="es-card ru d5">
-                    <div className="es-ic lav">🏆</div>
+                    <div className="es-ic lav"><Trophy size={24} strokeWidth={1.5} /></div>
                     <div className="es-txt">
                         <div className="es-t">I tuoi risultati</div>
                         <div className="es-s">12 quiz · 🔥 streak 8 settimane</div>

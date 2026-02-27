@@ -1,14 +1,19 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { weeklyContent, pregnancy, getWeekData } from '../data/mockData';
 import { useUser } from '../context/UserContext';
+import { weeklyContent, pregnancy, getWeekData } from '../data/mockData';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
-    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight
+    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2
 } from 'lucide-react';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
+import EditProfileModal from '../components/EditProfileModal';
+import TipBottomSheet from '../components/TipBottomSheet';
+import { getCategoryConfig } from '../utils/CategoryColors';
+import { Brain } from 'lucide-react';
 import './Home.css';
 
 // Using lucide-react icons instead of emojis for a sleeker look
@@ -79,12 +84,15 @@ let hasTriggeredWelcomePush = false;
 
 export default function Home() {
     const navigate = useNavigate();
-    const { userName, isMamma, getWeeksPregnant, babyStatus } = useUser();
-    const isNato = babyStatus === 'nato';
+    const { babyStatus, getWeeksPregnant, pregnancy, userName, ruolom } = useUser();
+    const isMamma = ruolom?.toLowerCase().includes('mamma');
+    const weeks = getWeeksPregnant();
 
     const [selectedMood, setSelectedMood] = useState(null);
     const [moodSaved, setMoodSaved] = useState(false);
     const [hideDiscovery, setHideDiscovery] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [selectedTip, setSelectedTip] = useState(null);
 
     // Interactive Checklist State
     const [checkedTasks, setCheckedTasks] = useState({
@@ -120,14 +128,33 @@ export default function Home() {
         }
     };
 
-    // Trigger on background
-    useMemo(() => {
-        CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+    // Request permissions on mount and handle initial welcome push logic
+    useEffect(() => {
+        const initNotifications = async () => {
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const permStatus = await LocalNotifications.checkPermissions();
+                    if (permStatus.display === 'prompt') {
+                        await LocalNotifications.requestPermissions();
+                    }
+                } catch (e) {
+                    console.log("Error checking/requesting notifications", e);
+                }
+            }
+        };
+
+        initNotifications();
+
+        const appStateListener = CapacitorApp.addListener('appStateChange', ({ isActive }) => {
             if (!isActive) {
                 scheduleWelcomePush();
             }
         });
-    }, []);
+
+        return () => {
+            appStateListener.then(l => l.remove());
+        };
+    }, [userName]);
 
     const toggleTask = async (taskId) => {
         try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
@@ -140,7 +167,6 @@ export default function Home() {
         setTimeout(() => setMoodSaved(true), 800);
     };
 
-    const weeks = getWeeksPregnant();
     const tips = isMamma ? weeklyContent.mammaTips : weeklyContent.papaTips;
     const moods = isMamma ? MOODS : MOODS_PAPA;
     const dailyTasks = useMemo(() => getDailyTasks(isMamma), [isMamma]);
@@ -156,12 +182,12 @@ export default function Home() {
 
             {/* MACRO PROGRESS INDICATOR */}
             <div className="home-macro-progress fi">
-                <div className={`hm-step ${!isNato ? 'active' : 'done'}`}>
+                <div className={`hm-step ${babyStatus !== 'nato' ? 'active' : 'done'}`}>
                     <div className="hm-dot">1</div>
                     <span>Gravidanza</span>
                 </div>
-                <div className={`hm-line ${isNato ? 'done' : ''}`}></div>
-                <div className={`hm-step ${isNato ? 'active' : ''}`}>
+                <div className={`hm-line ${babyStatus === 'nato' ? 'done' : ''}`}></div>
+                <div className={`hm-step ${babyStatus === 'nato' ? 'active' : ''}`}>
                     <div className="hm-dot">2</div>
                     <span>Primi Mesi</span>
                 </div>
@@ -206,7 +232,7 @@ export default function Home() {
                 <div className="disc-t">
                     <div className="disc-t-h">Scoperta del giorno</div>
                     <div className="disc-t-s">
-                        {isNato
+                        {babyStatus === 'nato'
                             ? "Goditi i primi momenti post-parto, la mamma ha bisogno di riposo e comprensione."
                             : (!isMamma ? getWeekData(weeks).papaTip : getWeekData(weeks).mamaTip)
                         }
@@ -216,8 +242,15 @@ export default function Home() {
             </div>
 
             {/* HERO CARD GRAVIDANZA OR PRIMI MESI */}
-            {!isNato ? (
+            {babyStatus !== 'nato' ? (
                 <div className="hc ru d4" onClick={() => navigate('/baby')}>
+                    <button
+                        className="hc-edit"
+                        onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
+                        aria-label="Modifica Profilo"
+                    >
+                        <Edit2 size={18} />
+                    </button>
                     <div className="hc-mesh"></div>
                     <div className="hc-grid"></div>
 
@@ -235,13 +268,23 @@ export default function Home() {
                 </div>
             ) : (
                 <div className="hc ru d4 hc-primi-mesi" onClick={() => navigate('/baby')}>
+                    <button
+                        className="hc-edit"
+                        onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
+                        aria-label="Modifica Profilo"
+                    >
+                        <Edit2 size={18} />
+                    </button>
                     <div className="hc-mesh"></div>
                     <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
-                    <div className="hc-eyebrow">Primi Mesi (0-6)</div>
+
+                    <div className="hc-eyebrow">I Primi Mesi <span className="wip-pill">In arrivo</span></div>
                     <div className="hc-title">Benvenuto al mondo! 🎉</div>
-                    <div className="hc-prg-lb" style={{ marginTop: '12px', fontSize: '14px', lineHeight: '1.4', paddingRight: '40px' }}>
-                        La sezione "Primi Anni" è in arrivo. Tocca qui per andare alla sezione Bimbo.
+                    <div className="hc-prg-lb" style={{ width: '65%', textAlign: 'left', marginTop: '4px', lineHeight: '1.4' }}>
+                        Preparati per un'avventura indimenticabile. Stiamo preparando dei consigli speciali per la vostra nuova vita insieme.
                     </div>
+
+                    <div className="hc-nato-icon">👶</div>
                 </div>
             )}
 
@@ -267,44 +310,36 @@ export default function Home() {
                 })}
             </div>
 
-            {/* OGGI PER TE */}
-            <div className="sec-head ru d6">
-                <div className="sec-title">Oggi per te</div>
-            </div>
-            <div className="oggi-row ru d6">
-                <div className="og-card blue">
-                    <div className="og-ic-wrap"><Stethoscope size={28} strokeWidth={2} /></div>
-                    <div className="og-tit">Salute</div>
-                    <div className="og-sub">Misura la pressione</div>
-                </div>
-                <div className="og-card blush">
-                    <div className="og-ic-wrap"><Smile size={28} strokeWidth={2} /></div>
-                    <div className="og-tit">Relax</div>
-                    <div className="og-sub">5 min di meditazione</div>
-                </div>
-                <div className="og-card sage">
-                    <div className="og-ic-wrap"><ShoppingBag size={28} strokeWidth={2} /></div>
-                    <div className="og-tit">Acquisti</div>
-                    <div className="og-sub">Checklist borsa parto</div>
-                </div>
-            </div>
-
-            {/* CONSIGLI */}
+            {/* CONSIGLI UNIFICATI (FEED) */}
             {tips.length > 0 && (
                 <>
-                    <div className="sec-head ru d7">
-                        <div className="sec-title">Consigli per te</div>
-                        <div className="sec-more">Vedi tutti</div>
+                    <div className="sec-head ru d6">
+                        <div className="sec-title">Articoli e Strumenti per te</div>
+                        <div className="sec-more" onClick={() => navigate('/tips-list')}>Vedi tutti</div>
                     </div>
-                    <div className="consigli-row ru d7">
-                        {tips.map((tip, index) => (
-                            <div key={tip.id} className="cons-card" onClick={() => navigate('/tip', { state: { tip } })}>
-                                <div className="cons-cat">{tip.category}</div>
-                                <div className="cons-ic-wrap">{ICON_MAP[tip.category] || <Sparkles size={28} strokeWidth={1.5} />}</div>
-                                <div className="cons-title">{tip.preview}</div>
-                                <div className="cons-dur">{index === 0 ? '3 esami in sospeso' : '4 min di lettura'}</div>
-                            </div>
-                        ))}
+                    <div className="consigli-row ru d6">
+                        {tips.map((tip, index) => {
+                            const conf = getCategoryConfig(tip.category);
+
+                            return (
+                                <div
+                                    key={tip.id}
+                                    className="cons-card"
+                                    style={{ backgroundImage: `url('/${conf.cardBgImage}')` }}
+                                    onClick={() => setSelectedTip(tip)}
+                                >
+                                    <div className="cons-layer" style={{ background: `linear-gradient(to top, ${conf.color}E6 0%, ${conf.color}66 50%, transparent 100%)` }}>
+                                        <div className="cons-cat" style={{ background: conf.bg, color: conf.color }}>{tip.category}</div>
+
+                                        <div className="cons-bottom">
+                                            <div className="cons-ic-wrap" style={{ fontSize: '28px' }}>{conf.icon}</div>
+                                            <div className="cons-title">{tip.preview}</div>
+                                            <div className="cons-dur">{index === 0 ? '3 esami in sospeso' : '4 min di lettura'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </>
             )}
@@ -315,7 +350,7 @@ export default function Home() {
                     <div className="sec-title">Mettiti alla prova</div>
                 </div>
                 <div className="qb" onClick={() => navigate('/article')}>
-                    <div className="qb-ic">🧠</div>
+                    <div className="qb-ic"><Brain size={32} strokeWidth={1.5} color="var(--midnight)" /></div>
                     <div className="qb-t">
                         <div className="qb-title">Quiz settimana {weeks}</div>
                         <div className="qb-sub">3 domande · 2 minuti</div>
@@ -324,6 +359,8 @@ export default function Home() {
                 </div>
             </div>
 
+            <EditProfileModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
+            <TipBottomSheet tip={selectedTip} onClose={() => setSelectedTip(null)} />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Gift, Heart, Stethoscope, Mail, User } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import './AnimatedOnboarding.css';
 
@@ -41,14 +41,24 @@ export default function AnimatedOnboarding() {
                 setLoadingProgress(p => {
                     if (p >= 100) {
                         clearInterval(timer);
-                        completeOnboarding({
-                            role: role === 'entrambi' ? 'mamma' : (role || 'mamma'),
-                            name: name || (role === 'papa' ? 'Marco' : 'Sara'),
-                            baby: babyNameInput,
-                            sex: babySex,
-                            conception: dateInput ? new Date(dateInput) : new Date('2025-08-10'),
-                        });
-                        navigate('/home');
+
+                        setTimeout(() => {
+                            let conceptionTime = dateInput ? new Date(dateInput) : new Date('2025-08-10');
+                            if (status === 'gravidanza' && dateInput) {
+                                conceptionTime.setDate(conceptionTime.getDate() - 280);
+                            }
+
+                            completeOnboarding({
+                                role: role === 'entrambi' ? 'mamma' : (role || 'mamma'),
+                                name: name || (role === 'papa' ? 'Marco' : 'Sara'),
+                                baby: babyNameInput,
+                                sex: babySex,
+                                status: status,
+                                conception: conceptionTime,
+                            });
+                            navigate('/home');
+                        }, 1200);
+
                         return 100;
                     }
                     return p + 2;
@@ -56,7 +66,7 @@ export default function AnimatedOnboarding() {
             }, 60);
             return () => clearInterval(timer);
         }
-    }, [step, completeOnboarding, navigate, name, role, babyNameInput, babySex, dateInput]);
+    }, [step, completeOnboarding, navigate, name, role, babyNameInput, babySex, dateInput, status]);
 
     return (
         <div className="aonb">
@@ -109,34 +119,40 @@ export default function AnimatedOnboarding() {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setRole('mamma');
                                     }}>
-                                        <div className="aonb__role-icon">🤰</div>
+                                        <div className="aonb__role-icon">
+                                            <UserRound strokeWidth={1.5} size={28} />
+                                        </div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Mamma</div>
                                             <div className="aonb__role-desc">Percorso personalizzato mamma</div>
                                         </div>
-                                        {role === 'mamma' && <CheckCircle2 size={24} color="var(--aqua)" />}
+                                        {role === 'mamma' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
                                     <div className={`aonb__role-card ${role === 'papa' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setRole('papa');
                                     }}>
-                                        <div className="aonb__role-icon">👨</div>
+                                        <div className="aonb__role-icon">
+                                            <User strokeWidth={1.5} size={28} />
+                                        </div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Papà</div>
                                             <div className="aonb__role-desc">Consigli mirati per papà</div>
                                         </div>
-                                        {role === 'papa' && <CheckCircle2 size={24} color="var(--aqua)" />}
+                                        {role === 'papa' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
                                     <div className={`aonb__role-card ${role === 'entrambi' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setRole('entrambi');
                                     }}>
-                                        <div className="aonb__role-icon">👫</div>
+                                        <div className="aonb__role-icon">
+                                            <Users strokeWidth={1.5} size={28} />
+                                        </div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Lo usiamo insieme</div>
                                             <div className="aonb__role-desc">Account condiviso di coppia</div>
                                         </div>
-                                        {role === 'entrambi' && <CheckCircle2 size={24} color="var(--aqua)" />}
+                                        {role === 'entrambi' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
                                 </div>
 
@@ -167,19 +183,19 @@ export default function AnimatedOnboarding() {
                                             try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                             setBabySex('M');
                                         }}>
-                                            Maschietto 👦
+                                            <Baby strokeWidth={1.5} size={20} /> Maschietto
                                         </div>
                                         <div className={`aonb__sex-pill ${babySex === 'F' ? 'aonb__sex-pill--selected' : ''}`} onClick={async () => {
                                             try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                             setBabySex('F');
                                         }}>
-                                            Femminuccia 👧
+                                            <Baby strokeWidth={1.5} size={20} /> Femminuccia
                                         </div>
                                         <div className={`aonb__sex-pill ${babySex === 'surprise' ? 'aonb__sex-pill--selected' : ''}`} onClick={async () => {
                                             try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                             setBabySex('surprise');
                                         }}>
-                                            Sorpresa 🎁
+                                            <Gift strokeWidth={1.5} size={20} /> Sorpresa
                                         </div>
                                     </div>
                                 </div>
@@ -197,23 +213,30 @@ export default function AnimatedOnboarding() {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setStatus('gravidanza');
                                     }}>
-                                        <div className="aonb__role-icon">🤰</div>
+                                        <div className="aonb__role-icon"><Heart strokeWidth={1.5} size={28} /></div>
                                         <div className="aonb__role-text"><div className="aonb__role-label">Siamo in gravidanza</div></div>
-                                        {status === 'gravidanza' && <CheckCircle2 size={24} color="var(--aqua)" />}
+                                        {status === 'gravidanza' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
                                     <div className={`aonb__role-card ${status === 'nato' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setStatus('nato');
                                     }}>
-                                        <div className="aonb__role-icon">🍼</div>
+                                        <div className="aonb__role-icon"><Baby strokeWidth={1.5} size={28} /></div>
                                         <div className="aonb__role-text"><div className="aonb__role-label">Il bimbo è già nato</div></div>
-                                        {status === 'nato' && <CheckCircle2 size={24} color="var(--aqua)" />}
+                                        {status === 'nato' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
                                 </div>
 
                                 <div className="aonb__input-group">
                                     <label className="aonb__label">{status === 'gravidanza' ? 'Data presunta del parto' : 'Data di nascita'}</label>
-                                    <input className="aonb__input" type="date" value={dateInput} onChange={e => setDateInput(e.target.value)} />
+                                    <input
+                                        className="aonb__input"
+                                        type="date"
+                                        value={dateInput}
+                                        min={status === 'gravidanza' ? new Date().toISOString().split('T')[0] : undefined}
+                                        max={status === 'nato' ? new Date().toISOString().split('T')[0] : undefined}
+                                        onChange={e => setDateInput(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         )}
@@ -229,7 +252,9 @@ export default function AnimatedOnboarding() {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setInvitePartner('si');
                                     }}>
-                                        <div className="aonb__role-icon" style={{ background: 'var(--aqua2)' }}>💌</div>
+                                        <div className="aonb__role-icon" style={{ background: 'var(--aqua2)', borderRadius: '12px', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Mail color="var(--aqua)" strokeWidth={2} size={22} />
+                                        </div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Voglio invitarlo ora</div>
                                             <div className="aonb__role-desc">Invia link di affiliazione</div>
@@ -239,7 +264,9 @@ export default function AnimatedOnboarding() {
                                         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
                                         setInvitePartner('no');
                                     }}>
-                                        <div className="aonb__role-icon" style={{ background: 'var(--border)' }}>👤</div>
+                                        <div className="aonb__role-icon" style={{ background: 'var(--border)', borderRadius: '12px', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <User color="var(--stone)" strokeWidth={2} size={22} />
+                                        </div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">Lo farò più tardi</div>
                                             <div className="aonb__role-desc">Continua in solitaria</div>
@@ -258,14 +285,21 @@ export default function AnimatedOnboarding() {
 
             {/* STEP 5: LOADING */}
             {step === 5 && (
-                <div className="aonb__step--loading">
-                    <div className="ru d1" style={{ width: 80, height: 80, borderRadius: 24, background: 'var(--aqua2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                <div className="aonb__step--loading" style={{ position: 'relative' }}>
+                    <div className="floating-items">
+                        <div className="float-item" style={{ left: '10%', top: '20%', animationDelay: '0s', opacity: 0.3 }}><Baby size={32} color="var(--aqua)" /></div>
+                        <div className="float-item" style={{ left: '80%', top: '15%', animationDelay: '0.5s', opacity: 0.3 }}><Heart size={32} color="var(--blush)" /></div>
+                        <div className="float-item" style={{ left: '15%', top: '70%', animationDelay: '1s', opacity: 0.3 }}><Stethoscope size={32} color="var(--midnight)" /></div>
+                        <div className="float-item" style={{ left: '75%', top: '65%', animationDelay: '1.5s', opacity: 0.3 }}><Gift size={32} color="var(--warm-amber)" /></div>
+                    </div>
+
+                    <div className="ru d1 pulse-circle" style={{ width: 80, height: 80, borderRadius: 24, background: 'var(--aqua2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, position: 'relative', zIndex: 5 }}>
                         <CheckCircle2 size={40} color="var(--aqua)" />
                     </div>
-                    <h1 className="aonb__title ru d2">Tutto pronto!</h1>
-                    <p className="aonb__subtitle ru d3">Sto preparando il percorso personalizzato...</p>
+                    <h1 className="aonb__title ru d2" style={{ position: 'relative', zIndex: 5 }}>Tutto pronto!</h1>
+                    <p className="aonb__subtitle ru d3" style={{ position: 'relative', zIndex: 5 }}>Sto preparando il percorso personalizzato...</p>
 
-                    <div className="aonb__loading-bar ru d4">
+                    <div className="aonb__loading-bar ru d4" style={{ position: 'relative', zIndex: 5 }}>
                         <div className="aonb__loading-fill" style={{ width: `${loadingProgress}%` }} />
                     </div>
                 </div>

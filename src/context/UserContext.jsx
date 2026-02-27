@@ -12,12 +12,14 @@ export function UserProvider({ children }) {
     // New Feature States
     const [babyStatus, setBabyStatus] = useState('gravidanza'); // 'gravidanza' | 'nato'
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
+    const [hospitalBag, setHospitalBag] = useState({}); // { itemId: boolean }
 
-    const completeOnboarding = ({ role, name, baby, conception }) => {
+    const completeOnboarding = ({ role, name, baby, status, conception }) => {
         setUserRole(role);
         setUserName(name);
         setBabyName(baby || '');
         setConceptionDate(conception);
+        if (status) setBabyStatus(status);
         setOnboardingDone(true);
     };
 
@@ -64,13 +66,21 @@ export function UserProvider({ children }) {
         }));
     };
 
+    const toggleBagItem = (itemId) => {
+        setHospitalBag(prev => ({
+            ...prev,
+            [itemId]: !prev[itemId]
+        }));
+    };
+
     const isMamma = userRole === 'mamma';
     const isPapa = userRole === 'papa';
 
     return (
         <UserContext.Provider value={{
-            userRole, userName, babyName, conceptionDate, onboardingDone,
-            babyStatus, setBabyStatus, diaryEntries, addDiaryEntry, removeDiaryEntry,
+            userRole, setUserRole, userName, setUserName, babyName, setBabyName, conceptionDate, setConceptionDate,
+            onboardingDone, babyStatus, setBabyStatus, diaryEntries, addDiaryEntry, removeDiaryEntry,
+            hospitalBag, toggleBagItem,
             isMamma, isPapa,
             completeOnboarding, devLogin,
             getWeeksPregnant, getWeeksRemaining, getDueDate,

@@ -1,0 +1,208 @@
+/* DueDateCalculator CSS */
+.due-date-page {
+    padding-top: max(80px, calc(env(safe-area-inset-top) + 60px));
+    padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.dd-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 24px;
+}
+
+.dd-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--midnight);
+    text-align: center;
+}
+
+.dd-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dd-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(15, 32, 53, 0.06);
+    border: 1px solid var(--border);
+}
+
+.dd-desc {
+    font-size: 15px;
+    color: var(--stone2);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.dd-tabs {
+    display: flex;
+    background: var(--color-bg-subtle);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.dd-tab {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--stone);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.dd-tab.active {
+    background: var(--white);
+    color: var(--midnight);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dd-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dd-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--slate);
+}
+
+.dd-input {
+    width: 100%;
+    padding: 16px;
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--midnight);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.dd-input:focus {
+    border-color: var(--aqua);
+    background: var(--white);
+}
+
+.dd-calc-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--midnight);
+    color: var(--white);
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 8px;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.dd-calc-btn:disabled {
+    opacity: 0.5;
+    background: var(--stone);
+    cursor: not-allowed;
+}
+
+.dd-calc-btn:not(:disabled):active {
+    opacity: 1;
+    transform: scale(0.98);
+}
+
+/* Result Card */
+.dd-result-card {
+    background: linear-gradient(145deg, var(--aqua2), #EBF9F9);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    border: 1px solid rgba(64, 193, 178, 0.3);
+    box-shadow: 0 12px 32px rgba(64, 193, 178, 0.15);
+}
+
+.dd-result-ic {
+    width: 56px;
+    height: 56px;
+    background: var(--aqua);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.dd-result-card h3 {
+    font-size: 15px;
+    color: var(--slate);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.dd-result-date {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--midnight);
+    font-family: var(--font-family-serif);
+    margin-bottom: 24px;
+}
+
+.dd-result-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dd-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dd-stat-val {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--midnight);
+}
+
+.dd-stat-lbl {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--stone);
+    text-transform: uppercase;
+}
+
+.dd-stat-sep {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--stone2);
+}
+
+.dd-result-hint {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--slate);
+    text-align: left;
+}
+
+.dd-result-hint svg {
+    flex-shrink: 0;
+    color: var(--aqua);
+}
