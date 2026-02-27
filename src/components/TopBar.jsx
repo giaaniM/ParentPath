@@ -31,7 +31,7 @@ export default function TopBar() {
         <div className="topbar">
             {/* Left side: Premium Logo */}
             <div className="topbar__logo">
-                <img src="/logo.png" alt="ParentPath Logo" className="topbar__logo-img" />
+                <img src="/logo_premium.png" alt="ParentPath" className="topbar__logo-img" />
                 <div className="topbar__logo-text">ParentPath</div>
             </div>
 

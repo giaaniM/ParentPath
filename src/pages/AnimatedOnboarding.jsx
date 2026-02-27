@@ -80,10 +80,10 @@ export default function AnimatedOnboarding() {
 
                     <div className="aonb__splash-content">
                         <div className="aonb__splash-logo-wrap">
-                            <img src="/logo.png" alt="ParentPath Logo" />
+                            <img src="/logo_premium.png" alt="ParentPath" />
                         </div>
                         <h1 className="aonb__splash-title">ParentPath</h1>
-                        <p className="aonb__splash-subtitle">Il compagno digitale premium per la tua genitorialità. Costruito con amore e scienza.</p>
+                        <p className="aonb__splash-subtitle">Ogni passo del tuo viaggio, guidato con amore e supportato dalla scienza.</p>
                     </div>
 
                     <div className="aonb__splash-bottom">

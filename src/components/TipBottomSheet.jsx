@@ -9,7 +9,13 @@ export default function TipBottomSheet({ tip, onClose }) {
     // Swipe to close state
     const [touchStart, setTouchStart] = useState(null);
     const [touchY, setTouchY] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        // Trigger slide up after mount
+        const timer = setTimeout(() => setIsMounted(true), 50);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Block background scroll when open
     useEffect(() => {
@@ -28,19 +34,13 @@ export default function TipBottomSheet({ tip, onClose }) {
     const handleClose = () => {
         setIsClosing(true);
         setTimeout(() => {
-            setIsClosing(false);
             onClose();
-            setTouchY(null);
-            setTouchStart(null);
-        }, 300); // match animation duration approximately
+        }, 300);
     };
 
     const handleTouchStart = (e) => {
-        // Only initiate drag if the sheet itself is dragged, or if scroll area is at top
-        const contentArea = e.target.closest('.tip-bs-content');
-        if (contentArea && contentArea.scrollTop > 0) return;
-
         setTouchStart(e.targetTouches[0].clientY);
+        setTouchY(0);
         setIsDragging(true);
     };
 
@@ -60,48 +60,51 @@ export default function TipBottomSheet({ tip, onClose }) {
         if (!isDragging) return;
         setIsDragging(false);
 
-        if (touchY > 100) {
-            // Dragged enough, close it
+        if (touchY > 120) {
             handleClose();
         } else {
-            // Snap back
-            setTouchY(null);
+            setTouchY(0);
             setTouchStart(null);
         }
     };
 
     const style = getCategoryConfig(tip.category);
 
-    // Calculate dynamic transform based on drag state
-    let transformStyle = '';
+    // Calculate dynamic transform
+    let currentTransform = 'translateY(100%)';
     if (isClosing) {
-        transformStyle = 'translateY(100%)';
-    } else if (touchY > 0) {
-        transformStyle = `translateY(${touchY}px)`;
+        currentTransform = 'translateY(100%)';
+    } else if (isDragging) {
+        currentTransform = `translateY(${touchY}px)`;
+    } else if (isMounted) {
+        currentTransform = 'translateY(0)';
     }
 
-    // Determine transition: none while dragging so it follows finger instantly
-    const transitionStyle = isDragging && touchY > 0 ? 'none' : (isClosing ? 'transform 0.3s ease-out' : 'transform 0.2s ease');
+    const transitionStyle = isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
 
     return (
         <div
-            className="tip-bs-overlay"
-            style={{ opacity: isClosing ? 0 : '', animation: isClosing ? 'none' : '' }}
+            className={`tip-bs-overlay ${isClosing ? 'closing' : ''}`}
             onClick={handleClose}
         >
             <div
                 className="tip-bs-sheet"
                 onClick={(e) => e.stopPropagation()}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
                 style={{
-                    transform: transformStyle,
+                    transform: currentTransform,
                     transition: transitionStyle,
-                    animation: (isClosing || isDragging) ? 'none' : ''
+                    animation: 'none' // We handle it via JS 'isMounted' for stability
                 }}
             >
-                <div className="tip-bs-handle" />
+                {/* Draggable Handle Area */}
+                <div
+                    className="tip-bs-drag-zone"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <div className="tip-bs-handle" />
+                </div>
 
                 <button className="tip-bs-close" onClick={handleClose}>
                     <X size={20} strokeWidth={2.5} />

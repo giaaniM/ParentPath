@@ -24,7 +24,7 @@
 
 /* Step 0 Splash Screen - Full immersive gradient */
 .aonb__step--splash {
-    background: linear-gradient(145deg, var(--aqua2) 0%, var(--blush2) 100%);
+    background: #FDFBF7;
     min-height: 100vh;
     width: 100%;
     display: flex;
@@ -45,15 +45,16 @@
 
 .aonb__splash-shape1 {
     position: absolute;
-    width: 400px;
-    height: 400px;
+    width: 600px;
+    height: 600px;
     border-radius: 50%;
-    background: var(--aqua);
-    filter: blur(80px);
-    opacity: 0.6;
-    top: -100px;
-    left: -100px;
-    animation: float 6s ease-in-out infinite alternate;
+    background: #FF8C66;
+    /* Vibrant Peach/Orange */
+    filter: blur(150px);
+    opacity: 0.12;
+    top: -150px;
+    left: -150px;
+    animation: float 12s ease-in-out infinite alternate;
 }
 
 .aonb__splash-shape2 {
@@ -61,12 +62,12 @@
     width: 500px;
     height: 500px;
     border-radius: 50%;
-    background: var(--blush);
-    filter: blur(100px);
-    opacity: 0.5;
+    background: var(--midnight);
+    filter: blur(160px);
+    opacity: 0.08;
     bottom: -150px;
-    right: -150px;
-    animation: float 8s ease-in-out infinite alternate-reverse;
+    right: -100px;
+    animation: float 15s ease-in-out infinite alternate-reverse;
 }
 
 .aonb__splash-content {
@@ -81,41 +82,33 @@
 }
 
 .aonb__splash-logo-wrap {
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 32px;
-    padding: 24px;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     animation: riseUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .aonb__splash-logo-wrap img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 20px;
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
 }
 
 .aonb__splash-title {
     font-family: var(--font-family-serif);
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 700;
     color: var(--midnight);
     line-height: 1.1;
     margin-bottom: 16px;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
     animation: riseUp 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .aonb__splash-subtitle {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
-    color: rgba(15, 32, 53, 0.75);
-    line-height: 1.4;
-    max-width: 320px;
+    color: rgba(15, 32, 53, 0.8);
+    line-height: 1.5;
+    max-width: 280px;
     animation: riseUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
