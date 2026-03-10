@@ -39,13 +39,12 @@ export default function BabyDev() {
 
             {/* BORN TOGGLE / MINI-CARD AT TOP */}
             {isNato ? (
-                <div className="bd-pregnancy-mini-card" onClick={toggleBabyStatus}>
-                    <div className="mini-card-icon">🤰</div>
+                <div className="bd-pregnancy-mini-card minimal" onClick={toggleBabyStatus}>
                     <div className="mini-card-text">
-                        <div className="mini-card-title">Il tuo viaggio in gravidanza</div>
-                        <div className="mini-card-sub">Clicca per riaprire e rivedere i ricordi</div>
+                        <span>🤰 Gravidanza conclusa</span>
+                        <span style={{ opacity: 0.6, fontSize: '13px' }}> - Rivedi ricordi</span>
                     </div>
-                    <ChevronRight size={20} color="var(--stone)" />
+                    <ChevronRight size={18} color="var(--stone)" />
                 </div>
             ) : (
                 <div className="bd-status-toggle" style={{ marginTop: '16px', marginBottom: '8px' }}>
@@ -69,53 +68,62 @@ export default function BabyDev() {
             {/* PREGNANCY VIEW */}
             <div className={`bd-pregnancy-wrap ${isNato ? 'bd-collapsed' : ''}`}>
                 {/* HERO CARD V4 */}
-                <div className="bd-hero fi">
+                <div className="bd-hero fi" style={{ padding: '20px', borderRadius: '0 0 32px 32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                    <div className={`bd-circle ${pregnancy.sex === 'M' ? 'bd-circle--boy' : ''}`}>
-                        <img src="/baby-24w.png" alt="Fetus" className="bd-fetus" style={{ animation: 'float 6s ease-in-out infinite' }} />
+                    {/* Top Row: Avatar + Name & Badge */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%' }}>
+                        <div
+                            className={`bd-circle ${pregnancy.sex === 'M' ? 'bd-circle--boy' : ''}`}
+                            style={{ width: '90px', height: '90px', marginBottom: 0, flexShrink: 0 }}
+                        >
+                            <img src="/baby-24w.png" alt="Fetus" className="bd-fetus" style={{ width: '90px', animation: 'float 6s ease-in-out infinite' }} />
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flex: 1, gap: '6px' }}>
+                            <div className="bd-name" style={{ margin: 0, fontSize: '26px' }}>
+                                {pregnancy.babyNickname} <span style={{ fontSize: '22px' }}>{pregnancy.sex === 'M' ? '♂' : '♀'}</span>
+                            </div>
+                            <div className="bd-pill" style={{ margin: 0, padding: '6px 14px', alignSelf: 'flex-start' }}>
+                                <span className="bd-pill-em" style={{ fontSize: '13px' }}>{pregnancy.stats.sizeEmoji}</span>
+                                <span className="bd-pill-tx" style={{ fontSize: '12px' }}>Grande come {weekData.sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="bd-name">
-                        {pregnancy.babyNickname} <span>{pregnancy.sex === 'M' ? '♂' : '♀'}</span>
-                    </div>
-
-                    <div className="bd-sub">
-                        {weekData.subtitle}
-                    </div>
-
-                    <div className="bd-pill">
-                        <span className="bd-pill-em">{pregnancy.stats.sizeEmoji}</span>
-                        <span className="bd-pill-tx">Grande come {weekData.sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}</span>
-                    </div>
-
-                    <div className="bd-stats-grid">
-                        <div className="bd-stat-box">
-                            <div className="bd-sv">{pregnancy.stats.length}</div>
+                    <div className="bd-stats-grid" style={{ marginBottom: 0 }}>
+                        <div className="bd-stat-box" style={{ padding: '12px 10px' }}>
+                            <div className="bd-sv" style={{ fontSize: '20px' }}>{pregnancy.stats.length}</div>
                             <div className="bd-sl">LUNGHEZZA</div>
                         </div>
-                        <div className="bd-stat-box">
-                            <div className="bd-sv">{pregnancy.stats.weight}</div>
+                        <div className="bd-stat-box" style={{ padding: '12px 10px' }}>
+                            <div className="bd-sv" style={{ fontSize: '20px' }}>{pregnancy.stats.weight}</div>
                             <div className="bd-sl">PESO</div>
                         </div>
-                        <div className="bd-stat-box">
-                            <div className="bd-sv">{percent}%</div>
+                        <div className="bd-stat-box" style={{ padding: '12px 10px' }}>
+                            <div className="bd-sv" style={{ fontSize: '20px' }}>{percent}%</div>
                             <div className="bd-sl">PERCORSO</div>
                         </div>
                     </div>
 
-                    <div className="bd-prog-card">
-                        <div className="bd-prog-head">
+                    <div className="bd-prog-card" style={{ padding: '16px', width: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                        <div className="bd-prog-head" style={{ marginBottom: '12px' }}>
                             <span>Inizio</span>
                             <span>Oggi</span>
                             <span>Sett. 40</span>
                         </div>
-                        <div className="bd-slider-wrap">
+                        <div className="bd-slider-wrap" style={{ marginBottom: '16px' }}>
                             <div className="bd-slider-bg"></div>
                             <div className="bd-slider-fill" style={{ width: `${percent}%` }}></div>
-                            <div className="bd-slider-thumb" style={{ left: `${percent}%` }}>{currentWeek}</div>
+                            <div className="bd-slider-thumb" style={{ left: `${percent}%`, borderColor: 'var(--white)', width: '22px', height: '22px', fontSize: '9px' }}>{currentWeek}</div>
                         </div>
-                        <div className="bd-prog-footer">
-                            Hai completato il <strong>{percent}%</strong>. Mancano <strong>{40 - currentWeek} settimane</strong>!
+
+                        <div className="bd-insights" style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)', textAlign: 'left' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--midnight)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Brain size={16} color="var(--aqua)" /> {weekData.title || `Sviluppo Settimana ${currentWeek}`}
+                            </div>
+                            <div style={{ fontSize: '14px', color: 'var(--stone)', lineHeight: 1.5 }}>
+                                {weekData.subtitle || weekData.events[0] || 'Il tuo bambino sta crescendo rapidamente. I suoi sensi si stanno sviluppando e inizia a prepararsi per il mondo esterno.'}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,7 +131,7 @@ export default function BabyDev() {
                 {/* QUESTA SETTIMANA */}
                 <div className="qsett ru d1">
                     <div className="qsett-hd">
-                        <div className="qsett-tt">🫀 Cosa succede questa settimana</div>
+                        <div className="qsett-tt">Questa settimana</div>
                         <div className="qsett-cta">Tutto ›</div>
                     </div>
                     {weeklyEvents.map(ev => (

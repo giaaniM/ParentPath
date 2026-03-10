@@ -12,8 +12,9 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import EditProfileModal from '../components/EditProfileModal';
 import TipBottomSheet from '../components/TipBottomSheet';
+import SosNotteModal from '../components/SosNotteModal';
 import { getCategoryConfig } from '../utils/CategoryColors';
-import { Brain } from 'lucide-react';
+import { Brain, Moon } from 'lucide-react';
 import './Home.css';
 
 // Using lucide-react icons instead of emojis for a sleeker look
@@ -84,14 +85,16 @@ let hasTriggeredWelcomePush = false;
 
 export default function Home() {
     const navigate = useNavigate();
-    const { babyStatus, getWeeksPregnant, pregnancy, userName, ruolom } = useUser();
+    const { babyStatus, getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString, userName, ruolom } = useUser();
     const isMamma = ruolom?.toLowerCase().includes('mamma');
     const weeks = getWeeksPregnant();
+    const months = getBabyAgeMonths();
 
     const [selectedMood, setSelectedMood] = useState(null);
     const [moodSaved, setMoodSaved] = useState(false);
     const [hideDiscovery, setHideDiscovery] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const [isSosOpen, setIsSosOpen] = useState(false);
     const [selectedTip, setSelectedTip] = useState(null);
 
     // Interactive Checklist State
@@ -180,66 +183,28 @@ export default function Home() {
             {/* GREETING */}
             <div className="greeting fi">Ciao {userName}! 👋</div>
 
-            {/* MACRO PROGRESS INDICATOR */}
-            <div className="home-macro-progress fi">
-                <div className={`hm-step ${babyStatus !== 'nato' ? 'active' : 'done'}`}>
-                    <div className="hm-dot">1</div>
-                    <span>Gravidanza</span>
-                </div>
-                <div className={`hm-line ${babyStatus === 'nato' ? 'done' : ''}`}></div>
-                <div className={`hm-step ${babyStatus === 'nato' ? 'active' : ''}`}>
-                    <div className="hm-dot">2</div>
-                    <span>Primi Mesi</span>
-                </div>
-                <div className="hm-line"></div>
-                <div className="hm-step locked">
-                    <div className="hm-dot">3</div>
-                    <span>1-3 Anni</span>
-                </div>
-            </div>
 
-            {/* MOOD STRIP */}
-            {!moodSaved ? (
-                <>
-                    <div className="mood-lbl ru d1">Come ti senti oggi?</div>
-                    <div className="mood-strip ru d2">
-                        {moods.map(m => (
-                            <div
-                                key={m.id}
-                                className={`md ${selectedMood?.id === m.id ? 'on' : ''}`}
-                                onClick={() => handleMood(m)}
-                            >
-                                <div className="md-emoji-wrap">{m.icon}</div>
-                                <div className="md-lb">{m.label}</div>
-                            </div>
-                        ))}
+
+
+
+            {/* SCOPERTA DEL GIORNO (MODAL) */}
+            {!hideDiscovery && (
+                <div className="disc-modal-overlay">
+                    <div className="disc-modal-card po">
+                        <div className="disc-modal-ic">✨</div>
+                        <h3 className="disc-modal-title">Scoperta del giorno</h3>
+                        <p className="disc-modal-text">
+                            {babyStatus === 'nato'
+                                ? "Goditi i primi momenti post-parto, la mamma ha bisogno di riposo e comprensione."
+                                : (!isMamma ? getWeekData(weeks).papaTip : getWeekData(weeks).mamaTip)
+                            }
+                        </p>
+                        <button className="disc-modal-btn" onClick={() => setHideDiscovery(true)}>
+                            Ho capito ✓
+                        </button>
                     </div>
-                </>
-            ) : (
-                <div className="mood-saved-badge po">
-                    <div className="ms-ic">{selectedMood?.icon}</div>
-                    <div className="ms-t">
-                        <div className="ms-tt">L'hai registrato!</div>
-                        <div className="ms-ss">Il tuo mood: {selectedMood?.label}</div>
-                    </div>
-                    <div className="ms-ar" onClick={() => { setMoodSaved(false); setSelectedMood(null); }}>Cambia</div>
                 </div>
             )}
-
-            {/* SCOPERTA DEL GIORNO */}
-            <div className={`disc-strip ru d3 ${hideDiscovery ? 'gone' : ''}`}>
-                <div className="disc-ic">✨</div>
-                <div className="disc-t">
-                    <div className="disc-t-h">Scoperta del giorno</div>
-                    <div className="disc-t-s">
-                        {babyStatus === 'nato'
-                            ? "Goditi i primi momenti post-parto, la mamma ha bisogno di riposo e comprensione."
-                            : (!isMamma ? getWeekData(weeks).papaTip : getWeekData(weeks).mamaTip)
-                        }
-                    </div>
-                </div>
-                <div className="disc-x" onClick={() => setHideDiscovery(true)}>✕</div>
-            </div>
 
             {/* HERO CARD GRAVIDANZA OR PRIMI MESI */}
             {babyStatus !== 'nato' ? (
@@ -256,7 +221,9 @@ export default function Home() {
 
                     <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
                     <div className="hc-eyebrow">Settimana {weeks}</div>
-                    <div className="hc-title">{getWeekData(weeks).heroTitle}</div>
+                    <div className="hc-title" style={{ fontSize: '28px', color: 'var(--midnight)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                        {pregnancy?.babyNickname} <span style={{ fontSize: '22px' }}>{pregnancy?.sex === 'M' ? '♂' : '♀'}</span>
+                    </div>
                     <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>
                     <div className="hc-prg-lb">{percent}% del percorso</div>
 
@@ -267,7 +234,7 @@ export default function Home() {
                     </div>
                 </div>
             ) : (
-                <div className="hc ru d4 hc-primi-mesi" onClick={() => navigate('/baby')}>
+                <div className={`hc ru d4 ${pregnancy?.sex === 'M' ? 'hc--boy' : 'hc--girl'}`} onClick={() => navigate('/baby')} style={{ overflow: 'hidden' }}>
                     <button
                         className="hc-edit"
                         onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
@@ -276,20 +243,41 @@ export default function Home() {
                         <Edit2 size={18} />
                     </button>
                     <div className="hc-mesh"></div>
+                    <div className="hc-grid" style={{ opacity: 0.3 }}></div>
                     <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
 
-                    <div className="hc-eyebrow">I Primi Mesi <span className="wip-pill">In arrivo</span></div>
-                    <div className="hc-title">Benvenuto al mondo! 🎉</div>
-                    <div className="hc-prg-lb" style={{ width: '65%', textAlign: 'left', marginTop: '4px', lineHeight: '1.4' }}>
-                        Preparati per un'avventura indimenticabile. Stiamo preparando dei consigli speciali per la vostra nuova vita insieme.
+                    <div className="hc-eyebrow" style={{ color: 'var(--stone)', letterSpacing: '1px' }}>Età: {getBabyPreciseAgeString()}</div>
+                    <div className="hc-title" style={{ fontSize: '28px', color: pregnancy?.sex === 'M' ? '#4A90E2' : 'var(--midnight)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                        {pregnancy?.babyNickname || 'Il tuo Bimbo'} <span>{pregnancy?.sex === 'M' ? '♂' : '♀'}</span>
                     </div>
 
-                    <div className="hc-nato-icon">👶</div>
+                    <div className="hc-prg">
+                        <div className="hc-prg-fill" style={{ width: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? '#4A90E2' : '#D65D3C' }}></div>
+                    </div>
+                    <div className="hc-prg-lb">{months} / 12 mesi completati</div>
+
+                    <div style={{ position: 'absolute', bottom: '-4px', right: '12px', fontSize: '90px', transform: 'rotate(-5deg)', animation: 'float 6s ease-in-out infinite' }}>👶</div>
+
+                    <div className="hc-badge" style={{ marginTop: '20px' }}>
+                        <span>🎉</span> I Primi Mesi
+                    </div>
+                </div>
+            )}
+
+            {/* SOS NOTTE BANNER (Primi Mesi solo) */}
+            {babyStatus === 'nato' && (
+                <div className="sos-home-banner ru d5" onClick={() => setIsSosOpen(true)}>
+                    <div className="sos-hb-icon"><Moon size={24} strokeWidth={2} /></div>
+                    <div className="sos-hb-text">
+                        <div className="sos-hb-title">SOS Notte</div>
+                        <div className="sos-hb-sub">Rumori bianchi e coliche</div>
+                    </div>
+                    <div className="sos-hb-go">Apri</div>
                 </div>
             )}
 
             {/* DA FARE QUESTA SETTIMANA */}
-            <div className="tw ru d5">
+            <div className={`tw ru d${babyStatus === 'nato' ? '6' : '5'}`}>
                 <div className="tw-head">
                     <div className="tw-tit">Da fare questa settimana</div>
                     <div className="tw-bdg">{completedCount} / {dailyTasks.length}</div>
@@ -361,6 +349,7 @@ export default function Home() {
 
             <EditProfileModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
             <TipBottomSheet tip={selectedTip} onClose={() => setSelectedTip(null)} />
+            <SosNotteModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />
         </div>
     );
 }

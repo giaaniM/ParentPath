@@ -7,6 +7,7 @@ export default function TipBottomSheet({ tip, onClose }) {
     const [isClosing, setIsClosing] = useState(false);
 
     // Swipe to close state
+    const [isDragging, setIsDragging] = useState(false);
     const [touchStart, setTouchStart] = useState(null);
     const [touchY, setTouchY] = useState(null);
     const [isMounted, setIsMounted] = useState(false);

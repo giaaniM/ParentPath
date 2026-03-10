@@ -1,54 +1,297 @@
-.ey-container {
+/* ── EARLY YEARS CONTROL CENTER ── */
+.ey-control-center {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 0 20px 24px;
+    box-shadow: 0 4px 16px rgba(15, 32, 53, 0.04);
+    border: 1px solid var(--border);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.trackers-heading {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--midnight);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.trackers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.tracker-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 64px 24px;
-    background: var(--white);
-    border-radius: 24px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(15, 32, 53, 0.05);
-    margin: 20px 20px 40px;
-    animation: fadeIn 0.8s ease-out forwards;
+    gap: 8px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--page-bg);
+    color: var(--midnight);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.ey-icon-wrap {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--aqua2), var(--blush2));
-    border-radius: 50%;
+.tracker-btn:active {
+    transform: scale(0.95);
+}
+
+/* Specific Tracker Styles */
+.tracker-btn.feed {
+    color: var(--coral);
+    background: rgba(230, 122, 107, 0.05);
+    border-color: rgba(230, 122, 107, 0.1);
+}
+
+.tracker-btn.diaper {
+    color: #4A90E2;
+    background: rgba(74, 144, 226, 0.05);
+    border-color: rgba(74, 144, 226, 0.1);
+}
+
+.tracker-btn.diaper.dirty {
+    color: #8B5A2B;
+    background: rgba(139, 90, 43, 0.05);
+    border-color: rgba(139, 90, 43, 0.1);
+}
+
+.tracker-btn.sleep {
+    color: var(--midnight);
+    background: rgba(24, 39, 56, 0.03);
+    border-color: rgba(24, 39, 56, 0.08);
+}
+
+.tracker-btn.sos {
+    color: var(--coral);
+    background: rgba(230, 122, 107, 0.03);
+    border-color: rgba(230, 122, 107, 0.1);
+}
+
+/* Active Timer Banner */
+.active-timer-banner {
+    display: flex;
+    align-items: center;
+    background: var(--coral);
+    color: var(--white);
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(230, 122, 107, 0.3);
+    animation: pulseBg 2s infinite alternate ease-in-out;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+@keyframes pulseBg {
+    0% {
+        background: var(--coral);
+        box-shadow: 0 4px 16px rgba(230, 122, 107, 0.3);
+    }
+
+    100% {
+        background: #E06B5C;
+        box-shadow: 0 4px 20px rgba(230, 122, 107, 0.5);
+    }
+}
+
+.active-timer-banner.sleep {
+    background: var(--midnight);
+    box-shadow: 0 4px 16px rgba(24, 39, 56, 0.3);
+    animation: pulseSleepBg 3s infinite alternate ease-in-out;
+}
+
+@keyframes pulseSleepBg {
+    0% {
+        background: var(--midnight);
+        box-shadow: 0 4px 16px rgba(24, 39, 56, 0.3);
+    }
+
+    100% {
+        background: #1F3247;
+        box-shadow: 0 4px 20px rgba(24, 39, 56, 0.5);
+    }
+}
+
+.active-timer-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.active-timer-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--midnight);
-    margin-bottom: 24px;
-    box-shadow: 0 8px 24px rgba(64, 193, 178, 0.2);
+    background: rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
 }
 
-.ey-title {
-    font-family: var(--font-family-serif);
-    font-size: 28px;
+.active-timer-type {
+    font-size: 14px;
     font-weight: 700;
+    line-height: 1.2;
+}
+
+.active-timer-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.side-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.side-btn.active {
+    background: var(--white);
+    color: var(--coral);
+    border-color: var(--white);
+}
+
+.active-timer-clock {
+    font-variant-numeric: tabular-nums;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.active-timer-stop {
+    background: var(--white);
+    color: var(--coral);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.active-timer-stop:active {
+    transform: scale(0.95);
+}
+
+/* SweetSpot Banner */
+.sweetspot-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(162, 123, 222, 0.1), rgba(162, 123, 222, 0.05));
+    border: 1px solid rgba(162, 123, 222, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
     color: var(--midnight);
+}
+
+.sweetspot-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--white);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(162, 123, 222, 0.15);
+}
+
+.sweetspot-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* Recent Trackers List */
+.trackers-recent-list {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+}
+
+.recent-heading {
+    font-size: 13px;
+    color: var(--stone);
     margin-bottom: 12px;
 }
 
-.ey-subtitle {
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--stone);
-    margin-bottom: 24px;
+.recent-tracker-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--page-bg);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    gap: 12px;
 }
 
-.ey-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--bg-subtle, #F7F5F2);
-    border: 1px dashed var(--stone);
+.recent-tracker-item.feed .recent-icon {
+    color: var(--coral);
+}
+
+.recent-tracker-item.diaper .recent-icon {
+    color: #4A90E2;
+}
+
+.recent-tracker-item.diaper.dirty .recent-icon {
+    color: #8B5A2B;
+}
+
+.recent-tracker-item.sleep .recent-icon {
     color: var(--midnight);
-    border-radius: 20px;
+}
+
+.recent-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recent-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--midnight);
+}
+
+.recent-time {
     font-size: 13px;
-    font-weight: 700;
+    color: var(--stone);
+    font-weight: 500;
+}
+
+.recent-del {
+    background: none;
+    border: none;
+    color: var(--stone);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

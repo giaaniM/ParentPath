@@ -88,8 +88,11 @@ export default function AnimatedOnboarding() {
 
                     <div className="aonb__splash-bottom">
                         <button className="aonb__btn-primary" onClick={handleNext}>Inizia ora</button>
-                        <button className="aonb__btn-secondary" onClick={() => { devLogin('mamma'); navigate('/home'); }}>
-                            Entra nella Demo
+                        <button className="aonb__btn-secondary" onClick={() => { devLogin('mamma', 'gravidanza'); navigate('/home'); }}>
+                            Entra nella Demo (Gravidanza)
+                        </button>
+                        <button className="aonb__btn-secondary" style={{ marginTop: 0 }} onClick={() => { devLogin('mamma', 'nato'); navigate('/home'); }}>
+                            Entra nella Demo (Neonato)
                         </button>
                     </div>
                 </div>
