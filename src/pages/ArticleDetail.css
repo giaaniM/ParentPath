@@ -115,36 +115,56 @@
 
 /* Body */
 .article-body {
-    margin-bottom: var(--space-xl);
+    padding-bottom: 120px;
+}
+
+.article-body__paragraph strong,
+.article-body__heading strong,
+.article-body__list-item strong,
+.article-body__tip p strong {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
 }
 
 .article-body__heading {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
     letter-spacing: var(--letter-spacing-tight);
-    margin: var(--space-lg) 0 var(--space-md);
+    margin: var(--space-xl) 0 var(--space-lg);
+    color: var(--color-text-primary);
 }
 
 .article-body__paragraph {
     font-size: var(--font-size-base);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-secondary);
-    margin-bottom: var(--space-base);
+    margin-bottom: var(--space-xl);
 }
 
 .article-body__list {
-    margin: var(--space-md) 0;
+    margin: var(--space-lg) 0 var(--space-xl);
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    padding: 0;
+    list-style: none;
+}
+
+.article-body__list.is-numbered {
+    list-style: decimal;
+    padding-left: var(--space-xl);
 }
 
 .article-body__list-item {
     display: flex;
-    gap: var(--space-sm);
+    gap: var(--space-md);
     font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
+    line-height: var(--line-height-relaxed);
     color: var(--color-text-secondary);
+}
+
+.is-numbered .article-body__list-item {
+    display: list-item;
 }
 
 .article-body__bullet {
@@ -158,11 +178,11 @@
 .article-body__tip {
     display: flex;
     gap: var(--space-md);
-    padding: var(--space-base);
+    padding: var(--space-lg);
     background: var(--color-accent-medical-light);
-    border-radius: var(--radius-md);
-    margin: var(--space-lg) 0;
-    border-left: 3px solid var(--color-accent-medical);
+    border-radius: var(--radius-lg);
+    margin: var(--space-xl) 0;
+    border-left: 4px solid var(--color-accent-medical);
 }
 
 .article-body__tip-icon {

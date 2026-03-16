@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { weeklyContent, pregnancy, getWeekData } from '../data/mockData';
+import { pregnancy, getWeekData, smartTrackerData, pregnancyWeather, newbornWeather, partnerSync, weeklyDevelopment, newbornDevelopment, pregnancyTasks, newbornTasks, getHomeTips } from '../data/mockData';
+import { useWeekData } from '../hooks/useWeekData';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
-    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2
+    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw
 } from 'lucide-react';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -33,82 +34,129 @@ const MOODS_PAPA = [
     { id: 'tired', icon: <Coffee strokeWidth={2.5} size={28} />, label: 'Stanco' },
 ];
 
-const ICON_MAP = {
-    'Sviluppo': <Sparkles size={28} strokeWidth={1.5} />,
-    'Da fare': <ClipboardCheck size={28} strokeWidth={1.5} />,
-    'Da avere': <ShoppingBag size={28} strokeWidth={1.5} />,
-    'Salute': <Stethoscope size={28} strokeWidth={1.5} />,
-    'Supporto': <Heart size={28} strokeWidth={1.5} />,
-    'Legame': <Sparkles size={28} strokeWidth={1.5} />,
-};
-
-// ── Dynamic Daily Tasks ──
-const MAMMA_TASK_POOL = [
-    'Prendi le vitamine prenatali',
-    "Bevi 2 litri d'acqua",
-    'Fai 10 minuti di stretching',
-    'Mangia una porzione di frutta',
-    'Fai una passeggiata di 15 minuti',
-    'Scrivi un pensiero nel diario',
-    "Fai esercizi di Kegel (5 min)",
-    'Riposati 20 minuti nel pomeriggio',
-    'Bevi una tisana senza caffeina',
-    'Misura la pressione',
-    'Parla col bambino per 5 minuti',
-];
-const PAPA_TASK_POOL = [
-    'Chiedi alla mamma come si sente',
-    "Organizza la borsa per l'ospedale",
-    'Massaggio serale alla schiena',
-    'Prepara la cena stasera',
-    'Leggi un articolo sulla paternità',
-    'Parla col bambino appoggiandoti alla pancia',
-    'Vai a fare la spesa',
-    'Prenota un\'attività rilassante per lei',
-    'Fai un complimento sincero alla mamma',
-    'Controlla la lista nascita',
-];
-
-function getDailyTasks(isMamma) {
-    const pool = isMamma ? MAMMA_TASK_POOL : PAPA_TASK_POOL;
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    const startIdx = (dayOfYear * 3) % pool.length;
-    return [
-        { id: 'task1', text: pool[startIdx % pool.length] },
-        { id: 'task2', text: pool[(startIdx + 1) % pool.length] },
-        { id: 'task3', text: pool[(startIdx + 2) % pool.length] },
-    ];
-}
+const PRIORITY_ORDER = { critica: 0, alta: 1, media: 2, bassa: 3 };
 
 // Used to make sure we only trigger the welcome push once per session
 let hasTriggeredWelcomePush = false;
 
+const DotIndicator = ({ current, total, color }) => {
+    return (
+        <div className="dot-indicator">
+            {[...Array(total)].map((_, i) => (
+                <div 
+                    key={i} 
+                    className="dot" 
+                    style={{ 
+                        backgroundColor: i < current ? color : '#E5E7EB',
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%'
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
 export default function Home() {
     const navigate = useNavigate();
-    const { babyStatus, getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString, userName, ruolom } = useUser();
-    const isMamma = ruolom?.toLowerCase().includes('mamma');
+    const {
+        babyStatus, setBabyStatus, getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString,
+        userName, isMamma, partnerName,
+        toggleTaskCompleted, isTaskCompleted,
+        hydration, addHydration, kicks, addKick,
+        trackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
+        getCustomTasksForWeek, babyName, babySex, babyNickname,
+        userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
+        appointments,
+        removeHydration, removeKick
+    } = useUser();
     const weeks = getWeeksPregnant();
     const months = getBabyAgeMonths();
 
-    const [selectedMood, setSelectedMood] = useState(null);
-    const [moodSaved, setMoodSaved] = useState(false);
-    const [hideDiscovery, setHideDiscovery] = useState(false);
+    // New JSON-driven week data
+    const weekJsonData = useWeekData(weeks);
+    // Legacy mockData fallback
+    const legacyWeekData = getWeekData(weeks);
+
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSosOpen, setIsSosOpen] = useState(false);
     const [selectedTip, setSelectedTip] = useState(null);
 
-    // Interactive Checklist State
-    const [checkedTasks, setCheckedTasks] = useState({
-        task1: false, task2: false, task3: false,
-    });
+    const nextAppointment = useMemo(() => {
+        if (!appointments || appointments.length === 0) return null;
+        
+        // Find appointments for future weeks or later today? 
+        // For simple logic, let's take the first one found in the appointments array
+        // (Usually users add them for the selected week in Agenda, so we find upcoming ones)
+        const sorted = [...appointments].sort((a, b) => a.weekNumber - b.weekNumber || a.time.localeCompare(b.time));
+        const now = new Date();
+        // Simple logic: first one in the list for now
+        return sorted[0];
+    }, [appointments]);
 
-    // Simulate opening from a push or registering a push
+    const getVisitDaysRemaining = (appt) => {
+        if (!appt) return null;
+        // Mocking logic for "3 giorni" etc.
+        const diff = appt.weekNumber - weeks;
+        if (diff === 0) return 'Oggi';
+        if (diff === 1) return '7 giorni';
+        return `${diff * 7} giorni`;
+    };
+
+    // Dynamic Weather Logic based on Mood
+    const getMoodWeather = (moodId) => {
+        const config = {
+            great: { condition: 'Radioso', icon: '✨', description: 'Ti senti alla grande! Energia al massimo.', tips: 'Approfittane per fare qualcosa che ami.' },
+            good: { condition: 'Sereno', icon: '☀️', description: 'Una bella giornata. Ti senti bene e in equilibrio.', tips: 'Una passeggiata leggera è l\'ideale.' },
+            tired: { condition: 'Nuvoloso', icon: '☁️', description: 'Un po\' di stanchezza oggi. È normale sentirsi così.', tips: 'Riposati più che puoi, te lo meriti.' },
+            sick: { condition: 'Pioggia', icon: '🌧️', description: 'Giornata difficile. La nausea o il malessere si fanno sentire.', tips: 'Tisana allo zenzero e tanto relax.' },
+            anxious: { condition: 'Variabile', icon: '⛅', description: 'Tanti pensieri in testa. Respira, andrà tutto bene.', tips: 'Prova 5 minuti di meditazione guidata.' },
+            excited: { condition: 'Elettrizzante', icon: '⚡', description: 'Non vedi l\'ora! L\'entusiasmo è contagioso.', tips: 'Condividi questa gioia con il partner.' },
+            chill: { condition: 'Calmo', icon: '🌊', description: 'Pace e tranquillità. Ti stai godendo il momento.', tips: 'Leggi un buon libro o ascolta musica.' },
+            dark: { condition: 'Tempesta', icon: '⛈️', description: 'Oggi è proprio no. Non forzarti a sorridere.', tips: 'Parlane con qualcuno di cui ti fidi.' }
+        };
+        return config[moodId] || config.good;
+    };
+
+    const weatherData = getMoodWeather(userMood);
+
+    // Handle status update
+    const handleMoodChange = async (moodId) => {
+        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+        setUserMood(moodId);
+    };
+
+    const handleActivityChange = (activity) => {
+        setUserActivity(activity);
+    };
+
+    const moods = isMamma ? MOODS : MOODS_PAPA;
+
+    // Greeting Timeframe
+    const isBorn = babyStatus === 'nato';
+    const percent = Math.min(100, Math.round((weeks / 40) * 100));
+
+    // Use JSON feto data if available, else fallback to legacy
+    const sizeEmoji = isBorn ? newbornDevelopment.month1.sizeEmoji : (weeklyDevelopment[weeks]?.sizeEmoji || '🌽');
+    const sizeLabel = isBorn ? newbornDevelopment.month1.sizeLabel : (weeklyDevelopment[weeks]?.sizeLabel || 'Spiga di Mais');
+
+    // Dynamic Phase Data
+    const phaseArticles = getHomeTips(isBorn, isMamma ? 'mamma' : 'papa');
+
+    const partnerInfo = {
+        name: partnerName || (isMamma ? 'Marco' : 'Sara'),
+        avatar: isMamma ? '👨' : '👩'
+    };
+
+    const timeframeLabel = isBorn ? `nel 1° Mese (Giorno ${pregnancy.daysBorn})` : `nella Settimana ${weeks}`;
+
+    // Used to make sure we only trigger the welcome push once per session
     const scheduleWelcomePush = async () => {
         if (hasTriggeredWelcomePush) return;
         hasTriggeredWelcomePush = true;
 
         try {
-            // Request permissions first (required on iOS and Android 13+)
             const permStatus = await LocalNotifications.requestPermissions();
             if (permStatus.display === 'granted') {
                 await LocalNotifications.schedule({
@@ -117,11 +165,8 @@ export default function Home() {
                             title: "Ciao " + userName + "! 👋",
                             body: "Il tuo bimbo ti aspetta. Entra per vedere com'è cresciuto! 👶",
                             id: 1,
-                            schedule: { at: new Date(Date.now() + 4000) }, // Fire in 4 seconds
-                            sound: null,
-                            attachments: null,
-                            actionTypeId: "",
-                            extra: null
+                            schedule: { at: new Date(Date.now() + 4000) },
+                            sound: null, attachments: null, actionTypeId: "", extra: null
                         }
                     ]
                 });
@@ -131,7 +176,6 @@ export default function Home() {
         }
     };
 
-    // Request permissions on mount and handle initial welcome push logic
     useEffect(() => {
         const initNotifications = async () => {
             if (Capacitor.isNativePlatform()) {
@@ -159,113 +203,206 @@ export default function Home() {
         };
     }, [userName]);
 
-    const toggleTask = async (taskId) => {
+    // Task logic - Sync with Agenda.jsx
+    const allTasks = useMemo(() => {
+        const jsonTasks = weekJsonData?.tasks || [];
+        const baseTasks = babyStatus === 'nato' ? newbornTasks : pregnancyTasks;
+        
+        // Combine JSON suggested tasks + site-wide static tasks + user custom tasks
+        const combined = [...jsonTasks, ...baseTasks, ...getCustomTasksForWeek(weeks)];
+        
+        // Filter out empty tasks and those missing text
+        return combined.filter(t => t.text && t.text.trim());
+    }, [weekJsonData, babyStatus, getCustomTasksForWeek, weeks]);
+
+    const homeTasks = allTasks; // Removed .slice(0, 4) to show all tasks as requested
+    const completedCount = homeTasks.filter(t => isTaskCompleted(weeks, t.id)).length;
+    const totalTasks = homeTasks.length;
+
+    const handleToggleTask = async (taskId) => {
         try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
-        setCheckedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }));
+        toggleTaskCompleted(weeks, taskId);
     };
 
-    const handleMood = async (mood) => {
+    const handleAddHydration = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        addHydration();
+    };
+
+    const handleRemoveHydration = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        removeHydration();
+    };
+
+    const handleAddKick = async (e) => {
+        e.stopPropagation();
         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
-        setSelectedMood(mood);
-        setTimeout(() => setMoodSaved(true), 800);
+        addKick();
     };
 
-    const tips = isMamma ? weeklyContent.mammaTips : weeklyContent.papaTips;
-    const moods = isMamma ? MOODS : MOODS_PAPA;
-    const dailyTasks = useMemo(() => getDailyTasks(isMamma), [isMamma]);
+    const handleRemoveKick = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        removeKick();
+    };
 
-    const completedCount = Object.values(checkedTasks).filter(Boolean).length;
-    const percent = Math.min(100, Math.round((weeks / 40) * 100));
+    const handleAddFeeding = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        addFeeding();
+    };
+
+    const handleRemoveFeeding = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        removeFeeding();
+    };
+
+    const handleAddDiaper = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        addDiaper();
+    };
+
+    const handleRemoveDiaper = async (e) => {
+        e.stopPropagation();
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        removeDiaper();
+    };
 
     return (
         <div className="page home-wrap">
 
-            {/* GREETING */}
-            <div className="greeting fi">Ciao {userName}! 👋</div>
+            <div className="greeting-wrapper fi" style={{ margin: '20px 20px 18px' }}>
+                <h2 className="greeting">
+                    Ciao {userName || 'Genitore'}!
+                </h2>
+            </div>
 
+            {/* HERO CARD (REDESIGNED V4 - COMPACT) */}
+            <div className={`hc ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')}>
+                <button
+                    className="hc-edit"
+                    onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
+                    aria-label="Modifica Profilo"
+                >
+                    <Edit2 size={16} />
+                </button>
+                
+                <div className="hc-mesh"></div>
+                <div className="hc-arr"><ArrowRight size={20} strokeWidth={1.5} /></div>
+                
+                <div className="hc-flex-v4">
+                    <div className="hc-text-v4">
+                        <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
+                        
+                        <h2 className="hc-title-v4">
+                            {isBorn ? babyName || 'Il tuo Bimbo' : (babyNickname || 'Piccolo')} 
+                            <span className="hc-sex-v4">{babySex === 'M' ? '♂' : babySex === 'F' ? '♀' : ''}</span>
+                        </h2>
 
+                        {!isBorn ? (
+                            <div className="hc-stats-v4">
+                                <div className="hc-stat-row-v4">
+                                    <div className="hc-prg-v4">
+                                        <div className="hc-prg-fill-v4" style={{ width: `${percent}%` }}></div>
+                                    </div>
+                                    <span className="hc-percent-v4">{percent}%</span>
+                                </div>
+                                <div className="hc-size-v4">
+                                    <span style={{ fontSize: '16px' }}>{sizeEmoji}</span>
+                                    <span>Grande come <strong>{sizeLabel}</strong></span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="hc-born-v4">
+                                <span className="hc-born-label-v4">NATO</span>
+                                <span className="hc-born-age-v4">{getBabyPreciseAgeString()}</span>
+                            </div>
+                        )}
+                    </div>
 
+                    <div className="hc-img-v4">
+                        {isBorn ? (
+                            <span style={{ fontSize: '60px' }}>🍼</span>
+                        ) : (
+                            <img 
+                                src="/baby-24w-alpha.png" 
+                                alt="Baby" 
+                                className="hc-baby-png-v4" 
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
 
-
-            {/* SCOPERTA DEL GIORNO (MODAL) */}
-            {!hideDiscovery && (
-                <div className="disc-modal-overlay">
-                    <div className="disc-modal-card po">
-                        <div className="disc-modal-ic">✨</div>
-                        <h3 className="disc-modal-title">Scoperta del giorno</h3>
-                        <p className="disc-modal-text">
-                            {babyStatus === 'nato'
-                                ? "Goditi i primi momenti post-parto, la mamma ha bisogno di riposo e comprensione."
-                                : (!isMamma ? getWeekData(weeks).papaTip : getWeekData(weeks).mamaTip)
-                            }
-                        </p>
-                        <button className="disc-modal-btn" onClick={() => setHideDiscovery(true)}>
-                            Ho capito ✓
-                        </button>
+            {/* UPCOMING VISIT CARD (NEW) */}
+            {nextAppointment && (
+                <div className="visit-card ru d0" onClick={() => navigate('/agenda')}>
+                    <div className="visit-date-box">
+                        <div className="visit-day">20</div>
+                        <div className="visit-month">MAR</div>
+                    </div>
+                    <div className="visit-divider"></div>
+                    <div className="visit-info">
+                        <div className="visit-title">{nextAppointment.name}</div>
+                        <div className="visit-subtitle">
+                            {nextAppointment.notes ? `${nextAppointment.notes} · ` : ''}{nextAppointment.time}
+                        </div>
+                    </div>
+                    <div className="visit-status-pill">
+                        {getVisitDaysRemaining(nextAppointment)}
                     </div>
                 </div>
             )}
 
-            {/* HERO CARD GRAVIDANZA OR PRIMI MESI */}
-            {babyStatus !== 'nato' ? (
-                <div className="hc ru d4" onClick={() => navigate('/baby')}>
-                    <button
-                        className="hc-edit"
-                        onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
-                        aria-label="Modifica Profilo"
-                    >
-                        <Edit2 size={18} />
-                    </button>
-                    <div className="hc-mesh"></div>
-                    <div className="hc-grid"></div>
-
-                    <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
-                    <div className="hc-eyebrow">Settimana {weeks}</div>
-                    <div className="hc-title" style={{ fontSize: '28px', color: 'var(--midnight)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                        {pregnancy?.babyNickname} <span style={{ fontSize: '22px' }}>{pregnancy?.sex === 'M' ? '♂' : '♀'}</span>
-                    </div>
-                    <div className="hc-prg"><div className="hc-prg-fill" style={{ width: `${percent}%` }}></div></div>
-                    <div className="hc-prg-lb">{percent}% del percorso</div>
-
-                    <img src="/baby-24w-alpha.png" alt="Baby" className="hc-img" style={{ animation: 'float 6s ease-in-out infinite' }} />
-
-                    <div className="hc-badge">
-                        <span>{getWeekData(weeks).sizeEmoji}</span> Grande come {getWeekData(weeks).sizeLabel?.toLowerCase() || pregnancy.stats.sizeComparison.toLowerCase()}
-                    </div>
-                </div>
-            ) : (
-                <div className={`hc ru d4 ${pregnancy?.sex === 'M' ? 'hc--boy' : 'hc--girl'}`} onClick={() => navigate('/baby')} style={{ overflow: 'hidden' }}>
-                    <button
-                        className="hc-edit"
-                        onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
-                        aria-label="Modifica Profilo"
-                    >
-                        <Edit2 size={18} />
-                    </button>
-                    <div className="hc-mesh"></div>
-                    <div className="hc-grid" style={{ opacity: 0.3 }}></div>
-                    <div className="hc-arr"><ArrowRight size={24} strokeWidth={1.5} /></div>
-
-                    <div className="hc-eyebrow" style={{ color: 'var(--stone)', letterSpacing: '1px' }}>Età: {getBabyPreciseAgeString()}</div>
-                    <div className="hc-title" style={{ fontSize: '28px', color: pregnancy?.sex === 'M' ? '#4A90E2' : 'var(--midnight)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                        {pregnancy?.babyNickname || 'Il tuo Bimbo'} <span>{pregnancy?.sex === 'M' ? '♂' : '♀'}</span>
+            {/* TASK PROGRESS CARD */}
+            <div
+                className={`home-task-progress-card ru d${isBorn ? '6' : '3'}`}
+                onClick={() => navigate('/agenda')}
+                style={{ margin: '0 20px 20px' }}
+            >
+                <div className="htp-content">
+                    <div className="htp-info">
+                        <div className="htp-eyebrow">Agenda: {isBorn ? 'Mese 1' : `Settimana ${weeks}`}</div>
+                        <div className="htp-title">
+                            {completedCount === totalTasks && totalTasks > 0
+                                ? "Tutto pronto! 🎉"
+                                : `${completedCount} di ${totalTasks} completati`}
+                        </div>
+                        <div className="htp-desc">
+                            {isBorn ? "Adempimenti nascita e visite mediche." : "Screening e preparazione al parto."}
+                        </div>
                     </div>
 
-                    <div className="hc-prg">
-                        <div className="hc-prg-fill" style={{ width: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? '#4A90E2' : '#D65D3C' }}></div>
-                    </div>
-                    <div className="hc-prg-lb">{months} / 12 mesi completati</div>
-
-                    <div style={{ position: 'absolute', bottom: '-4px', right: '12px', fontSize: '90px', transform: 'rotate(-5deg)', animation: 'float 6s ease-in-out infinite' }}>👶</div>
-
-                    <div className="hc-badge" style={{ marginTop: '20px' }}>
-                        <span>🎉</span> I Primi Mesi
+                    <div className="htp-ring-container">
+                        <svg className="htp-ring" viewBox="0 0 100 100">
+                            <circle className="htp-ring-bg" cx="50" cy="50" r="40"></circle>
+                            <circle
+                                className="htp-ring-fill"
+                                cx="50" cy="50" r="40"
+                                strokeDasharray="251.2"
+                                strokeDashoffset={totalTasks > 0 ? 251.2 - (251.2 * (completedCount / totalTasks)) : 251.2}
+                            ></circle>
+                        </svg>
+                        <div className="htp-ring-text">
+                            <ClipboardCheck size={24} color={completedCount === totalTasks && totalTasks > 0 ? "var(--aqua)" : "var(--midnight)"} />
+                        </div>
                     </div>
                 </div>
-            )}
+                
+                {homeTasks.length > 0 && completedCount < totalTasks && (
+                    <div className="htp-preview">
+                        <span className="htp-preview-label">Prossimo:</span>
+                        <span className="htp-preview-text">{homeTasks.find(t => !isTaskCompleted(weeks, t.id))?.text || homeTasks[0].text}</span>
+                    </div>
+                )}
+            </div>
 
-            {/* SOS NOTTE BANNER (Primi Mesi solo) */}
-            {babyStatus === 'nato' && (
+            {/* SOS NOTTE BANNER (Newborn only) */}
+            {isBorn && (
                 <div className="sos-home-banner ru d5" onClick={() => setIsSosOpen(true)}>
                     <div className="sos-hb-icon"><Moon size={24} strokeWidth={2} /></div>
                     <div className="sos-hb-text">
@@ -276,80 +413,129 @@ export default function Home() {
                 </div>
             )}
 
-            {/* DA FARE QUESTA SETTIMANA */}
-            <div className={`tw ru d${babyStatus === 'nato' ? '6' : '5'}`}>
-                <div className="tw-head">
-                    <div className="tw-tit">Da fare questa settimana</div>
-                    <div className="tw-bdg">{completedCount} / {dailyTasks.length}</div>
+
+            {/* SYNC & SMART WIDGETS */}
+            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    {/* LEFT: PRIMARY TRACKER */}
+                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, #E6FFFA, #EBF8FF)', borderRadius: '24px', boxShadow: '0 8px 24px rgba(44,122,123,0.1)', position: 'relative' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                                {isBorn ? <Coffee size={20} color="#3182CE" /> : <Droplets size={20} color="#3182CE" />}
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                                <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveFeeding : handleRemoveHydration}>
+                                    <Minus size={16} />
+                                </button>
+                                <button className="trkr-btn trkr-btn--plus" onClick={isBorn ? handleAddFeeding : handleAddHydration}>
+                                    <Plus size={16} />
+                                </button>
+                            </div>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#2C7A7B', textTransform: 'uppercase' }}>{isBorn ? 'Poppate' : 'Idratazione'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
+                            {isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)}
+                            <span style={{ fontSize: '14px', color: '#63B3ED' }}>/{isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)}</span>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#2B6CB0', marginBottom: '8px' }}>
+                            {isBorn ? `Prox: ${trackers?.feeding?.next || '--'}` : (hydration?.count >= (hydration?.target || 8)) ? 'Obiettivo raggiunto! ✨' : 'Più acqua, più energia'}
+                        </div>
+                        <DotIndicator 
+                            current={isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)} 
+                            total={isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)} 
+                            color="#3182CE" 
+                        />
+                    </div>
+
+                    {/* RIGHT: SECONDARY TRACKER */}
+                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, #FFF5F5, #FFF5F7)', borderRadius: '24px', boxShadow: '0 8px 24px rgba(155,44,44,0.05)', position: 'relative' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                                {isBorn ? <Sparkles size={20} color="#E53E3E" /> : <Heart size={20} color="#E53E3E" />}
+                            </div>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                                <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveDiaper : handleRemoveKick}>
+                                    <Minus size={16} />
+                                </button>
+                                <button className="trkr-btn trkr-btn--plus" onClick={isBorn ? handleAddDiaper : handleAddKick}>
+                                    <Plus size={16} />
+                                </button>
+                            </div>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#9B2C2C', textTransform: 'uppercase' }}>{isBorn ? 'Pannolini' : 'Calcetti'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
+                            {isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
+                            <span style={{ fontSize: '14px', color: '#FEB2B2' }}>/{isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}</span>
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#C53030', marginBottom: '8px' }}>
+                            {isBorn ? `Stato: ${trackers?.diapers?.status || 'Regolare'}` : (kicks?.count < 5 ? 'Stato: Tranquillo' : 'Stato: Attivo! 🕺')}
+                        </div>
+                        <DotIndicator 
+                            current={isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)} 
+                            total={isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)} 
+                            color="#E53E3E" 
+                        />
+                    </div>
                 </div>
 
-                {dailyTasks.map(task => {
-                    const isChecked = checkedTasks[task.id];
+            </div>
+
+            {/* CONSIGLI UTILI */}
+            <div className="sec-head ru d6">
+                <div className="sec-title">Consigli per il {isBorn ? '1° Mese' : `la Settimana ${pregnancy.currentWeek}`}</div>
+                <div className="sec-more" onClick={() => navigate('/tips-list')}>Vedi tutti</div>
+            </div>
+            <div className="consigli-row ru d6">
+                {phaseArticles.map((tip) => {
+                    const conf = getCategoryConfig(tip.category);
                     return (
                         <div
-                            key={task.id}
-                            className={`t-row ${isChecked ? 'done' : ''}`}
-                            onClick={() => toggleTask(task.id)}
+                            key={tip.id}
+                            className="cons-card"
+                            style={{ backgroundImage: `url('/${conf.cardBgImage}')` }}
+                            onClick={() => setSelectedTip(tip)}
                         >
-                            <div className="t-chk"></div>
-                            <div className="t-txt">{task.text}</div>
+                            <div className="cons-layer" style={{ background: `linear-gradient(to top, ${conf.color}E6 0%, ${conf.color}66 50%, transparent 100%)` }}>
+                                <div className="cons-cat" style={{ background: conf.bg, color: conf.color }}>{conf.name}</div>
+                                <div className="cons-bottom">
+                                    <div className="cons-ic-wrap" style={{ fontSize: '28px' }}>{conf.icon}</div>
+                                    <div className="cons-title">{tip.title}</div>
+                                    <div className="cons-dur">{tip.readingTime} di lettura</div>
+                                </div>
+                            </div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* CONSIGLI UNIFICATI (FEED) */}
-            {tips.length > 0 && (
-                <>
-                    <div className="sec-head ru d6">
-                        <div className="sec-title">Articoli e Strumenti per te</div>
-                        <div className="sec-more" onClick={() => navigate('/tips-list')}>Vedi tutti</div>
-                    </div>
-                    <div className="consigli-row ru d6">
-                        {tips.map((tip, index) => {
-                            const conf = getCategoryConfig(tip.category);
-
-                            return (
-                                <div
-                                    key={tip.id}
-                                    className="cons-card"
-                                    style={{ backgroundImage: `url('/${conf.cardBgImage}')` }}
-                                    onClick={() => setSelectedTip(tip)}
-                                >
-                                    <div className="cons-layer" style={{ background: `linear-gradient(to top, ${conf.color}E6 0%, ${conf.color}66 50%, transparent 100%)` }}>
-                                        <div className="cons-cat" style={{ background: conf.bg, color: conf.color }}>{tip.category}</div>
-
-                                        <div className="cons-bottom">
-                                            <div className="cons-ic-wrap" style={{ fontSize: '28px' }}>{conf.icon}</div>
-                                            <div className="cons-title">{tip.preview}</div>
-                                            <div className="cons-dur">{index === 0 ? '3 esami in sospeso' : '4 min di lettura'}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </>
-            )}
-
-            {/* QUIZ BANNER */}
-            <div style={{ paddingBottom: '10px' }} className="ru d8">
-                <div className="sec-head">
-                    <div className="sec-title">Mettiti alla prova</div>
-                </div>
-                <div className="qb" onClick={() => navigate('/article')}>
-                    <div className="qb-ic"><Brain size={32} strokeWidth={1.5} color="var(--midnight)" /></div>
-                    <div className="qb-t">
-                        <div className="qb-title">Quiz settimana {weeks}</div>
-                        <div className="qb-sub">3 domande · 2 minuti</div>
-                    </div>
-                    <div className="qb-badge">Inizia →</div>
-                </div>
-            </div>
+            {/* SPACER FOR BOTTOM PADDING */}
+            <div style={{ height: '40px' }}></div>
 
             <EditProfileModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
-            <TipBottomSheet tip={selectedTip} onClose={() => setSelectedTip(null)} />
-            <SosNotteModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />
+            <TipBottomSheet key={selectedTip?.id || 'none'} tip={selectedTip} onClose={() => setSelectedTip(null)} />
+            <SosNotteModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />            {/* DEV TOGGLE FOR TESTING PHASES */}
+            <div style={{ padding: '0 20px 40px', opacity: 0.5 }}>
+                <button 
+                    onClick={() => {
+                        setBabyStatus(isBorn ? 'gravidanza' : 'nato');
+                    }}
+                    style={{ 
+                        width: '100%', 
+                        padding: '12px', 
+                        borderRadius: '12px', 
+                        border: '1px dashed var(--stone)',
+                        background: 'transparent',
+                        fontSize: '12px',
+                        color: 'var(--stone)',
+                        fontWeight: 600
+                    }}
+                >
+                    DEBUG Centralizzato: Passa a {isBorn ? 'Settimana 24 (Gravidanza)' : 'Mese 1 (Nascita)'}
+                </button>
+            </div>
+
         </div>
     );
 }

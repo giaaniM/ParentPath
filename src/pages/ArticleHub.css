@@ -132,3 +132,45 @@
 .es-card.hl .es-arr {
     color: #E67399;
 }
+
+/* ── Filter Pills ── */
+.es-filter-pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    scrollbar-width: none;
+}
+.es-filter-pills::-webkit-scrollbar {
+    display: none;
+}
+
+.es-filter-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--stone);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.es-filter-pill.active {
+    background: var(--midnight);
+    color: var(--white);
+    border-color: var(--midnight);
+}
+
+.es-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--stone);
+    font-size: 14px;
+    font-style: italic;
+    background: rgba(0,0,0,0.02);
+    border-radius: 12px;
+}

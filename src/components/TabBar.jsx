@@ -1,12 +1,12 @@
 import { useLocation } from 'react-router-dom';
-import { Home, Baby, Compass } from 'lucide-react';
+import { Home, Baby, Calendar, Compass } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './TabBar.css';
 
 const tabs = [
     { path: '/home', icon: Home, label: 'Home' },
     { path: '/baby', icon: Baby, label: 'Bimbo' },
-    { path: '/article', icon: Compass, label: 'Esplora' },
+    { path: '/agenda', icon: Calendar, label: 'Agenda' },
 ];
 
 export default function TabBar() {
@@ -26,7 +26,10 @@ export default function TabBar() {
                 {activeIndex >= 0 && (
                     <div
                         className="tabbar__pill"
-                        style={{ transform: `translateX(${activeIndex * 100}%)` }}
+                        style={{ 
+                            transform: `translateX(${activeIndex * 100}%)`,
+                            width: `calc(${100 / tabs.length}% - 4px)`
+                        }}
                     />
                 )}
                 {tabs.map((tab, i) => {

@@ -15,6 +15,7 @@ import TipListView from './pages/TipListView';
 import DueDateCalculator from './pages/DueDateCalculator';
 import HospitalBag from './pages/HospitalBag';
 import Diary from './pages/Diary';
+import Agenda from './pages/Agenda';
 import StickyBackButton from './components/StickyBackButton';
 import './styles/global.css';
 
@@ -39,10 +40,10 @@ function AppContent() {
         <Route path="/tools/hospital-bag" element={<HospitalBag />} />
         <Route path="/tip" element={<TipDetail />} />
         <Route path="/tips-list" element={<TipListView />} />
+        <Route path="/agenda" element={<Agenda />} />
         <Route path="/diary" element={<Diary />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {!hideGlobalBars && <DiaryFAB />}
       {!hideGlobalBars && <TabBar />}
     </div>
   );

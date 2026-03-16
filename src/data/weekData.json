@@ -1,0 +1,126 @@
+[
+  {
+    "week": 4,
+    "feto": { "size_label": "Papavero", "size_emoji": "🫘", "length_cm": 0.04, "weight_g": 0.1, "description": "La prima divisione cellulare è avvenuta. L'embrione si sta impiantando nell'utero e inizia a formare le strutture di base." },
+    "milestone": { "title": "Prima divisione cellulare", "category": "sviluppo", "icon": "🧬" },
+    "tasks": [
+      { "id": "w4_t1", "text": "Prenotare prima visita ginecologica", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "w4_t2", "text": "Iniziare acido folico se non fatto", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" }
+    ],
+    "articles": [
+      { "id": "w4_a1", "title": "Cosa succede nelle prime 4 settimane", "category": "sviluppo", "icon": "🧬", "read_time_min": 5, "author": "Dr.ssa Ferretti, Ginecologa", "teaser": "Le prime settimane sono cruciali per lo sviluppo embrionale..." }
+    ],
+    "partner_note": "Il test è positivo! Sii presente e rassicurante, è un momento emozionante per entrambi."
+  },
+  {
+    "week": 8,
+    "feto": { "size_label": "Fragola", "size_emoji": "🍓", "length_cm": 1.6, "weight_g": 1, "description": "Il tuo bimbo ha ora una forma umana riconoscibile. Le braccia e le gambe si stanno formando e il cuore batte forte." },
+    "milestone": { "title": "Forma umana riconoscibile", "category": "sviluppo", "icon": "👶" },
+    "tasks": [
+      { "id": "w8_t1", "text": "Prenotare prima ecografia", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "w8_t2", "text": "Evitare alcol, fumo e cibi crudi", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "w8_t3", "text": "Accompagnare alla prima ecografia", "assignee": "partner", "priority": "alta", "suggested": true, "category": "supporto" }
+    ],
+    "articles": [
+      { "id": "w8_a1", "title": "Prima ecografia: cosa aspettarsi", "category": "salute", "icon": "🩺", "read_time_min": 6, "author": "Ostetrica Bianchi", "teaser": "La prima ecografia è un momento emozionante e importante..." },
+      { "id": "w8_a2", "title": "Nausee del primo trimestre: rimedi", "category": "salute", "icon": "💊", "read_time_min": 4, "author": "Dr. Rossi", "teaser": "Le nausee mattutine colpiscono fino all'80% delle donne..." }
+    ],
+    "partner_note": "La prima ecografia è un momento indimenticabile. Vai con lei e preparati a emozionarti."
+  },
+  {
+    "week": 12,
+    "feto": { "size_label": "Lime", "size_emoji": "🍋", "length_cm": 5.4, "weight_g": 14, "description": "Fine del primo trimestre! I riflessi iniziano a comparire, il bimbo può chiudere le dita e fare piccoli movimenti." },
+    "milestone": { "title": "Fine 1° trimestre", "category": "sviluppo", "icon": "🎉" },
+    "tasks": [
+      { "id": "w12_t1", "text": "Comunicare la gravidanza a familiari e amici", "assignee": "entrambi", "priority": "media", "suggested": true, "category": "preparazione" },
+      { "id": "w12_t2", "text": "Screening cromosomico (test combinato)", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" }
+    ],
+    "articles": [
+      { "id": "w12_a1", "title": "Quando e come condividere la notizia", "category": "supporto", "icon": "💬", "read_time_min": 4, "author": "Psicologa Dr.ssa Verdi", "teaser": "Molte coppie scelgono di aspettare la fine del primo trimestre..." }
+    ],
+    "partner_note": "È il momento di condividere la notizia! Pianifica insieme a lei come farlo."
+  },
+  {
+    "week": 20,
+    "feto": { "size_label": "Banana", "size_emoji": "🍌", "length_cm": 25.6, "weight_g": 300, "description": "Il bimbo è lungo come una banana. I movimenti sono forti e frequenti — la mamma li sente davvero!" },
+    "milestone": { "title": "Ecografia morfologica", "category": "sviluppo", "icon": "🔍" },
+    "tasks": [
+      { "id": "w20_t1", "text": "Ecografia morfologica obbligatoria", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "w20_t2", "text": "Registrare i primi movimenti", "assignee": "mamma", "priority": "media", "suggested": true, "category": "sviluppo" },
+      { "id": "w20_t3", "text": "Iniziare a pensare alla cameretta", "assignee": "entrambi", "priority": "bassa", "suggested": true, "category": "preparazione" }
+    ],
+    "articles": [
+      { "id": "w20_a1", "title": "Ecografia morfologica: guida completa", "category": "salute", "icon": "🩺", "read_time_min": 8, "author": "Dr.ssa Ferretti", "teaser": "La morfologica è l'esame più dettagliato della gravidanza..." },
+      { "id": "w20_a2", "title": "Sentire il bambino muoversi: è normale?", "category": "sviluppo", "icon": "👶", "read_time_min": 4, "author": "Ostetrica Bianchi", "teaser": "I primi movimenti fetali sono un momento magico..." }
+    ],
+    "partner_note": "Metti la mano sulla pancia: le vibrazioni della tua voce arrivano benissimo al bimbo."
+  },
+  {
+    "week": 24,
+    "feto": { "size_label": "Pannocchia", "size_emoji": "🌽", "length_cm": 30, "weight_g": 600, "description": "Il bimbo compie dei 'movimenti respiratori' allenando i polmoni. Il cervello sviluppa i sensi: ora può sentire la tua voce e reagire alla musica." },
+    "milestone": { "title": "Sviluppo dell'udito", "category": "sviluppo", "icon": "👂" },
+    "tasks": [
+      { "id": "w24_t1", "text": "Prenotare Curva Glicemica (GTT)", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "w24_t2", "text": "Iscriversi al Corso di Accompagnamento alla Nascita", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "preparazione" },
+      { "id": "w24_t3", "text": "Iniziare la ricerca dell'Ospedale per il parto", "assignee": "entrambi", "priority": "media", "suggested": true, "category": "preparazione" }
+    ],
+    "articles": [
+      { "id": "w24_a1", "title": "Curva Glicemica: come prepararsi", "category": "salute", "icon": "🩺", "read_time_min": 4, "author": "Dr.ssa F. Gatti", "teaser": "Tutto quello che devi sapere sul test del glucosio tra la 24ª e la 28ª settimana." },
+      { "id": "w24_a2", "title": "Cosa sente il bimbo a 24 settimane", "category": "sviluppo", "icon": "👂", "read_time_min": 5, "author": "Ostetrica Bianchi", "teaser": "Il mondo dei suoni visto dall'interno del grembo materno." }
+    ],
+    "partner_note": "Il bimbo reagisce ai suoni esterni. Prova a leggere una favola o fargli sentire un po' di musica rilassante."
+  },
+  {
+    "week": 28,
+    "feto": { "size_label": "Lattuga", "size_emoji": "🥬", "length_cm": 37, "weight_g": 1100, "description": "Il cervello entra nella fase REM. Il bimbo sogna e registra le esperienze sensoriali. Sente e reagisce ai suoni esterni." },
+    "milestone": { "title": "Schemi sonno REM", "category": "sviluppo", "icon": "💭" },
+    "tasks": [
+      { "id": "w28_t1", "text": "Corso preparto se non ancora fatto", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "preparazione" },
+      { "id": "w28_t2", "text": "Pianificare visite ogni 2 settimane", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "w28_t3", "text": "Organizzare la valigia ospedale", "assignee": "partner", "priority": "media", "suggested": true, "category": "preparazione" }
+    ],
+    "articles": [
+      { "id": "w28_a1", "title": "3° trimestre: cosa cambia", "category": "sviluppo", "icon": "📖", "read_time_min": 6, "author": "Dr.ssa Ferretti", "teaser": "Il terzo trimestre porta grandi cambiamenti per mamma e bimbo..." }
+    ],
+    "partner_note": "Organizza la valigia ospedale insieme a lei: riduce l'ansia di entrambi."
+  },
+  {
+    "week": 32,
+    "feto": { "size_label": "Zucca", "size_emoji": "🎃", "length_cm": 42.4, "weight_g": 1700, "description": "Molti bimbi iniziano a girarsi a testa in giù. I polmoni sono quasi pronti e il bimbo guarisce più velocemente." },
+    "milestone": { "title": "Si gira a testa in giù", "category": "sviluppo", "icon": "🔄" },
+    "tasks": [
+      { "id": "w32_t1", "text": "Scrivere il piano del parto", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "preparazione" },
+      { "id": "w32_t2", "text": "Ecografia di controllo posizione", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" }
+    ],
+    "articles": [
+      { "id": "w32_a1", "title": "Come scrivere il piano del parto", "category": "preparazione", "icon": "📝", "read_time_min": 7, "author": "Ostetrica Bianchi", "teaser": "Un piano del parto ti aiuta a comunicare le tue preferenze..." }
+    ],
+    "partner_note": "8 settimane al parto: organizza il congedo di paternità con il datore di lavoro."
+  },
+  {
+    "week": 36,
+    "feto": { "size_label": "Melone", "size_emoji": "🍈", "length_cm": 47.4, "weight_g": 2700, "description": "I polmoni hanno raggiunto la maturità. Se nascesse ora, starebbe benissimo. La posizione cefalica è consolidata." },
+    "milestone": { "title": "Polmoni quasi maturi", "category": "sviluppo", "icon": "🫁" },
+    "tasks": [
+      { "id": "w36_t1", "text": "Preparare la borsa per l'ospedale", "assignee": "entrambi", "priority": "critica", "suggested": true, "category": "preparazione" },
+      { "id": "w36_t2", "text": "Installare il seggiolino auto", "assignee": "partner", "priority": "alta", "suggested": true, "category": "acquisti" }
+    ],
+    "articles": [
+      { "id": "w36_a1", "title": "Cosa mettere in borsa per il parto", "category": "preparazione", "icon": "🧳", "read_time_min": 5, "author": "Redazione ParentPath", "teaser": "Una lista completa e pratica per non dimenticare nulla..." }
+    ],
+    "partner_note": "Metti il numero dell'ospedale in rubrica. Praticate il piano B per arrivare."
+  },
+  {
+    "week": 40,
+    "feto": { "size_label": "Anguria", "size_emoji": "🍉", "length_cm": 50.7, "weight_g": 3500, "description": "Il grande giorno è arrivato! Il bimbo è completamente sviluppato e pronto a conoscere il mondo." },
+    "milestone": { "title": "Pronto a nascere", "category": "sviluppo", "icon": "🎂" },
+    "tasks": [
+      { "id": "w40_t1", "text": "Monitorare le contrazioni", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "w40_t2", "text": "Tenere il telefono sempre carico", "assignee": "partner", "priority": "alta", "suggested": true, "category": "preparazione" }
+    ],
+    "articles": [
+      { "id": "w40_a1", "title": "Segnali che il parto si avvicina", "category": "salute", "icon": "🏥", "read_time_min": 6, "author": "Dr.ssa Ferretti", "teaser": "Come riconoscere i segnali del travaglio e quando andare in ospedale..." }
+    ],
+    "partner_note": "Sei pronto. Sarà la cosa più intensa e straordinaria della tua vita."
+  }
+]

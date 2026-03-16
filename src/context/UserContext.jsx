@@ -1,11 +1,24 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const UserContext = createContext(null);
+
+// --- localStorage helpers ---
+function loadJSON(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch { return fallback; }
+}
+function saveJSON(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* quota */ }
+}
 
 export function UserProvider({ children }) {
     const [userRole, setUserRole] = useState(null); // 'mamma' | 'papa'
     const [userName, setUserName] = useState('');
     const [babyName, setBabyName] = useState('');
+    const [babySex, setBabySex] = useState(null); // 'M' | 'F' | null
+    const [partnerName, setPartnerName] = useState('');
     const [conceptionDate, setConceptionDate] = useState(null);
     const [onboardingDone, setOnboardingDone] = useState(false);
 
@@ -14,22 +27,145 @@ export function UserProvider({ children }) {
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
     const [hospitalBag, setHospitalBag] = useState({}); // { itemId: boolean }
 
+    // --- MVP Agenda / Task State (persisted) ---
+    const [completedTasks, setCompletedTasks] = useState(() => loadJSON('pp_completedTasks', {}));
+    const [weekNotes, setWeekNotes] = useState(() => loadJSON('pp_weekNotes', {}));
+    const [appointments, setAppointments] = useState(() => loadJSON('pp_appointments', []));
+    const [customTasks, setCustomTasks] = useState(() => loadJSON('pp_customTasks', []));
+
+    // --- Pregnancy Tracker State ---
+    const [hydration, setHydration] = useState(() => loadJSON('pp_hydration', { count: 0, target: 8 }));
+    const [kicks, setKicks] = useState(() => loadJSON('pp_kicks', { count: 0, target: 10 }));
+
+    // --- User Status Mapping (to demonstrate sync/UI) ---
+    const [userMood, setUserMood] = useState(() => localStorage.getItem('pp_userMood') || 'good');
+    const [userActivity, setUserActivity] = useState(() => localStorage.getItem('pp_userActivity') || 'Riposando');
+    const [partnerStatus, setPartnerStatus] = useState(() => loadJSON('pp_partnerStatus', {
+        status: 'In attesa...',
+        lastUpdate: 'Poco fa',
+        activity: 'Occupato'
+    }));
+
+    // Persist on change
+    useEffect(() => { saveJSON('pp_completedTasks', completedTasks); }, [completedTasks]);
+    useEffect(() => { saveJSON('pp_weekNotes', weekNotes); }, [weekNotes]);
+    useEffect(() => { saveJSON('pp_appointments', appointments); }, [appointments]);
+    useEffect(() => { saveJSON('pp_customTasks', customTasks); }, [customTasks]);
+    useEffect(() => { saveJSON('pp_hydration', hydration); }, [hydration]);
+    useEffect(() => { saveJSON('pp_kicks', kicks); }, [kicks]);
+    useEffect(() => { localStorage.setItem('pp_userMood', userMood); }, [userMood]);
+    useEffect(() => { localStorage.setItem('pp_userActivity', userActivity); }, [userActivity]);
+    useEffect(() => { saveJSON('pp_partnerStatus', partnerStatus); }, [partnerStatus]);
+
+    // --- Tracker Helpers ---
+    const addHydration = useCallback(() => {
+        setHydration(prev => ({ ...prev, count: Math.min(prev.count + 1, 20) }));
+    }, []);
+
+    const removeHydration = useCallback(() => {
+        setHydration(prev => ({ ...prev, count: Math.max(prev.count - 1, 0) }));
+    }, []);
+
+    const addKick = useCallback(() => {
+        setKicks(prev => ({ ...prev, count: prev.count + 1 }));
+    }, []);
+
+    const removeKick = useCallback(() => {
+        setKicks(prev => ({ ...prev, count: Math.max(prev.count - 1, 0) }));
+    }, []);
+
+    const addFeeding = useCallback(() => {
+        setTrackers(prev => ({
+            ...prev,
+            feeding: { ...prev.feeding, count: prev.feeding.count + 1, last: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) }
+        }));
+    }, []);
+
+    const removeFeeding = useCallback(() => {
+        setTrackers(prev => ({
+            ...prev,
+            feeding: { ...prev.feeding, count: Math.max((prev.feeding?.count || 0) - 1, 0) }
+        }));
+    }, []);
+
+    const addDiaper = useCallback(() => {
+        setTrackers(prev => ({
+            ...prev,
+            diapers: { ...prev.diapers, count: (prev.diapers?.count || 0) + 1, last: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) }
+        }));
+    }, []);
+
+    const removeDiaper = useCallback(() => {
+        setTrackers(prev => ({
+            ...prev,
+            diapers: { ...prev.diapers, count: Math.max((prev.diapers?.count || 0) - 1, 0) }
+        }));
+    }, []);
+
+    // --- Task helpers ---
+    const toggleTaskCompleted = useCallback((weekKey, taskId) => {
+        const key = `${weekKey}_${taskId}`;
+        setCompletedTasks(prev => ({ ...prev, [key]: !prev[key] }));
+    }, []);
+
+    const isTaskCompleted = useCallback((weekKey, taskId) => {
+        return !!completedTasks[`${weekKey}_${taskId}`];
+    }, [completedTasks]);
+
+    // --- Week notes helpers ---
+    const setWeekNote = useCallback((week, text) => {
+        setWeekNotes(prev => ({ ...prev, [week]: text }));
+    }, []);
+
+    const getWeekNote = useCallback((week) => {
+        return weekNotes[week] || '';
+    }, [weekNotes]);
+
+    // --- Appointment helpers ---
+    const addAppointment = useCallback((appt) => {
+        setAppointments(prev => [...prev, { id: Date.now().toString(), ...appt }]);
+    }, []);
+
+    const removeAppointment = useCallback((id) => {
+        setAppointments(prev => prev.filter(a => a.id !== id));
+    }, []);
+
+    // --- Custom task helpers ---
+    const addCustomTask = useCallback((task) => {
+        setCustomTasks(prev => [...prev, { id: Date.now().toString(), suggested: false, ...task }]);
+    }, []);
+
+    const removeCustomTask = useCallback((id) => {
+        setCustomTasks(prev => prev.filter(t => t.id !== id));
+    }, []);
+
+    const getCustomTasksForWeek = useCallback((week) => {
+        return customTasks.filter(t => t.weekNumber === week);
+    }, [customTasks]);
+
+    const getAppointmentsForWeek = useCallback((week) => {
+        return appointments.filter(a => a.weekNumber === week);
+    }, [appointments]);
+
     // Newborn Trackers
     const [trackers, setTrackers] = useState({
-        feeding: [], // { id, timestamp, type: 'breast'|'bottle', amount?: number, duration?: number, side?: 'left'|'right'|'both' }
-        sleep: [],   // { id, startTime, endTime, duration }
-        diapers: []  // { id, timestamp, type: 'wet'|'dirty'|'both' }
+        feeding: [],
+        sleep: [],
+        diapers: []
     });
 
-    const [activeFeedTimer, setActiveFeedTimer] = useState(null); // { startTime: Date, type: 'breast'|'bottle', side: 'left'|'right' }
-    const [lastBreastSide, setLastBreastSide] = useState('left'); // 'left' | 'right'
-    const [activeSleepTimer, setActiveSleepTimer] = useState(null); // { startTime: Date }
-    const completeOnboarding = ({ role, name, baby, status, conception }) => {
+    const [activeFeedTimer, setActiveFeedTimer] = useState(null);
+    const [lastBreastSide, setLastBreastSide] = useState('left');
+    const [activeSleepTimer, setActiveSleepTimer] = useState(null);
+
+    const completeOnboarding = ({ role, name, baby, status, conception, sex, partner }) => {
         setUserRole(role);
         setUserName(name);
         setBabyName(baby || '');
         setConceptionDate(conception);
         if (status) setBabyStatus(status);
+        if (sex) setBabySex(sex);
+        if (partner) setPartnerName(partner);
         setOnboardingDone(true);
     };
 
@@ -38,6 +174,8 @@ export function UserProvider({ children }) {
         setUserRole(role);
         setUserName(role === 'mamma' ? 'Sara' : 'Marco');
         setBabyName('');
+        setBabySex('M');
+        setPartnerName(role === 'mamma' ? 'Marco' : 'Sara');
         setConceptionDate(new Date('2025-08-10'));
         setBabyStatus(status);
         setOnboardingDone(true);
@@ -64,7 +202,6 @@ export function UserProvider({ children }) {
     // calculate newborn age in months (approx 4.33 weeks per month)
     const getBabyAgeMonths = () => {
         const weeks = getBabyAgeWeeks();
-        // Return at least month 1 if born
         if (babyStatus === 'nato' && weeks < 4.33) return 1;
         return Math.floor(weeks / 4.33) + 1;
     };
@@ -98,35 +235,31 @@ export function UserProvider({ children }) {
     const getSweetSpot = () => {
         if (!trackers.sleep || trackers.sleep.length === 0) return null;
 
-        // Find the last completed sleep
         const completedSleeps = trackers.sleep.filter(s => s.endTime).sort((a, b) => b.endTime - a.endTime);
         if (completedSleeps.length === 0) return null;
 
         const lastSleep = completedSleeps[0];
         const ageWeeks = getBabyAgeWeeks();
 
-        // Determine optimal Wake Window based on age (in minutes)
-        // 0-4 weeks: ~60 mins
-        // 4-12 weeks: ~90 mins
-        // 12-24 weeks: ~120 mins
-        // >24 weeks: ~180 mins
         let wakeWindowMins = 60;
         if (ageWeeks >= 4 && ageWeeks < 12) wakeWindowMins = 90;
         else if (ageWeeks >= 12 && ageWeeks < 24) wakeWindowMins = 120;
         else if (ageWeeks >= 24) wakeWindowMins = 180;
 
         const nextNapTime = new Date(lastSleep.endTime.getTime() + wakeWindowMins * 60000);
-        return {
-            lastSleepEnd: lastSleep.endTime,
-            wakeWindowMins,
-            nextNapTime
-        };
+        return { lastSleepEnd: lastSleep.endTime, wakeWindowMins, nextNapTime };
+    };
+
+    // Derived phase
+    const getAppPhase = () => {
+        if (babyStatus === 'nato') return 'NEWBORN';
+        return 'PREGNANCY';
     };
 
     const getDueDate = () => {
         if (!conceptionDate) return null;
         const due = new Date(conceptionDate);
-        due.setDate(due.getDate() + 280); // 40 weeks
+        due.setDate(due.getDate() + 280);
         return due;
     };
 
@@ -171,15 +304,32 @@ export function UserProvider({ children }) {
 
     return (
         <UserContext.Provider value={{
-            userRole, setUserRole, userName, setUserName, babyName, setBabyName, conceptionDate, setConceptionDate,
-            onboardingDone, babyStatus, setBabyStatus, diaryEntries, addDiaryEntry, removeDiaryEntry,
+            userRole, setUserRole, userName, setUserName, babyName, setBabyName,
+            babySex, setBabySex, partnerName, setPartnerName,
+            conceptionDate, setConceptionDate,
+            onboardingDone, babyStatus, setBabyStatus,
+            diaryEntries, addDiaryEntry, removeDiaryEntry,
             hospitalBag, toggleBagItem,
             trackers, addTrackerEntry, removeTrackerEntry,
             activeFeedTimer, setActiveFeedTimer, lastBreastSide, setLastBreastSide,
             activeSleepTimer, setActiveSleepTimer,
+            // MVP Agenda state
+            completedTasks, toggleTaskCompleted, isTaskCompleted,
+            weekNotes, setWeekNote, getWeekNote,
+            appointments, addAppointment, removeAppointment, getAppointmentsForWeek,
+            customTasks, addCustomTask, removeCustomTask, getCustomTasksForWeek,
+            // Pregnancy Tracker
+            hydration, setHydration, addHydration, removeHydration,
+            kicks, setKicks, addKick, removeKick,
+            // Status states
+            userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
+            // Newborn Tracker
+            trackers, setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
+            //
             isMamma, isPapa,
             completeOnboarding, devLogin,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
+            getAppPhase,
         }}>
             {children}
         </UserContext.Provider>

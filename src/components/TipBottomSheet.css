@@ -185,12 +185,36 @@
     color: var(--stone);
 }
 
-/* Paragraphs */
+/* Paragraphs and Headings */
+.tip-bs-heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--midnight);
+    margin: 24px 0 12px 0;
+}
+
 .tip-bs-text {
     font-size: 16px;
     line-height: 1.6;
     color: var(--night);
     margin: 0 0 16px 0;
+}
+
+.tip-bs-list {
+    margin: 16px 0 24px 0;
+    padding-left: 20px;
+}
+
+.tip-bs-list li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--night);
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.tip-bs-list li::marker {
+    color: #38C6A5;
 }
 
 .tip-bs-text-highlight {

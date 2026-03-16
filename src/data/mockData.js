@@ -41,6 +41,15 @@ export const weeklyDevelopment = {
     sizeEmoji: '🍌', sizeLabel: 'Banana',
     length: '25 cm', weight: '300 g',
     events: ['Si muove e scalcia', 'Ha le sopracciglia formate', 'Inizia a produrre meconio'],
+    developmentDetails: {
+      title: 'Primi Movimenti',
+      fact: 'Il bimbo è molto attivo!',
+      longDesc: 'Inizia a sentire i primi calcetti. È un segno di salute e vitalità.'
+    },
+    essentialTips: [
+      { id: 'w20_t1', type: 'visit', title: 'Morfologica', desc: 'Ecografia di metà termine.' },
+      { id: 'w20_t2', type: 'health', title: 'Ferro', desc: 'Mangia cibi ricchi di ferro.' }
+    ],
     mamaTip: 'Inizia a documentare i movimenti: 10 al giorno è un buon riferimento.',
     papaTip: 'Metti la mano sulla pancia: le vibrazioni della tua voce arrivano benissimo al bimbo.',
   },
@@ -77,6 +86,15 @@ export const weeklyDevelopment = {
     sizeEmoji: '🌽', sizeLabel: 'Spiga di mais',
     length: '30 cm', weight: '600 g',
     events: ['Produzione di surfattante', 'Udito strutturalmente completo', 'Viso completamente formato'],
+    developmentDetails: {
+      title: 'Sviluppo Polmonare',
+      fact: 'I polmoni iniziano a produrre surfattante.',
+      longDesc: 'Le cellule polmonari si preparano alla prima boccata d\'aria.'
+    },
+    essentialTips: [
+      { id: 'w24_t1', type: 'visit', title: 'Curva Glicemica', desc: 'Test del glucosio.' },
+      { id: 'w24_t2', type: 'health', title: 'Corso preparto', desc: 'Iscriviti ora.' }
+    ],
     mamaTip: 'Questo è il traguardo della viabilità fetale. Un momento importante.',
     papaTip: 'Comincia a guardare i seggiolini auto — richiede ricerca e installazione.',
   },
@@ -113,6 +131,15 @@ export const weeklyDevelopment = {
     sizeEmoji: '🥬', sizeLabel: 'Lattuga',
     length: '37 cm', weight: '1.1 kg',
     events: ['Prima fase REM attiva — il bimbo sogna!', 'Sente e reagisce ai suoni esterni', 'Gli occhi si aprono e si chiudono'],
+    developmentDetails: {
+      title: 'Sogni e Memoria',
+      fact: 'Il tuo bimbo sta iniziando a sognare!',
+      longDesc: 'L\'attività cerebrale mostra cicli di sonno REM. Inizia a memorizzare suoni familiari come la tua voce.'
+    },
+    essentialTips: [
+      { id: 't1', type: 'visit', title: 'Visita di controllo', desc: 'Controllo pressione e urine.' },
+      { id: 't2', type: 'health', title: 'Idratazione', desc: 'Bevi 2 litri d\'acqua al giorno.' }
+    ],
     mamaTip: 'Terzo trimestre iniziato! Pianifica le visite con il ginecologo ogni 2 settimane.',
     papaTip: 'Organizza la valigia ospedale insieme a lei: riduce l\'ansia di entrambi.',
   },
@@ -228,9 +255,95 @@ export const weeklyDevelopment = {
 
 export function getWeekData(week) {
   // Clamp to available data
-  const w = Math.max(20, Math.min(40, week));
-  return weeklyDevelopment[w] || weeklyDevelopment[28];
+  const w = Math.max(1, Math.min(40, week));
+  const base = weeklyDevelopment[w] || weeklyDevelopment[24];
+  
+  // Ensure we always have these fields for UI stability
+  return {
+    ...base,
+    developmentDetails: base.developmentDetails || {
+      title: 'Sviluppo in corso',
+      fact: 'Il tuo bimbo cresce ogni giorno!',
+      longDesc: 'Ogni settimana porta nuove incredibili scoperte e sviluppi nel piccolo.'
+    },
+    essentialTips: base.essentialTips || [
+      { id: 'def-1', type: 'health', title: 'Benessere', desc: 'Prenditi cura di te e del tuo bimbo.' },
+      { id: 'def-2', type: 'visit', title: 'Controllo', desc: 'Consulta il calendario per le prossime visite.' }
+    ]
+  };
 }
+
+export const newbornDevelopment = {
+  month1: {
+    heroTitle: 'Il mondo in Bianco e Nero',
+    subtitle: 'Il tuo bimbo vede solo a contrasto. Reagisce ai riflessi primordiali e riconosce l\'odore della mamma.',
+    sizeEmoji: '👶', sizeLabel: 'Neonato',
+    length: '52 cm', weight: '3.8 kg',
+    mamaTip: 'Cura del moncone: mantienilo sempre asciutto e pulito.',
+    papaTip: 'Contatto pelle a pelle: fondamentale per calmare il pianto serale.',
+    essentialTips: [
+      { id: 'nb-t1', type: 'visit', title: 'Pediatra', desc: 'Prima visita di controllo.' },
+      { id: 'nb-t2', type: 'health', title: 'Vitamina D', desc: 'Inizia la somministrazione giornaliera.' }
+    ],
+    developmentDetails: {
+      title: 'Primi Giorni',
+      fact: 'Il bimbo riconosce il tuo odore.',
+      longDesc: 'Il senso dell\'olfatto è molto sviluppato dalla nascita.'
+    }
+  }
+};
+
+export const pregnancyTasks = [
+  { id: 'pt1', text: 'Prenota Curva Glicemica (GTT)', assignee: 'mamma', category: 'Salute', priority: 'high' },
+  { id: 'pt2', text: 'Iscrizione Corso Preparto', assignee: 'entrambi', category: 'Da fare', priority: 'medium' },
+];
+
+export const newbornTasks = [
+  { id: 'nt1', text: 'Dichiarazione Nascita (Comune)', assignee: 'papa', category: 'Da fare', priority: 'high' },
+];
+
+export const pregnancyArticles = [
+  { id: 'article-1', title: 'Il bimbo sente la tua voce', category: 'Sviluppo', readingTime: '4 min' },
+  { id: 'article-2', title: 'Dormire con la pancia', category: 'Benessere', readingTime: '5 min' },
+  { id: 'article-4', title: 'Scegliere il nome giusto', category: 'Supporto', readingTime: '6 min' },
+  { id: 'article-5', title: 'Primi acquisti: la culla', category: 'Da avere', readingTime: '5 min' },
+];
+
+export const newbornArticles = [
+  { id: 'n1', title: 'Il moncone ombelicale', category: 'Salute', readingTime: '4 min' },
+  { id: 'n2', title: 'Ritmi sonno-veglia', category: 'Benessere', readingTime: '6 min' },
+  { id: 'n3', title: 'Dichiarazione di nascita', category: 'Da fare', readingTime: '3 min' },
+];
+
+export const getHomeTips = (isBorn, role) => {
+  const ids = (isBorn ? newbornArticles : pregnancyArticles).map(a => a.id);
+  const activeArticles = articles || [];
+  return activeArticles.filter(a => ids.includes(a.id));
+};
+
+export const smartTrackerData = {
+  pregnancy: {
+    hydration: { current: 5, target: 8 },
+    kicks: { count: 3, target: 10 }
+  },
+  newborn: {
+    feeding: { current: 4, target: 8 },
+    diapers: { count: 5, target: 7 }
+  }
+};
+
+export const partnerSync = {
+  papaView: { mammaStatus: 'Sara sta riposando 💤', lastUpdate: '5 min fa' },
+  mammaView: { papaStatus: 'Marco sta pulendo ✨', lastUpdate: '2 min fa' }
+};
+
+export const pregnancyWeather = {
+  mamma: { condition: 'Sereno', icon: '☀️', description: 'Giorno perfetto.', tips: 'Bevi molta acqua.' }
+};
+
+export const newbornWeather = {
+  mamma: { condition: 'Nuvole', icon: '☁️', description: 'Riposa.', tips: 'Dormi quando dorme lui.' }
+};
 
 
 export const weeklyContent = {
@@ -422,21 +535,29 @@ export const articles = [
     content: [
       {
         type: 'paragraph',
-        text: 'Trovare una posizione comoda per dormire nel secondo trimestre può iniziare a essere una sfida. La pancia cresce e la posizione supina (a pancia in su) non è più raccomandata per lunghi periodi.',
+        text: 'Trovare una posizione comoda per dormire nel secondo e terzo trimestre può iniziare a essere una sfida. La pancia cresce e la posizione supina (a pancia in su) non è più raccomandata perché il peso dell\'utero può comprimere la vena cava, riducendo il flusso di sangue verso il cuore e la placenta.'
       },
       {
         type: 'heading',
-        text: 'La posizione migliore (SOS)',
+        text: 'La posizione migliore (SOS)'
       },
       {
         type: 'paragraph',
-        text: 'SOS sta per "Sleep On Side" (dormire sul fianco). Ancora meglio è dormire sul lato sinistro, poiché aumenta la quantità di sangue e nutrienti che raggiungono la placenta e il bambino, ed evita che l\'utero prema sul fegato.',
+        text: 'SOS sta per "Sleep On Side" (dormire sul fianco). Ancora meglio è dormire sul lato sinistro, poiché aumenta la quantità di sangue e nutrienti che raggiungono la placenta e il bambino.'
+      },
+      {
+        type: 'list',
+        items: [
+          'Sinistro è meglio: evita la compressione del fegato e facilita il lavoro dei reni.',
+          'Ginocchia flesse: aiuta a scaricare la tensione dalla zona lombare.',
+          'Cuscino tra le gambe: mantiene le anche allineate e riduce i dolori al bacino.'
+        ]
       },
       {
         type: 'tip',
-        text: 'Un cuscino per la gravidanza (o un cuscino extra tra le ginocchia) può alleviare la pressione su fianchi e zona lombare, migliorando significativamente la qualità del sonno.',
-      },
-    ],
+        text: 'Se ti svegli sulla schiena, non preoccuparti: è normale muoversi nel sonno. Semplicemente rigirati con calma sul fianco sinistro.'
+      }
+    ]
   },
   {
     id: 'article-3',
@@ -453,18 +574,184 @@ export const articles = [
     content: [
       {
         type: 'paragraph',
-        text: 'Spesso ci si concentra solo sui cambiamenti fisici e mentali della madre, ma anche il cervello dei futuri padri subisce modifiche significative durante la gravidanza della partner. È un fenomeno documentato scientificamente, a volte chiamato "couvade".',
+        text: 'Spesso ci si concentra solo sui cambiamenti fisici e mentali della madre, ma anche il cervello dei futuri padri subisce modifiche significative durante la gravidanza della partner. È un fenomeno documentato scientificamente, a volte chiamato "couvade".'
       },
       {
         type: 'heading',
-        text: 'Cambiamenti ormonali',
+        text: 'Cambiamenti ormonali'
       },
       {
         type: 'paragraph',
-        text: 'Studi indicano che anche i futuri papà subiscono variazioni ormonali. Il livello di testosterone può diminuire leggermente, mentre l\'ossitocina (l\'ormone dell\'attaccamento) e la prolattina aumentano in prossimità del parto, preparando il padre a livello neurobiologico ad accudire il neonato.',
+        text: 'Anche se non portano il bambino in grembo, i padri mostrano variazioni nei livelli di testosterone, ossitocina e prolattina. Questi cambiamenti preparano il cervello maschile alla cura e alla protezione del neonato.'
       },
-    ],
+      {
+        type: 'list',
+        items: [
+          'Aumento dell\'ossitocina: favorisce il legame affettivo.',
+          'Riduzione del testosterone: riduce l\'aggressività e aumenta la pazienza.',
+          'Aumento della prolattina: stimola l\'istinto di accudimento.'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'Abbracciare la partner e appoggiare la mano sulla pancia non aiuta solo lei, ma sincronizza i tuoi ritmi biologici con quelli del bambino.'
+      }
+    ]
   },
+  {
+    id: 'article-4',
+    title: 'Scegliere il nome giusto',
+    readingTime: '6 min',
+    category: 'Supporto',
+    publishedDate: '20 febbraio 2026',
+    validatedBy: { name: 'Redazione', specialty: 'Editor', institution: 'ParentPath' },
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Il nome accompagnerà il tuo bimbo per tutta la vita. Spesso è una decisione che genera stress o indecisione tra i partner, ma può essere anche un momento di profonda connessione.'
+      },
+      {
+        type: 'heading',
+        text: 'Consigli per decidere'
+      },
+      {
+        type: 'list',
+        items: [
+          'Provate a pronunciarlo ad alta voce insieme al cognome per sentirne l\'armonia.',
+          'Considerate il significato e l\'origine, se per voi è importante.',
+          'Evitate nomi troppo complessi o difficili da sillabare.',
+          'Assicuratevi che piaccia davvero a entrambi, senza compromessi forzati.'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'Non sentitevi obbligati a condividerlo prima della nascita. Mantenerlo segreto riduce le opinioni non richieste.'
+      }
+    ]
+  },
+  {
+    id: 'article-5',
+    title: 'Primi acquisti: la culla',
+    readingTime: '5 min',
+    category: 'Da avere',
+    publishedDate: '22 febbraio 2026',
+    validatedBy: { name: 'Redazione', specialty: 'Editor', institution: 'ParentPath' },
+    content: [
+      {
+        type: 'paragraph',
+        text: 'La sicurezza nel sonno è la priorità assoluta per un neonato. La culla non è solo un elemento d\'arredo, ma il luogo dove passerà la maggior parte del tempo nei primi mesi.'
+      },
+      {
+        type: 'heading',
+        text: 'Requisiti di sicurezza'
+      },
+      {
+        type: 'list',
+        items: [
+          'Certificazione EN 1130 (normativa europea per culle).',
+          'Sbarre distanti non più di 4.5 - 6.5 cm per evitare che il bimbo si incastri.',
+          'Materasso rigido e della misura esatta della base.',
+          'Nessun paracolpi morbido, peluche o cuscini all\'interno.'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'Posizionate la culla nella vostra stanza per i primi 6 mesi (room-sharing), come consigliato dalle linee guida pediatriche.'
+      }
+    ]
+  },
+  {
+    id: 'n2',
+    title: 'Ritmi sonno-veglia',
+    readingTime: '6 min',
+    category: 'Benessere',
+    publishedDate: '1 marzo 2026',
+    validatedBy: { name: 'Dr.ssa Ferretti', specialty: 'Neonatologa', institution: 'Roma' },
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Nei primi giorni, il neonato non distingue il giorno dalla notte. Il suo stomaco è piccolo e ha bisogno di nutrirsi circa ogni 2-3 ore, indipendentemente dall\'orario.'
+      },
+      {
+        type: 'heading',
+        text: 'Come aiutarlo a sincronizzarsi'
+      },
+      {
+        type: 'list',
+        items: [
+          'Luce naturale e rumori domestici durante il giorno.',
+          'Buio totale (o luce rossa molto soffusa) e silenzio durante le poppate notturne.',
+          'Nessuna interazione o gioco durante i risvegli notturni.',
+          'Esposizione alla luce solare indiretta al mattino.'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'Verso i 3-4 mesi inizierà a produrre melatonina con più regolarità e i ritmi si stabilizzeranno.'
+      }
+    ]
+  },
+  {
+    id: 'n3',
+    title: 'Dichiarazione di nascita',
+    readingTime: '3 min',
+    category: 'Da fare',
+    publishedDate: '2 marzo 2026',
+    validatedBy: { name: 'Ufficio Anagrafe', specialty: 'Servizi', institution: 'Italia' },
+    content: [
+      {
+        type: 'paragraph',
+        text: 'La burocrazia è l\'ultimo pensiero dopo il parto, ma è necessaria. Ecco i tempi e i modi previsti dalla legge italiana.'
+      },
+      {
+        type: 'heading',
+        text: 'Dove e quando'
+      },
+      {
+        type: 'list',
+        items: [
+          'Entro 3 giorni: presso la direzione sanitaria dell\'ospedale dove è avvenuta la nascita.',
+          'Entro 10 giorni: presso l\'ufficio dello stato civile del comune di residenza (o di nascita).',
+          'Documenti: attestazione di nascita (rilasciata dall\'ospedale) e documenti d\'identità dei genitori.'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'La denuncia in ospedale è spesso la via più rapida e comoda per i neo-genitori.'
+      }
+    ]
+  },
+  {
+    id: 'n1',
+    title: 'Il moncone ombelicale',
+    readingTime: '4 min',
+    category: 'Salute',
+    publishedDate: '28 febbraio 2026',
+    validatedBy: { name: 'Dr.ssa Ferretti', specialty: 'Neonatologa', institution: 'Roma' },
+    content: [
+      {
+        type: 'paragraph',
+        text: 'Il moncone è ciò che resta del cordone ombelicale. La sua cura è semplice ma fondamentale per prevenire infezioni (onfaliti).'
+      },
+      {
+        type: 'heading',
+        text: 'Pratiche consigliate'
+      },
+      {
+        type: 'list',
+        items: [
+          'Tenerlo pulito e, soprattutto, ASCIUTTO.',
+          'Piegare il pannolino verso il basso per lasciarlo esposto all\'aria.',
+          'Non usare polveri o disinfettanti aggressivi a meno di indicazioni mediche.',
+          'Attendere che cada spontaneamente (solitamente tra 7 e 14 giorni).'
+        ]
+      },
+      {
+        type: 'tip',
+        text: 'Se notate rossore intenso alla base, cattivo odore o secrezioni, consultate il pediatra.'
+      }
+    ]
+  }
 ];
 
 export const toolsData = {

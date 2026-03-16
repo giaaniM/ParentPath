@@ -8,12 +8,13 @@ export default function Diary() {
         getWeeksPregnant, diaryEntries, addDiaryEntry, removeDiaryEntry,
         babyStatus, getBabyAgeMonths
     } = useUser();
-    const currentWeek = getWeeksPregnant();
+    const isBorn = babyStatus === 'nato';
+    const isNato = isBorn; // Alias for readability in this component
+    const currentWeek = isBorn ? 0 : getWeeksPregnant(); // If born, weeks pregnant is 0
     const currentMonth = getBabyAgeMonths();
-    const isNato = babyStatus === 'nato';
 
     // Depending on phase, expanded timeline item is week or month
-    const [expandedItem, setExpandedItem] = useState(isNato ? `m${currentMonth}` : `w${currentWeek}`);
+    const [expandedItem, setExpandedItem] = useState(isBorn ? `m${currentMonth}` : `w${currentWeek}`);
     const [isAdding, setIsAdding] = useState(false);
     const [newNoteText, setNewNoteText] = useState('');
     const [newNoteType, setNewNoteType] = useState('note'); // 'note' | 'appointment'

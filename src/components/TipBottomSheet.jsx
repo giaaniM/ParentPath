@@ -120,36 +120,66 @@ export default function TipBottomSheet({ tip, onClose }) {
                     <h2 className="tip-bs-title">{tip.title}</h2>
 
                     <div className="tip-bs-meta">
-                        <span className="tip-bs-meta-icon">⏱</span> 2 min
+                        <span className="tip-bs-meta-icon">⏱</span> {tip.readingTime || '2 min'}
                         <span>·</span>
-                        Oggi
+                        {tip.publishedDate || 'Oggi'}
                         <span>·</span>
-                        Settimana 24
+                        {tip.category}
                     </div>
 
                     <div className="tip-bs-valid">
                         <div className="tip-bs-valid-icon">✓</div>
                         <div className="tip-bs-valid-labels">
                             <span className="tip-bs-valid-eyebrow">Validato da</span>
-                            <span className="tip-bs-valid-name">Team ParentPath</span>
-                            <span className="tip-bs-valid-spec">Redazione Ospedaliera · Revisione Medico Scientifica</span>
+                            <span className="tip-bs-valid-name">{tip.validatedBy?.name || 'Team ParentPath'}</span>
+                            <span className="tip-bs-valid-spec">
+                                {tip.validatedBy?.specialty || 'Redazione Ospedaliera'} · {tip.validatedBy?.institution || 'Revisione Scientifica'}
+                            </span>
                         </div>
                     </div>
 
-                    {tip.body?.map((p, i) => {
-                        // Highlight logic for the specific photo1 example
-                        if (p.includes('papille gustative formate')) {
-                            const parts = p.split('papille gustative formate');
-                            return (
-                                <p key={i} className="tip-bs-text">
-                                    {parts[0]}
-                                    <span className="tip-bs-text-highlight">papille gustative formate</span>
-                                    {parts[1]}
-                                </p>
-                            );
-                        }
-                        return <p key={i} className="tip-bs-text">{p}</p>;
-                    })}
+                    {/* Render legacy 'body' or structured 'content' */}
+                    {tip.content ? (
+                        tip.content.map((block, idx) => {
+                            switch (block.type) {
+                                case 'heading':
+                                    return <h3 key={idx} className="tip-bs-heading">{block.text}</h3>;
+                                case 'paragraph':
+                                    return <p key={idx} className="tip-bs-text">{block.text}</p>;
+                                case 'list':
+                                    return (
+                                        <ul key={idx} className="tip-bs-list">
+                                            {block.items.map((item, i) => (
+                                                <li key={i}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    );
+                                case 'tip':
+                                    return (
+                                        <div key={idx} className="tip-bs-callout">
+                                            <div className="tip-bs-callout-head">💡 Consiglio</div>
+                                            <p className="tip-bs-callout-text">{block.text}</p>
+                                        </div>
+                                    );
+                                default:
+                                    return null;
+                            }
+                        })
+                    ) : (
+                        tip.body?.map((p, i) => {
+                            if (p.includes('papille gustative formate')) {
+                                const parts = p.split('papille gustative formate');
+                                return (
+                                    <p key={i} className="tip-bs-text">
+                                        {parts[0]}
+                                        <span className="tip-bs-text-highlight">papille gustative formate</span>
+                                        {parts[1]}
+                                    </p>
+                                );
+                            }
+                            return <p key={i} className="tip-bs-text">{p}</p>;
+                        })
+                    )}
 
                     {tip.tip && (
                         <div className="tip-bs-callout">

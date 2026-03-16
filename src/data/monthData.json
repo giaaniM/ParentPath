@@ -1,0 +1,90 @@
+[
+  {
+    "month": 0,
+    "baby": { "weight_range_kg": "2.5–4.0", "length_range_cm": "45–55", "description": "Benvenuto al mondo! Il tuo piccolo si sta adattando. Ha già i riflessi primordiali come la suzione e la prensione." },
+    "milestones": [
+      { "title": "Riflesso di suzione", "achieved": true, "icon": "🍼" },
+      { "title": "Contatto pelle a pelle", "achieved": true, "icon": "🫂" }
+    ],
+    "tracker_defaults": { "sleep_target_hours": 16, "feeds_per_day": 10, "show_diaper_tracker": true },
+    "tasks": [
+      { "id": "m0_t1", "text": "Dichiarazione di Nascita (Comune)", "assignee": "papa", "priority": "critica", "suggested": true, "category": "da fare" },
+      { "id": "m0_t2", "text": "Scelta del Pediatra", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "m0_t3", "text": "Richiesta Codice Fiscale", "assignee": "papa", "priority": "alta", "suggested": true, "category": "da fare" }
+    ],
+    "articles": [
+      { "id": "m0_a1", "title": "Cura del moncone ombelicale", "category": "salute", "icon": "🩹", "read_time_min": 3, "author": "Ostetrica L. Bianchi" }
+    ]
+  },
+  {
+    "month": 1,
+    "baby": { "weight_range_kg": "3.5–5.0", "length_range_cm": "50–58", "description": "Il bimbo ha recuperato il calo ponderale. Vede a circa 20-25cm, preferendo i forti contrasti e il volto umano." },
+    "milestones": [
+      { "title": "Riflesso di Moro", "achieved": false, "icon": "👐" },
+      { "title": "Visione Bianco e Nero", "achieved": false, "icon": "🏁" },
+      { "title": "Recupero peso nascita", "achieved": true, "icon": "📈" }
+    ],
+    "tracker_defaults": { "sleep_target_hours": 15, "feeds_per_day": 8, "show_diaper_tracker": true },
+    "tasks": [
+      { "id": "m1_t1", "text": "Primo Bilancio di Salute (15-45gg)", "assignee": "entrambi", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "m1_t2", "text": "Inizio Vitamina D quotidiana", "assignee": "mamma", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "m1_t3", "text": "Ecografia Anche (prenotazione)", "assignee": "papa", "priority": "media", "suggested": true, "category": "salute" }
+    ],
+    "articles": [
+      { "id": "m1_a1", "title": "Capire il pianto del neonato", "category": "benessere", "icon": "😭", "read_time_min": 5, "author": "Dr.ssa M. Gatti" }
+    ]
+  },
+  {
+    "month": 3,
+    "baby": { "weight_range_kg": "5.5–6.5", "length_range_cm": "58–62", "description": "Il bimbo sorride intenzionalmente e produce i primi suoni vocalici. Riconosce i volti familiari." },
+    "milestones": [
+      { "title": "Sorriso sociale", "achieved": false, "icon": "😊" },
+      { "title": "Vocalizza (ah, oh)", "achieved": false, "icon": "💬" },
+      { "title": "Segue con gli occhi", "achieved": false, "icon": "👀" }
+    ],
+    "tracker_defaults": { "sleep_target_hours": 14, "feeds_per_day": 8, "show_diaper_tracker": true },
+    "tasks": [
+      { "id": "m3_t1", "text": "Visita pediatrica 3° mese", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "m3_t2", "text": "Vaccinazione esavalente (1ª dose)", "assignee": "mamma", "priority": "critica", "suggested": true, "category": "salute" },
+      { "id": "m3_t3", "text": "Introdurre tummy time 10 min/giorno", "assignee": "entrambi", "priority": "media", "suggested": true, "category": "sviluppo" }
+    ],
+    "articles": [
+      { "id": "m3_a1", "title": "Il sorriso sociale: perché è una svolta", "category": "sviluppo", "icon": "😊", "read_time_min": 4, "author": "Psicologa Dr.ssa Verdi" },
+      { "id": "m3_a2", "title": "Tummy time: come farlo senza stress", "category": "sviluppo", "icon": "👶", "read_time_min": 3, "author": "Fisioterapista infantile" }
+    ]
+  },
+  {
+    "month": 6,
+    "baby": { "weight_range_kg": "7.0–8.5", "length_range_cm": "64–68", "description": "Molti bimbi iniziano a stare seduti da soli. È il momento di introdurre i primi cibi solidi!" },
+    "milestones": [
+      { "title": "Sta seduto con supporto", "achieved": false, "icon": "🪑" },
+      { "title": "Prime pappe", "achieved": false, "icon": "🥣" },
+      { "title": "Passa oggetti tra le mani", "achieved": false, "icon": "🤲" }
+    ],
+    "tracker_defaults": { "sleep_target_hours": 13, "feeds_per_day": 6, "show_diaper_tracker": true },
+    "tasks": [
+      { "id": "m6_t1", "text": "Prima pappa (consultare pediatra)", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "m6_t2", "text": "Baby-proofing della casa", "assignee": "partner", "priority": "alta", "suggested": true, "category": "preparazione" }
+    ],
+    "articles": [
+      { "id": "m6_a1", "title": "Svezzamento: BLW e tradizionale", "category": "sviluppo", "icon": "🥣", "read_time_min": 7, "author": "Pediatra Dr. Esposito" }
+    ]
+  },
+  {
+    "month": 12,
+    "baby": { "weight_range_kg": "9.0–11.0", "length_range_cm": "73–78", "description": "Buon compleanno! Il bimbo potrebbe fare i primi passi senza sostegno e dire le sue prime parole con significato." },
+    "milestones": [
+      { "title": "Primi passi!", "achieved": false, "icon": "🚶" },
+      { "title": "Prime parole", "achieved": false, "icon": "🗣️" },
+      { "title": "Usa la tazza", "achieved": false, "icon": "🥤" }
+    ],
+    "tracker_defaults": { "sleep_target_hours": 12, "feeds_per_day": 5, "show_diaper_tracker": true },
+    "tasks": [
+      { "id": "m12_t1", "text": "Visita pediatrica 12 mesi", "assignee": "entrambi", "priority": "alta", "suggested": true, "category": "salute" },
+      { "id": "m12_t2", "text": "Passare dal biberon alla tazza", "assignee": "entrambi", "priority": "media", "suggested": true, "category": "sviluppo" }
+    ],
+    "articles": [
+      { "id": "m12_a1", "title": "Dal biberon alla tazza: come passare", "category": "sviluppo", "icon": "🥤", "read_time_min": 4, "author": "Pediatra Dr. Esposito" }
+    ]
+  }
+]

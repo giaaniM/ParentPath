@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { useUser } from '../context/UserContext';
-import { weeklyContent } from '../data/mockData';
+import { ChevronRight } from 'lucide-react';
+import { pregnancy, pregnancyArticles, newbornArticles } from '../data/mockData';
 import { getCategoryConfig } from '../utils/CategoryColors';
 import StickyBackButton from '../components/StickyBackButton';
 import TipBottomSheet from '../components/TipBottomSheet';
@@ -10,13 +10,17 @@ import './TipListView.css';
 
 export default function TipListView() {
     const navigate = useNavigate();
-    const { ruolom } = useUser();
-    const isMamma = ruolom?.toLowerCase().includes('mamma');
+    const { isMamma, babyStatus } = useUser();
 
-    // Aggregation of tips based on role, exactly like Home
+    // Aggregation of tips based on phase and role
     const allTips = useMemo(() => {
-        return isMamma ? weeklyContent.mammaTips : weeklyContent.papaTips;
-    }, [isMamma]);
+        const isBorn = babyStatus === 'nato';
+        const baseArticles = isBorn ? newbornArticles : pregnancyArticles;
+        return baseArticles.map(a => ({
+            ...a,
+            readingTime: a.duration || '3 min'
+        }));
+    }, [isMamma, babyStatus]);
 
     const [activeFilter, setActiveFilter] = useState('Tutti');
     const [selectedTip, setSelectedTip] = useState(null);

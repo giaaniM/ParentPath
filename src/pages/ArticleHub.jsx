@@ -1,12 +1,36 @@
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { ChevronRight, BookOpen, Apple, Moon, ShoppingBag, Calculator, Brain, Trophy } from 'lucide-react';
+import { useWeekData } from '../hooks/useWeekData';
+import { ChevronRight, BookOpen, ShoppingBag, Calculator, Brain, Trophy } from 'lucide-react';
 import './ArticleHub.css';
+
+const CATEGORIES = ['Tutti', 'sviluppo', 'salute', 'acquisti', 'nutrizione', 'supporto'];
+
+const CATEGORY_ICON_COLORS = {
+    sviluppo: 'blue',
+    salute: 'coral',
+    acquisti: 'green',
+    nutrizione: 'gold',
+    supporto: 'lav',
+    preparazione: 'blue',
+};
 
 export default function ArticleHub() {
     const navigate = useNavigate();
     const { getWeeksPregnant } = useUser();
     const currentWeek = getWeeksPregnant();
+    const weekData = useWeekData(currentWeek);
+
+    const [activeFilter, setActiveFilter] = useState('Tutti');
+
+    // Articles from JSON
+    const allArticles = weekData?.articles || [];
+
+    const filteredArticles = useMemo(() => {
+        if (activeFilter === 'Tutti') return allArticles;
+        return allArticles.filter(a => a.category?.toLowerCase() === activeFilter.toLowerCase());
+    }, [allArticles, activeFilter]);
 
     return (
         <div className="page hub-page">
@@ -14,31 +38,40 @@ export default function ArticleHub() {
                 <div className="es-hl ru">Esplora</div>
                 <div className="es-sub ru d1">Guide, strumenti e quiz per la sett. {currentWeek}</div>
 
+                {/* Category filter pills */}
+                <div className="es-filter-pills ru d1">
+                    {CATEGORIES.map(cat => (
+                        <button
+                            key={cat}
+                            className={`es-filter-pill ${activeFilter === cat ? 'active' : ''}`}
+                            onClick={() => setActiveFilter(cat)}
+                        >
+                            {cat === 'Tutti' ? 'Tutti' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="es-g ru d1">Guide questa settimana</div>
-                <div className="es-card ru d2" onClick={() => navigate('/article/1')}>
-                    <div className="es-ic blue"><BookOpen size={24} strokeWidth={1.5} /></div>
-                    <div className="es-txt">
-                        <div className="es-t">Cosa succede nel corpo</div>
-                        <div className="es-s">5 min · Sett. {currentWeek}</div>
-                    </div>
-                    <div className="es-arr"><ChevronRight size={20} /></div>
-                </div>
-                <div className="es-card ru d3" onClick={() => navigate('/article/2')}>
-                    <div className="es-ic coral"><Apple size={24} strokeWidth={1.5} /></div>
-                    <div className="es-txt">
-                        <div className="es-t">Nutrizione nel 3° trimestre</div>
-                        <div className="es-s">Cosa mangiare, cosa evitare</div>
-                    </div>
-                    <div className="es-arr"><ChevronRight size={20} /></div>
-                </div>
-                <div className="es-card ru d4" onClick={() => navigate('/article/3')}>
-                    <div className="es-ic green"><Moon size={24} strokeWidth={1.5} /></div>
-                    <div className="es-txt">
-                        <div className="es-t">Dormire bene al 7° mese</div>
-                        <div className="es-s">Posizioni e consigli pratici</div>
-                    </div>
-                    <div className="es-arr"><ChevronRight size={20} /></div>
-                </div>
+
+                {filteredArticles.length > 0 ? (
+                    filteredArticles.map((article) => {
+                        const colorClass = CATEGORY_ICON_COLORS[article.category] || 'blue';
+                        return (
+                            <div key={article.id} className="es-card ru d2" onClick={() => navigate(`/article/${article.id}`)}>
+                                <div className={`es-ic ${colorClass}`}>
+                                    <BookOpen size={24} strokeWidth={1.5} />
+                                </div>
+                                <div className="es-txt">
+                                    <div className="es-t">{article.title}</div>
+                                    <div className="es-s">{article.read_time_min} min · Sett. {currentWeek}</div>
+                                </div>
+                                <div className="es-arr"><ChevronRight size={20} /></div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="es-empty">Nessun articolo per questa categoria</div>
+                )}
 
                 <div className="es-g ru d2">Strumenti</div>
                 <div className="es-card ru d3" onClick={() => navigate('/tools/hospital-bag')}>
@@ -75,7 +108,6 @@ export default function ArticleHub() {
                     </div>
                     <div className="es-arr"><ChevronRight size={20} /></div>
                 </div>
-
             </div>
         </div>
     );

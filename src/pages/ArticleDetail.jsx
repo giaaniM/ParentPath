@@ -8,7 +8,27 @@ export default function ArticleDetail() {
     const { id } = useParams();
 
     // Find the right article or default to first
-    const article = articles.find(a => a.id === id) || articles[0];
+    // Find the right article or provide a robust fallback
+    const article = (articles || []).find(a => a.id === id) || (articles && articles[0]) || {
+        title: 'Articolo non trovato',
+        category: 'Info',
+        readingTime: '--',
+        publishedDate: '--',
+        validatedBy: { name: 'ParentPath', specialty: 'Team', institution: '' },
+        content: [{ type: 'paragraph', text: 'Spiacenti, non è stato possibile caricare questo contenuto.' }]
+    };
+
+    // Helper to parse **bold** text
+    const renderContent = (text) => {
+        if (typeof text !== 'string') return text;
+        const parts = text.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i}>{part.slice(2, -2)}</strong>;
+            }
+            return part;
+        });
+    };
 
     return (
         <div className="page page-enter article-page">
@@ -44,25 +64,26 @@ export default function ArticleDetail() {
                 {article.content.map((block, index) => {
                     switch (block.type) {
                         case 'heading':
-                            return <h2 key={index} className="article-body__heading">{block.text}</h2>;
+                            return <h2 key={index} className="article-body__heading">{renderContent(block.text)}</h2>;
                         case 'paragraph':
-                            return <p key={index} className="article-body__paragraph">{block.text}</p>;
+                            return <p key={index} className="article-body__paragraph">{renderContent(block.text)}</p>;
                         case 'list':
+                            const ListTag = block.listType === 'numbered' ? 'ol' : 'ul';
                             return (
-                                <ul key={index} className="article-body__list">
+                                <ListTag key={index} className={`article-body__list ${block.listType === 'numbered' ? 'is-numbered' : ''}`}>
                                     {block.items.map((item, i) => (
                                         <li key={i} className="article-body__list-item">
-                                            <span className="article-body__bullet">·</span>
-                                            {item}
+                                            {block.listType !== 'numbered' && <span className="article-body__bullet">·</span>}
+                                            {renderContent(item)}
                                         </li>
                                     ))}
-                                </ul>
+                                </ListTag>
                             );
                         case 'tip':
                             return (
                                 <div key={index} className="article-body__tip">
                                     <span className="article-body__tip-icon">💡</span>
-                                    <p>{block.text}</p>
+                                    <p>{renderContent(block.text)}</p>
                                 </div>
                             );
                         default:

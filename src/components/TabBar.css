@@ -31,7 +31,7 @@
     left: 6px;
     top: 6px;
     bottom: 6px;
-    width: calc(33.333% - 4px);
+    /* width is dynamic in JS */
     background: #FFB8A1;
     /* Warm BabyDev Peach */
     border-radius: 26px;
