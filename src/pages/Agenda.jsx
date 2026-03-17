@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useUser } from '../context/UserContext';
 import { useWeekData } from '../hooks/useWeekData';
 import { pregnancyTasks, newbornTasks } from '../data/mockData';
@@ -16,7 +16,8 @@ export default function Agenda() {
         toggleTaskCompleted, isTaskCompleted,
         getWeekNote, setWeekNote,
         getAppointmentsForWeek, addAppointment, removeAppointment,
-        getCustomTasksForWeek, addCustomTask,
+        getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
+        dismissTask, isTaskDismissed,
     } = useUser();
 
     const currentWeek = getWeeksPregnant();
@@ -29,11 +30,45 @@ export default function Agenda() {
     // New task modal state
     const [newTaskText, setNewTaskText] = useState('');
     const [newTaskAssignee, setNewTaskAssignee] = useState('entrambi');
+    const [editingTaskId, setEditingTaskId] = useState(null);
+    const [editingTaskText, setEditingTaskText] = useState('');
+    const [swipingTaskId, setSwipingTaskId] = useState(null);
+    const touchStartX = useRef(null);
 
     // New appointment modal state
     const [newApptName, setNewApptName] = useState('');
     const [newApptTime, setNewApptTime] = useState('09:00');
     const [newApptNotes, setNewApptNotes] = useState('');
+
+    // Modal swipe logic
+    const taskModalRef = useRef(null);
+    const apptModalRef = useRef(null);
+    const modalDragY = useRef(0);
+    const modalStartY = useRef(0);
+    const [isModalSwiping, setIsModalSwiping] = useState(false);
+
+    const handleModalTouchStart = (e) => {
+        modalStartY.current = e.touches[0].clientY;
+        setIsModalSwiping(true);
+    };
+
+    const handleModalTouchMove = (e, ref) => {
+        if (!isModalSwiping) return;
+        const deltaY = e.touches[0].clientY - modalStartY.current;
+        if (deltaY > 0) {
+            modalDragY.current = deltaY;
+            if (ref.current) ref.current.style.transform = `translateY(${deltaY}px)`;
+        }
+    };
+
+    const handleModalTouchEnd = (setter, ref) => {
+        setIsModalSwiping(false);
+        if (modalDragY.current > 100) {
+            setter(false);
+        }
+        if (ref.current) ref.current.style.transform = '';
+        modalDragY.current = 0;
+    };
 
     const weekData = useWeekData(selectedWeek);
     const weekNote = getWeekNote(selectedWeek);
@@ -47,16 +82,17 @@ export default function Agenda() {
         
         // Filter base tasks that might be relevant for this week (simplified: show all if no week match)
         const combined = [...jsonTasks, ...baseTasks, ...customTasks];
-        // Filter out empty tasks and sort
+        // Filter out empty tasks, dismissed tasks, and sort
         return combined
             .filter(t => t.text && t.text.trim())
+            .filter(t => !isTaskDismissed(t.id))
             .sort((a, b) => {
                 const aCompleted = isTaskCompleted(selectedWeek, a.id) ? 1 : 0;
                 const bCompleted = isTaskCompleted(selectedWeek, b.id) ? 1 : 0;
                 if (aCompleted !== bCompleted) return aCompleted - bCompleted;
                 return (PRIORITY_ORDER[a.priority] || 3) - (PRIORITY_ORDER[b.priority] || 3);
             });
-    }, [weekData, customTasks, selectedWeek, isTaskCompleted]);
+    }, [weekData, customTasks, selectedWeek, isTaskCompleted, isTaskDismissed]);
 
     // Calculate the date range for a given week
     const getWeekDateRange = (week) => {
@@ -118,6 +154,45 @@ export default function Agenda() {
         setNewApptTime('09:00');
         setNewApptNotes('');
         setShowApptModal(false);
+    };
+    
+    const handleDeleteTask = (task) => {
+        if (task.suggested) {
+            dismissTask(task.id);
+        } else {
+            removeCustomTask(task.id);
+        }
+        setSwipingTaskId(null);
+    };
+
+    const handleStartEditTask = (task) => {
+        if (task.suggested) return; // Suggested tasks can't be edited
+        setEditingTaskId(task.id);
+        setEditingTaskText(task.text);
+    };
+
+    const handleSaveTaskEdit = () => {
+        if (editingTaskText.trim()) {
+            updateCustomTask(editingTaskId, { text: editingTaskText.trim() });
+        }
+        setEditingTaskId(null);
+    };
+
+    const handleTouchStart = (e, taskId) => {
+        if (swipingTaskId && swipingTaskId !== taskId) {
+            setSwipingTaskId(null);
+        }
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e, taskId) => {
+        if (!touchStartX.current) return;
+        const deltaX = touchStartX.current - e.touches[0].clientX;
+        if (deltaX > 50) {
+            setSwipingTaskId(taskId);
+        } else if (deltaX < -50 && swipingTaskId === taskId) {
+            setSwipingTaskId(null);
+        }
     };
 
     const getAssigneeBadge = (assignee) => {
@@ -251,29 +326,72 @@ export default function Agenda() {
                         const completed = isTaskCompleted(selectedWeek, task.id);
                         const assignee = getAssigneeBadge(task.assignee);
                         const priority = getPriorityBadge(task.priority);
+                        const isEditing = editingTaskId === task.id;
+                        const isSwiping = swipingTaskId === task.id;
 
                         return (
                             <div
                                 key={task.id}
-                                className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''}`}
-                                onClick={() => toggleTaskCompleted(selectedWeek, task.id)}
+                                className={`agenda-task-item-container ${isSwiping ? 'swiping' : ''}`}
+                                onTouchStart={(e) => handleTouchStart(e, task.id)}
+                                onTouchMove={(e) => handleTouchMove(e, task.id)}
                             >
-                                {task.suggested && (
-                                    <div className="agenda-task-suggested-indicator">
-                                        <Sparkles size={12} />
+                                <div
+                                    className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''}`}
+                                    onClick={() => {
+                                        if (isEditing) return;
+                                        if (isSwiping) {
+                                            setSwipingTaskId(null);
+                                        } else {
+                                            toggleTaskCompleted(selectedWeek, task.id);
+                                        }
+                                    }}
+                                >
+                                    {task.suggested && (
+                                        <div className="agenda-task-suggested-indicator">
+                                            <Sparkles size={12} />
+                                        </div>
+                                    )}
+                                    <div className={`agenda-task-check ${completed ? 'checked' : ''}`}>
+                                        {completed && <Check size={14} strokeWidth={3} />}
                                     </div>
-                                )}
-                                <div className={`agenda-task-check ${completed ? 'checked' : ''}`}>
-                                    {completed && <Check size={14} strokeWidth={3} />}
-                                </div>
-                                <div className="agenda-task-content">
-                                    <div className="agenda-task-text">{task.text || 'Task senza descrizione'}</div>
-                                    <div className="agenda-task-badges">
-                                        <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
-                                        {priority && (
-                                            <span className={`agenda-badge ${priority.className}`}>{priority.label}</span>
+                                    <div className="agenda-task-content" onClick={(e) => {
+                                        if (!task.suggested) {
+                                            e.stopPropagation();
+                                            handleStartEditTask(task);
+                                        }
+                                    }}>
+                                        {isEditing ? (
+                                            <input
+                                                className="agenda-task-edit-input"
+                                                value={editingTaskText}
+                                                onChange={(e) => setEditingTaskText(e.target.value)}
+                                                onBlur={handleSaveTaskEdit}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleSaveTaskEdit()}
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <div className="agenda-task-text">{task.text || 'Task senza descrizione'}</div>
                                         )}
+                                        <div className="agenda-task-badges">
+                                            <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
+                                            {priority && (
+                                                <span className={`agenda-badge ${priority.className}`}>{priority.label}</span>
+                                            )}
+                                        </div>
                                     </div>
+                                    
+                                    {/* Web-only delete button (hidden by default, shows on hover in CSS) */}
+                                    <button className="agenda-task-delete-btn-inline" onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteTask(task);
+                                    }}>
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                                
+                                <div className="agenda-task-delete-action" onClick={() => handleDeleteTask(task)}>
+                                    <span>Elimina</span>
                                 </div>
                             </div>
                         );
@@ -288,7 +406,15 @@ export default function Agenda() {
             {/* ── ADD TASK MODAL ── */}
             {showTaskModal && (
                 <div className="agenda-modal-overlay" onClick={() => setShowTaskModal(false)}>
-                    <div className="agenda-modal" onClick={e => e.stopPropagation()}>
+                    <div 
+                        className={`agenda-modal ${isModalSwiping ? 'swiping' : ''}`} 
+                        ref={taskModalRef}
+                        onClick={e => e.stopPropagation()}
+                        onTouchStart={handleModalTouchStart}
+                        onTouchMove={(e) => handleModalTouchMove(e, taskModalRef)}
+                        onTouchEnd={() => handleModalTouchEnd(setShowTaskModal, taskModalRef)}
+                    >
+                        <div className="bd-bottom-sheet-handle" style={{ margin: '-12px auto 16px', background: 'rgba(0,0,0,0.08)' }} />
                         <div className="agenda-modal-header">
                             <h3>Nuovo Task</h3>
                             <button className="agenda-modal-close" onClick={() => setShowTaskModal(false)}>
@@ -329,7 +455,15 @@ export default function Agenda() {
             {/* ── ADD APPOINTMENT MODAL ── */}
             {showApptModal && (
                 <div className="agenda-modal-overlay" onClick={() => setShowApptModal(false)}>
-                    <div className="agenda-modal" onClick={e => e.stopPropagation()}>
+                    <div 
+                        className={`agenda-modal ${isModalSwiping ? 'swiping' : ''}`}
+                        ref={apptModalRef}
+                        onClick={e => e.stopPropagation()}
+                        onTouchStart={handleModalTouchStart}
+                        onTouchMove={(e) => handleModalTouchMove(e, apptModalRef)}
+                        onTouchEnd={() => handleModalTouchEnd(setShowApptModal, apptModalRef)}
+                    >
+                        <div className="bd-bottom-sheet-handle" style={{ margin: '-12px auto 16px', background: 'rgba(0,0,0,0.08)' }} />
                         <div className="agenda-modal-header">
                             <h3>Nuovo Appuntamento</h3>
                             <button className="agenda-modal-close" onClick={() => setShowApptModal(false)}>

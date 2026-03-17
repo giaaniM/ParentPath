@@ -12,7 +12,7 @@ export const users = {
 };
 
 export const pregnancy = {
-  currentWeek: 28,
+  currentWeek: 31,
   totalWeeks: 40,
   dueDate: '2026-06-15',
   babyNickname: 'Piccolo',
@@ -92,8 +92,8 @@ export const weeklyDevelopment = {
       longDesc: 'Le cellule polmonari si preparano alla prima boccata d\'aria.'
     },
     essentialTips: [
-      { id: 'w24_t1', type: 'visit', title: 'Curva Glicemica', desc: 'Test del glucosio.' },
-      { id: 'w24_t2', type: 'health', title: 'Corso preparto', desc: 'Iscriviti ora.' }
+      { id: 'w24_t1', type: 'visit', title: 'Screening Glicemico', desc: 'Premi per visualizzare i task' },
+      { id: 'w24_t2', type: 'health', title: 'Preparazione al Parto', desc: 'Premi per visualizzare i task' }
     ],
     mamaTip: 'Questo è il traguardo della viabilità fetale. Un momento importante.',
     papaTip: 'Comincia a guardare i seggiolini auto — richiede ricerca e installazione.',
@@ -162,13 +162,28 @@ export const weeklyDevelopment = {
     papaTip: 'Fai la lista del corredo neonato insieme — è un momento di connessione bellissimo.',
   },
   31: {
-    heroTitle: 'Percepisce i sapori',
-    subtitle: 'Le papille gustative sono attive. I sapori del cibo che mangi passano nel liquido amniotico.',
+    heroTitle: 'Sviluppo dei Sensi',
+    subtitle: 'Il bimbo pesa circa 1.5kg e i suoi sensi si affinano: riconosce già i sapori di ciò che mangi.',
     sizeEmoji: '🫒', sizeLabel: 'Mazzo di olive',
     length: '41 cm', weight: '1.5 kg',
-    events: ['Percezione dei sapori', 'Midollo osseo produce globuli rossi', 'Quasi tutti gli organi maturi'],
-    mamaTip: 'Varia la dieta: i sapori che assaggi ora influenzano i gusti del bambino.',
-    papaTip: 'Impara l\'RCP neonatale: esistono corsi di 2 ore, molto utili.',
+    events: ['Polmoni quasi maturi', 'Ciclo sonno-veglia regolare', 'Riconosce i sapori'],
+    developmentDetails: {
+      title: 'Maturazione Polmonare',
+      fact: 'I polmoni sono quasi pronti!',
+      longDesc: 'Se il bambino nascesse ora, avrebbe ottime possibilità di respirare quasi autonomamente. Il grasso sottocutaneo aumenta per aiutarlo a regolare la temperatura.'
+    },
+    essentialTips: [
+      { id: 'w31_t1', type: 'visit', title: 'Ecografia 3° Trimestre', desc: 'Valutazione accrescimento e posizione fetale (Mamma).' },
+      { id: 'w31_t2', type: 'health', title: 'Posizioni per il travaglio', desc: 'Esercitarsi insieme su respirazione e massaggi (Entrambi).' },
+      { id: 'w31_t3', type: 'prep', title: 'Borsa Ospedale', desc: 'Preparate il corredo per il primo cambio (Entrambi).' }
+    ],
+    curiosities: [
+      'Il bambino dorme fino a 15 ore al giorno in questa fase.',
+      'I suoi polmoni producono già surfattante per respirare alla nascita.',
+      'Gli occhi reagiscono alla luce che filtra attraverso la pancia.'
+    ],
+    mamaTip: 'Focus sul Ferro: mangia carne rossa magra o legumi con limone per l\'assorbimento. Aiuterà contro la stanchezza.',
+    papaTip: 'Supporto Fisico: la schiena di lei è sotto pressione. Un massaggio lombare di 10 minuti stasera farà miracoli.',
   },
   32: {
     heroTitle: 'Si prepara alla posizione di nascita',

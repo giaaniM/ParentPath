@@ -7,7 +7,7 @@
 .greeting {
     font-family: var(--font-family-serif);
     font-size: 24px;
-    color: var(--midnight);
+    color: #000;
     font-weight: 700;
     margin: 0;
     line-height: 1.2;
@@ -175,7 +175,7 @@
     position: relative;
     min-height: 140px;
     border-radius: 36px;
-    margin: 0 20px 24px;
+    margin: 0 20px 16px;
     padding: 24px;
     cursor: pointer;
     overflow: hidden;
@@ -211,17 +211,18 @@
 .hc-content-v4 {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px; /* Balance with larger image */
     width: 100%;
     z-index: 2;
 }
 
 .hc-fetus-mini {
-    width: 80px;
-    height: 80px;
+    width: 105px;
+    height: 105px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .hc-fetus-mini img {
@@ -312,16 +313,16 @@
 
 .hc-size-v4 {
     background: var(--white);
-    padding: 8px 14px;
+    padding: 6px 12px;
     border-radius: 100px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--midnight);
     box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     width: fit-content;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     border: 1px solid rgba(0,0,0,0.02);
 }
 
@@ -566,7 +567,7 @@
     background: var(--white);
     padding: 20px;
     border-radius: 24px;
-    margin: 0 20px 28px;
+    margin: 0 20px 8px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.04);
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
@@ -673,19 +674,71 @@
     text-overflow: ellipsis;
 }
 
+.htp-visit-preview {
+    margin-top: 8px;
+    padding: 12px;
+    background: var(--aqua3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.htp-visit-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--white);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--aqua);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.htp-visit-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.htp-visit-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--aqua);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.htp-visit-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--midnight);
+}
+
+.htp-visit-tag {
+    font-size: 11px;
+    font-weight: 800;
+    background: var(--white);
+    color: var(--aqua);
+    padding: 4px 10px;
+    border-radius: 100px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
 /* ── SEC REUSABLE ── */
 .sec-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin: 24px 20px 14px;
+    margin: 4px 20px 8px;
     padding: 0 4px;
 }
 
 .sec-title {
     font-size: 17px;
     font-weight: 800;
-    color: var(--midnight);
+    color: #000;
 }
 
 .sec-more {

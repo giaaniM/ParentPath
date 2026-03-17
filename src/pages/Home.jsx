@@ -63,7 +63,7 @@ export default function Home() {
     const {
         babyStatus, setBabyStatus, getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString,
         userName, isMamma, partnerName,
-        toggleTaskCompleted, isTaskCompleted,
+        toggleTaskCompleted, isTaskCompleted, isTaskDismissed,
         hydration, addHydration, kicks, addKick,
         trackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
         getCustomTasksForWeek, babyName, babySex, babyNickname,
@@ -135,11 +135,12 @@ export default function Home() {
 
     // Greeting Timeframe
     const isBorn = babyStatus === 'nato';
-    const percent = Math.min(100, Math.round((weeks / 40) * 100));
+    const percent = isBorn ? 100 : Math.min(100, Math.round((weeks / pregnancy.totalWeeks) * 100));
 
-    // Use JSON feto data if available, else fallback to legacy
-    const sizeEmoji = isBorn ? newbornDevelopment.month1.sizeEmoji : (weeklyDevelopment[weeks]?.sizeEmoji || '🌽');
-    const sizeLabel = isBorn ? newbornDevelopment.month1.sizeLabel : (weeklyDevelopment[weeks]?.sizeLabel || 'Spiga di Mais');
+    // Dynamic Phase Data
+    const phaseDev = isBorn ? newbornDevelopment.month1 : getWeekData(weeks);
+    const sizeEmoji = phaseDev?.sizeEmoji || '✨';
+    const sizeLabel = phaseDev?.sizeLabel || '...';
 
     // Dynamic Phase Data
     const phaseArticles = getHomeTips(isBorn, isMamma ? 'mamma' : 'papa');
@@ -211,11 +212,11 @@ export default function Home() {
         // Combine JSON suggested tasks + site-wide static tasks + user custom tasks
         const combined = [...jsonTasks, ...baseTasks, ...getCustomTasksForWeek(weeks)];
         
-        // Filter out empty tasks and those missing text
-        return combined.filter(t => t.text && t.text.trim());
-    }, [weekJsonData, babyStatus, getCustomTasksForWeek, weeks]);
+        // Filter out empty tasks, those missing text, AND DISMISSED TASKS
+        return combined.filter(t => t.text && t.text.trim() && !isTaskDismissed(t.id));
+    }, [weekJsonData, babyStatus, getCustomTasksForWeek, weeks, isTaskDismissed]);
 
-    const homeTasks = allTasks; // Removed .slice(0, 4) to show all tasks as requested
+    const homeTasks = allTasks;
     const completedCount = homeTasks.filter(t => isTaskCompleted(weeks, t.id)).length;
     const totalTasks = homeTasks.length;
 
@@ -284,13 +285,6 @@ export default function Home() {
             {/* HERO CARD (REDESIGNED V4 - PREMIUM GLASS) */}
             <div className={`hc-v4 glass ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')}>
                 <div className="hc-mesh-v2"></div>
-                <button
-                    className="hc-edit-v4"
-                    onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
-                    aria-label="Modifica Profilo"
-                >
-                    <Edit2 size={14} />
-                </button>
                 
                 <div className="hc-arr-v4"><ArrowRight size={18} strokeWidth={2} /></div>
                 
@@ -302,8 +296,10 @@ export default function Home() {
                     <div className="hc-info-v4">
                         <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
                         <h2 className="hc-title-v4">
-                            {isBorn ? babyName || 'Il tuo Bimbo' : (babyNickname || 'Piccolo')} 
-                            <span className="hc-sex-v4">{babySex === 'M' ? '♂' : (babySex === 'F' ? '♀' : '')}</span>
+                            {isBorn ? (babyName || 'Il tuo Bimbo') : (babyNickname || 'Piccolo')} 
+                            <span className="hc-sex-v4">
+                                {(babySex || pregnancy.sex) === 'M' ? '♂' : ((babySex || pregnancy.sex) === 'F' ? '♀' : '')}
+                            </span>
                         </h2>
                         
                         {!isBorn ? (
@@ -315,7 +311,7 @@ export default function Home() {
                                     <span className="hc-percent-v4">{percent}%</span>
                                 </div>
                                 <div className="hc-size-v4">
-                                    <span style={{ fontSize: '16px' }}>{sizeEmoji}</span>
+                                    <span style={{ fontSize: '13px' }}>{sizeEmoji}</span>
                                     <span>Grande come <strong>{sizeLabel}</strong></span>
                                 </div>
                             </div>
@@ -329,31 +325,12 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* UPCOMING VISIT CARD (NEW) */}
-            {nextAppointment && (
-                <div className="visit-card ru d0" onClick={() => navigate('/agenda')}>
-                    <div className="visit-date-box">
-                        <div className="visit-day">20</div>
-                        <div className="visit-month">MAR</div>
-                    </div>
-                    <div className="visit-divider"></div>
-                    <div className="visit-info">
-                        <div className="visit-title">{nextAppointment.name}</div>
-                        <div className="visit-subtitle">
-                            {nextAppointment.notes ? `${nextAppointment.notes} · ` : ''}{nextAppointment.time}
-                        </div>
-                    </div>
-                    <div className="visit-status-pill">
-                        {getVisitDaysRemaining(nextAppointment)}
-                    </div>
-                </div>
-            )}
 
             {/* TASK PROGRESS CARD */}
             <div
                 className={`home-task-progress-card ru d${isBorn ? '6' : '3'}`}
                 onClick={() => navigate('/agenda')}
-                style={{ margin: '0 20px 20px' }}
+                style={{ margin: '0 20px 12px' }}
             >
                 <div className="htp-content">
                     <div className="htp-info">
@@ -364,7 +341,7 @@ export default function Home() {
                                 : `${completedCount} di ${totalTasks} completati`}
                         </div>
                         <div className="htp-desc">
-                            {isBorn ? "Adempimenti nascita e visite mediche." : "Screening e preparazione al parto."}
+                            Premi per visualizzare i task
                         </div>
                     </div>
 
@@ -386,8 +363,20 @@ export default function Home() {
                 
                 {homeTasks.length > 0 && completedCount < totalTasks && (
                     <div className="htp-preview">
-                        <span className="htp-preview-label">Prossimo:</span>
+                        <span className="htp-preview-label">Task:</span>
                         <span className="htp-preview-text">{homeTasks.find(t => !isTaskCompleted(weeks, t.id))?.text || homeTasks[0].text}</span>
+                    </div>
+                )}
+
+                {/* INTEGRATED VISIT PREVIEW */}
+                {nextAppointment && (
+                    <div className="htp-visit-preview">
+                        <div className="htp-visit-icon"><Stethoscope size={16} /></div>
+                        <div className="htp-visit-info">
+                            <span className="htp-visit-label">Prossima Visita:</span>
+                            <span className="htp-visit-text">{nextAppointment.name} · 20 Mar</span>
+                        </div>
+                        <div className="htp-visit-tag">{getVisitDaysRemaining(nextAppointment)}</div>
                     </div>
                 )}
             </div>
@@ -474,8 +463,8 @@ export default function Home() {
             </div>
 
             {/* CONSIGLI UTILI */}
-            <div className="sec-head ru d6">
-                <div className="sec-title">Consigli per il {isBorn ? '1° Mese' : `la Settimana ${pregnancy.currentWeek}`}</div>
+            <div className="sec-head ru d6" style={{ marginTop: '4px' }}>
+                <div className="sec-title">Consigli per te {isMamma ? 'Mamma' : 'Papà'}</div>
                 <div className="sec-more" onClick={() => navigate('/tips-list')}>Vedi tutti</div>
             </div>
             <div className="consigli-row ru d6">
@@ -506,27 +495,7 @@ export default function Home() {
 
             <EditProfileModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
             <TipBottomSheet key={selectedTip?.id || 'none'} tip={selectedTip} onClose={() => setSelectedTip(null)} />
-            <SosNotteModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />            {/* DEV TOGGLE FOR TESTING PHASES */}
-            <div style={{ padding: '0 20px 40px', opacity: 0.5 }}>
-                <button 
-                    onClick={() => {
-                        setBabyStatus(isBorn ? 'gravidanza' : 'nato');
-                    }}
-                    style={{ 
-                        width: '100%', 
-                        padding: '12px', 
-                        borderRadius: '12px', 
-                        border: '1px dashed var(--stone)',
-                        background: 'transparent',
-                        fontSize: '12px',
-                        color: 'var(--stone)',
-                        fontWeight: 600
-                    }}
-                >
-                    DEBUG Centralizzato: Passa a {isBorn ? 'Settimana 24 (Gravidanza)' : 'Mese 1 (Nascita)'}
-                </button>
-            </div>
-
+            <SosNotteModal isOpen={isSosOpen} onClose={() => setIsSosOpen(false)} />
         </div>
     );
 }

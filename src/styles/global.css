@@ -286,3 +286,15 @@ textarea {
     background: var(--color-primary-light);
     color: var(--color-primary-dark);
 }
+/* ─── Mesh Gradient Utility ─── */
+.bd-mesh-gradient {
+    position: absolute;
+    inset: 0;
+    background-color: #ffffff;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(14,100%,94%,1) 0, transparent 55%), 
+        radial-gradient(at 100% 0%, hsla(177,41%,93%,1) 0, transparent 55%), 
+        radial-gradient(at 100% 100%, hsla(14,100%,97%,1) 0, transparent 55%), 
+        radial-gradient(at 0% 100%, hsla(177,50%,96%,1) 0, transparent 55%);
+    z-index: -1;
+}

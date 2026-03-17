@@ -32,6 +32,7 @@ export function UserProvider({ children }) {
     const [weekNotes, setWeekNotes] = useState(() => loadJSON('pp_weekNotes', {}));
     const [appointments, setAppointments] = useState(() => loadJSON('pp_appointments', []));
     const [customTasks, setCustomTasks] = useState(() => loadJSON('pp_customTasks', []));
+    const [dismissedTasks, setDismissedTasks] = useState(() => loadJSON('pp_dismissedTasks', []));
 
     // --- Pregnancy Tracker State ---
     const [hydration, setHydration] = useState(() => loadJSON('pp_hydration', { count: 0, target: 8 }));
@@ -51,6 +52,7 @@ export function UserProvider({ children }) {
     useEffect(() => { saveJSON('pp_weekNotes', weekNotes); }, [weekNotes]);
     useEffect(() => { saveJSON('pp_appointments', appointments); }, [appointments]);
     useEffect(() => { saveJSON('pp_customTasks', customTasks); }, [customTasks]);
+    useEffect(() => { saveJSON('pp_dismissedTasks', dismissedTasks); }, [dismissedTasks]);
     useEffect(() => { saveJSON('pp_hydration', hydration); }, [hydration]);
     useEffect(() => { saveJSON('pp_kicks', kicks); }, [kicks]);
     useEffect(() => { localStorage.setItem('pp_userMood', userMood); }, [userMood]);
@@ -139,6 +141,18 @@ export function UserProvider({ children }) {
         setCustomTasks(prev => prev.filter(t => t.id !== id));
     }, []);
 
+    const updateCustomTask = useCallback((id, updates) => {
+        setCustomTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    }, []);
+
+    const dismissTask = useCallback((id) => {
+        setDismissedTasks(prev => [...prev, id]);
+    }, []);
+
+    const isTaskDismissed = useCallback((id) => {
+        return dismissedTasks.includes(id);
+    }, [dismissedTasks]);
+
     const getCustomTasksForWeek = useCallback((week) => {
         return customTasks.filter(t => t.weekNumber === week);
     }, [customTasks]);
@@ -169,6 +183,14 @@ export function UserProvider({ children }) {
         setOnboardingDone(true);
     };
 
+    // Main login helper
+    const login = (role, name) => {
+        setUserRole(role);
+        setUserName(name);
+        setBabyStatus('gravidanza'); // Force pregnancy for now as requested
+        setOnboardingDone(true);
+    };
+
     // Quick login for dev
     const devLogin = (role, status = 'gravidanza') => {
         setUserRole(role);
@@ -177,7 +199,7 @@ export function UserProvider({ children }) {
         setBabySex('M');
         setPartnerName(role === 'mamma' ? 'Marco' : 'Sara');
         setConceptionDate(new Date('2025-08-10'));
-        setBabyStatus(status);
+        setBabyStatus('gravidanza'); // Force pregnancy
         setOnboardingDone(true);
     };
 
@@ -317,7 +339,8 @@ export function UserProvider({ children }) {
             completedTasks, toggleTaskCompleted, isTaskCompleted,
             weekNotes, setWeekNote, getWeekNote,
             appointments, addAppointment, removeAppointment, getAppointmentsForWeek,
-            customTasks, addCustomTask, removeCustomTask, getCustomTasksForWeek,
+            customTasks, addCustomTask, removeCustomTask, updateCustomTask, getCustomTasksForWeek,
+            dismissedTasks, dismissTask, isTaskDismissed,
             // Pregnancy Tracker
             hydration, setHydration, addHydration, removeHydration,
             kicks, setKicks, addKick, removeKick,
@@ -327,7 +350,7 @@ export function UserProvider({ children }) {
             trackers, setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
             //
             isMamma, isPapa,
-            completeOnboarding, devLogin,
+            completeOnboarding, devLogin, login,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
         }}>

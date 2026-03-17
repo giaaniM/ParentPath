@@ -73,10 +73,7 @@ export default function AnimatedOnboarding() {
             {/* STEP 0: SPLASH SCREEN */}
             {step === 0 && (
                 <div className="aonb__step--splash">
-                    <div className="aonb__splash-bg-shapes">
-                        <div className="aonb__splash-shape1"></div>
-                        <div className="aonb__splash-shape2"></div>
-                    </div>
+                    <div className="bd-mesh-gradient"></div>
 
                     <div className="aonb__splash-content">
                         <div className="aonb__splash-logo-wrap">
@@ -289,12 +286,7 @@ export default function AnimatedOnboarding() {
             {/* STEP 5: LOADING */}
             {step === 5 && (
                 <div className="aonb__step--loading" style={{ position: 'relative' }}>
-                    <div className="floating-items">
-                        <div className="float-item" style={{ left: '10%', top: '20%', animationDelay: '0s', opacity: 0.3 }}><Baby size={32} color="var(--aqua)" /></div>
-                        <div className="float-item" style={{ left: '80%', top: '15%', animationDelay: '0.5s', opacity: 0.3 }}><Heart size={32} color="var(--blush)" /></div>
-                        <div className="float-item" style={{ left: '15%', top: '70%', animationDelay: '1s', opacity: 0.3 }}><Stethoscope size={32} color="var(--midnight)" /></div>
-                        <div className="float-item" style={{ left: '75%', top: '65%', animationDelay: '1.5s', opacity: 0.3 }}><Gift size={32} color="var(--warm-amber)" /></div>
-                    </div>
+                    <div className="bd-mesh-gradient" style={{ opacity: 0.7 }}></div>
 
                     <div className="ru d1 pulse-circle" style={{ width: 80, height: 80, borderRadius: 24, background: 'var(--aqua2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, position: 'relative', zIndex: 5 }}>
                         <CheckCircle2 size={40} color="var(--aqua)" />

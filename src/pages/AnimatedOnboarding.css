@@ -24,7 +24,7 @@
 
 /* Step 0 Splash Screen - Full immersive gradient */
 .aonb__step--splash {
-    background: #FDFBF7;
+    background: transparent;
     min-height: 100vh;
     width: 100%;
     display: flex;
@@ -36,38 +36,9 @@
     animation: fadeIn 0.8s ease forwards;
 }
 
+/* Removed old splash shapes in favor of global mesh gradient */
 .aonb__splash-bg-shapes {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    z-index: 0;
-}
-
-.aonb__splash-shape1 {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: #FF8C66;
-    /* Vibrant Peach/Orange */
-    filter: blur(150px);
-    opacity: 0.12;
-    top: -150px;
-    left: -150px;
-    animation: float 12s ease-in-out infinite alternate;
-}
-
-.aonb__splash-shape2 {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: var(--midnight);
-    filter: blur(160px);
-    opacity: 0.08;
-    bottom: -150px;
-    right: -100px;
-    animation: float 15s ease-in-out infinite alternate-reverse;
+    display: none;
 }
 
 .aonb__splash-content {
@@ -399,7 +370,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    background: var(--page-bg);
+    background: transparent;
     padding: 40px 20px;
     text-align: center;
 }
