@@ -14,11 +14,11 @@ function saveJSON(key, value) {
 }
 
 export function UserProvider({ children }) {
-    const [userRole, setUserRole] = useState(null); // 'mamma' | 'papa'
-    const [userName, setUserName] = useState('');
-    const [babyName, setBabyName] = useState('');
-    const [babySex, setBabySex] = useState(null); // 'M' | 'F' | null
-    const [partnerName, setPartnerName] = useState('');
+    const [userRole, setUserRole] = useState('papa'); // Default to papa as requested
+    const [userName, setUserName] = useState('Valerio');
+    const [babyName, setBabyName] = useState('Giacomo');
+    const [babySex, setBabySex] = useState('M'); // 'M' | 'F' | null
+    const [partnerName, setPartnerName] = useState('Sara');
     const [conceptionDate, setConceptionDate] = useState(null);
     const [onboardingDone, setOnboardingDone] = useState(false);
 
@@ -194,10 +194,10 @@ export function UserProvider({ children }) {
     // Quick login for dev
     const devLogin = (role, status = 'gravidanza') => {
         setUserRole(role);
-        setUserName(role === 'mamma' ? 'Sara' : 'Marco');
-        setBabyName('');
+        setUserName(role === 'mamma' ? 'Sara' : 'Valerio');
+        setBabyName('Giacomo');
         setBabySex('M');
-        setPartnerName(role === 'mamma' ? 'Marco' : 'Sara');
+        setPartnerName(role === 'mamma' ? 'Valerio' : 'Sara');
         setConceptionDate(new Date('2025-08-10'));
         setBabyStatus('gravidanza'); // Force pregnancy
         setOnboardingDone(true);
@@ -205,7 +205,7 @@ export function UserProvider({ children }) {
 
     // Compute weeks from conception
     const getWeeksPregnant = () => {
-        if (!conceptionDate) return 24; // fallback
+        if (!conceptionDate) return 31; // fallback to demo week
         const now = new Date();
         const diffMs = now - new Date(conceptionDate);
         const weeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
@@ -347,7 +347,7 @@ export function UserProvider({ children }) {
             // Status states
             userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
             // Newborn Tracker
-            trackers, setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
+            setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
             //
             isMamma, isPapa,
             completeOnboarding, devLogin, login,

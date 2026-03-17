@@ -49,7 +49,7 @@ export const dailyFacts = {
         emoji: '🫒',
         title: 'Si muove!',
         text: 'Il bambino inizia a muoversi dentro di te! Non lo senti ancora, ma fa piccoli scatti e giravolte. È grande come un\'oliva.',
-        shareText: 'Il nostro piccolo ha iniziato a muoversi! 🫒',
+        shareText: 'Giacomo ha iniziato a muoversi! 🫒',
         bgGradient: ['#F0FFF0', '#E0FFE0'],
         trimester: 1,
     },
@@ -427,7 +427,7 @@ export const didYouKnow = {
         {
             id: 'dyk-t3-5',
             emoji: '🫀',
-            text: 'Il cuore del bambino pompa circa 25 litri di sangue al giorno nel terzo trimestre — un piccolo atleta!',
+            text: 'Il cuore di Giacomo pompa circa 25 litri di sangue al giorno nel terzo trimestre — un piccolo atleta!',
             bgColor: '#FFF0F5',
             accentColor: '#D45B7A',
         },

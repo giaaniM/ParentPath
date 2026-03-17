@@ -10,7 +10,7 @@ export default function PreLogin() {
 
     const handleLogin = (role) => {
         setIsLoading(true);
-        const name = role === 'mamma' ? 'Sara' : 'Marco';
+        const name = role === 'mamma' ? 'Sara' : 'Valerio';
         login(role, name);
         setTimeout(() => {
             navigate('/home');
@@ -59,7 +59,7 @@ export default function PreLogin() {
                         >
                             <span className="prelogin__role-emoji">👨</span>
                             <span className="prelogin__role-name">Papà</span>
-                            <span className="prelogin__role-desc">Marco</span>
+                            <span className="prelogin__role-desc">Valerio</span>
                         </button>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export default function PreLogin() {
                     <p className="prelogin__hint">Demo · Scegli il tuo ruolo per iniziare</p>
                     <button
                         className="prelogin__dev-skip"
-                        onClick={() => { login('mamma', 'Sara'); navigate('/home'); }}
+                        onClick={() => { login('papa', 'Valerio'); navigate('/home'); }}
                     >
                         ⚡ Salta al Dashboard (dev)
                     </button>

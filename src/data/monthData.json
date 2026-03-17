@@ -1,7 +1,7 @@
 [
   {
     "month": 0,
-    "baby": { "weight_range_kg": "2.5–4.0", "length_range_cm": "45–55", "description": "Benvenuto al mondo! Il tuo piccolo si sta adattando. Ha già i riflessi primordiali come la suzione e la prensione." },
+    "baby": { "weight_range_kg": "2.5–4.0", "length_range_cm": "45–55", "description": "Benvenuto al mondo! Giacomo si sta adattando. Ha già i riflessi primordiali come la suzione e la prensione." },
     "milestones": [
       { "title": "Riflesso di suzione", "achieved": true, "icon": "🍼" },
       { "title": "Contatto pelle a pelle", "achieved": true, "icon": "🫂" }

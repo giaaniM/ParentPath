@@ -8,7 +8,8 @@
 
 .bd-mesh-bg-container {
     position: relative;
-    margin-top: calc(env(safe-area-inset-top, 0px) + 90px * -1); 
+    /* Negate both TopBar height and safe-area to start at absolute top */
+    margin-top: calc(-90px - env(safe-area-inset-top, 0px)); 
     border-radius: 0 0 64px 64px;
     overflow: hidden;
     z-index: 10;
@@ -18,8 +19,8 @@
 /* ── PREMIUM HERO SECTION ── */
 .bd-premium-hero {
     position: relative;
-    /* Hero now extends behind the fixed TopBar */
-    padding: calc(env(safe-area-inset-top, 0px) + 95px) 24px 12px;
+    /* Increased to 100px total base to give more air above 'Settimana' label */
+    padding: calc(100px + env(safe-area-inset-top, 0px)) 24px 12px; 
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -263,6 +264,7 @@
 /* ── INSIGHTS V4 ── */
 .bd-section-v4 {
     margin: 0 24px 8px;
+    padding-bottom: 32px; /* Extra room at the bottom of each section */
 }
 
 .bd-insight-card {
@@ -327,8 +329,8 @@
     font-size: 22px;
     font-weight: 700;
     color: #000;
-    margin-top: 0px; /* Reduced from 4px */
-    margin-bottom: 20px;
+    margin-top: -6px; /* Slightly looser than -12px to avoid overlap */
+    margin-bottom: 24px;
     padding-left: 4px;
     letter-spacing: -0.5px;
     display: flex;
@@ -450,7 +452,7 @@
 .bd-v4-tip-eyebrow {
     font-size: 12px;
     font-weight: 800;
-    color: #000;
+    color: var(--midnight) !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     display: block;

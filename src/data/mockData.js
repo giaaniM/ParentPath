@@ -5,7 +5,7 @@ export const users = {
     avatar: '👩',
   },
   papa: {
-    name: 'Marco',
+    name: 'Valerio',
     role: 'papà',
     avatar: '👨',
   },
@@ -15,7 +15,7 @@ export const pregnancy = {
   currentWeek: 31,
   totalWeeks: 40,
   dueDate: '2026-06-15',
-  babyNickname: 'Piccolo',
+  babyNickname: 'Giacomo',
   sex: 'M',
   stats: {
     length: '37 cm',
@@ -36,7 +36,7 @@ export const pregnancy = {
 // Note: to be validated by medical advisory board before v1.0 release
 export const weeklyDevelopment = {
   20: {
-    heroTitle: 'Il piccolo si muove di più',
+    heroTitle: 'Giacomo si muove di più',
     subtitle: 'Il bimbo è ormai lungo come una banana. I movimenti sono forti e frequenti — li senti davvero!',
     sizeEmoji: '🍌', sizeLabel: 'Banana',
     length: '25 cm', weight: '300 g',
@@ -92,8 +92,8 @@ export const weeklyDevelopment = {
       longDesc: 'Le cellule polmonari si preparano alla prima boccata d\'aria.'
     },
     essentialTips: [
-      { id: 'w24_t1', type: 'visit', title: 'Screening Glicemico', desc: 'Premi per visualizzare i task' },
-      { id: 'w24_t2', type: 'health', title: 'Preparazione al Parto', desc: 'Premi per visualizzare i task' }
+      { id: 'w24_t1', type: 'visit', title: 'Screening', desc: 'Premi per visualizzare i task' },
+      { id: 'w24_t2', type: 'health', title: 'Preparazione al parto', desc: 'Premi per visualizzare i task' }
     ],
     mamaTip: 'Questo è il traguardo della viabilità fetale. Un momento importante.',
     papaTip: 'Comincia a guardare i seggiolini auto — richiede ricerca e installazione.',
@@ -126,7 +126,7 @@ export const weeklyDevelopment = {
     papaTip: 'Iniziate a scegliere il nome: i pediatri dicono che i bimbi reagiscono al loro nome già in utero.',
   },
   28: {
-    heroTitle: 'Piccolo sta formando i ricordi',
+    heroTitle: 'Giacomo sta formando i ricordi',
     subtitle: 'Il cervello entra nella fase REM. Il bimbo sogna e registra le esperienze sensoriali vissute in utero.',
     sizeEmoji: '🥬', sizeLabel: 'Lattuga',
     length: '37 cm', weight: '1.1 kg',
@@ -173,9 +173,9 @@ export const weeklyDevelopment = {
       longDesc: 'Se il bambino nascesse ora, avrebbe ottime possibilità di respirare quasi autonomamente. Il grasso sottocutaneo aumenta per aiutarlo a regolare la temperatura.'
     },
     essentialTips: [
-      { id: 'w31_t1', type: 'visit', title: 'Ecografia 3° Trimestre', desc: 'Valutazione accrescimento e posizione fetale (Mamma).' },
-      { id: 'w31_t2', type: 'health', title: 'Posizioni per il travaglio', desc: 'Esercitarsi insieme su respirazione e massaggi (Entrambi).' },
-      { id: 'w31_t3', type: 'prep', title: 'Borsa Ospedale', desc: 'Preparate il corredo per il primo cambio (Entrambi).' }
+      { id: 'w31_t1', type: 'visit', title: 'Ecografia', desc: 'Premi per visualizzare i task' },
+      { id: 'w31_t2', type: 'health', title: 'Posizioni travaglio', desc: 'Premi per visualizzare i task' },
+      { id: 'w31_t3', type: 'prep', title: 'Borsa Ospedale', desc: 'Premi per visualizzare i task' }
     ],
     curiosities: [
       'Il bambino dorme fino a 15 ore al giorno in questa fase.',
@@ -279,7 +279,7 @@ export function getWeekData(week) {
     developmentDetails: base.developmentDetails || {
       title: 'Sviluppo in corso',
       fact: 'Il tuo bimbo cresce ogni giorno!',
-      longDesc: 'Ogni settimana porta nuove incredibili scoperte e sviluppi nel piccolo.'
+      longDesc: 'Ogni settimana porta nuove incredibili scoperte e sviluppi in Giacomo.'
     },
     essentialTips: base.essentialTips || [
       { id: 'def-1', type: 'health', title: 'Benessere', desc: 'Prenditi cura di te e del tuo bimbo.' },
@@ -349,7 +349,7 @@ export const smartTrackerData = {
 
 export const partnerSync = {
   papaView: { mammaStatus: 'Sara sta riposando 💤', lastUpdate: '5 min fa' },
-  mammaView: { papaStatus: 'Marco sta pulendo ✨', lastUpdate: '2 min fa' }
+  mammaView: { papaStatus: 'Valerio sta pulendo ✨', lastUpdate: '2 min fa' }
 };
 
 export const pregnancyWeather = {

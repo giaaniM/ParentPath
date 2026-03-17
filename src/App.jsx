@@ -16,6 +16,7 @@ import DueDateCalculator from './pages/DueDateCalculator';
 import HospitalBag from './pages/HospitalBag';
 import Diary from './pages/Diary';
 import Agenda from './pages/Agenda';
+import ScrollToTop from './components/ScrollToTop';
 import StickyBackButton from './components/StickyBackButton';
 import './styles/global.css';
 
@@ -26,6 +27,7 @@ function AppContent() {
 
   return (
     <div className="app-shell">
+      <ScrollToTop />
       {!hideGlobalBars && <TopBar />}
       <StickyBackButton />
       <Routes>

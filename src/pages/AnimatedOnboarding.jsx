@@ -9,9 +9,9 @@ export default function AnimatedOnboarding() {
     const navigate = useNavigate();
     const { completeOnboarding, devLogin } = useUser();
     const [step, setStep] = useState(0);
-    const [role, setRole] = useState(null);
-    const [name, setName] = useState('');
-    const [babyNameInput, setBabyNameInput] = useState('');
+    const [role, setRole] = useState('papa');
+    const [name, setName] = useState('Valerio');
+    const [babyNameInput, setBabyNameInput] = useState('Giacomo');
     const [babySex, setBabySex] = useState(null);
     const [status, setStatus] = useState('gravidanza');
     const [dateInput, setDateInput] = useState('');
@@ -49,8 +49,8 @@ export default function AnimatedOnboarding() {
                             }
 
                             completeOnboarding({
-                                role: role === 'entrambi' ? 'mamma' : (role || 'mamma'),
-                                name: name || (role === 'papa' ? 'Marco' : 'Sara'),
+                                role: role === 'entrambi' ? 'papa' : (role || 'papa'),
+                                name: name || (role === 'mamma' ? 'Sara' : 'Valerio'),
                                 baby: babyNameInput,
                                 sex: babySex,
                                 status: status,
@@ -85,11 +85,8 @@ export default function AnimatedOnboarding() {
 
                     <div className="aonb__splash-bottom">
                         <button className="aonb__btn-primary" onClick={handleNext}>Inizia ora</button>
-                        <button className="aonb__btn-secondary" onClick={() => { devLogin('mamma', 'gravidanza'); navigate('/home'); }}>
-                            Entra nella Demo (Gravidanza)
-                        </button>
-                        <button className="aonb__btn-secondary" style={{ marginTop: 0 }} onClick={() => { devLogin('mamma', 'nato'); navigate('/home'); }}>
-                            Entra nella Demo (Neonato)
+                        <button className="aonb__btn-secondary" onClick={() => { devLogin('papa', 'gravidanza'); navigate('/home'); }}>
+                            Entra nella Demo
                         </button>
                     </div>
                 </div>

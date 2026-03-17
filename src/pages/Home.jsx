@@ -276,14 +276,14 @@ export default function Home() {
     return (
         <div className="page home-wrap">
 
-            <div className="greeting-wrapper fi" style={{ margin: '20px 20px 18px' }}>
+            <div className="greeting-wrapper fi" style={{ margin: '2px 20px 12px' }}>
                 <h2 className="greeting">
                     Ciao {userName || 'Genitore'}!
                 </h2>
             </div>
 
             {/* HERO CARD (REDESIGNED V4 - PREMIUM GLASS) */}
-            <div className={`hc-v4 glass ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')}>
+            <div className={`hc-v4 glass ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')} style={{ marginBottom: '24px' }}>
                 <div className="hc-mesh-v2"></div>
                 
                 <div className="hc-arr-v4"><ArrowRight size={18} strokeWidth={2} /></div>
@@ -296,7 +296,7 @@ export default function Home() {
                     <div className="hc-info-v4">
                         <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
                         <h2 className="hc-title-v4">
-                            {isBorn ? (babyName || 'Il tuo Bimbo') : (babyNickname || 'Piccolo')} 
+                            {isBorn ? (babyName || 'Il tuo Bimbo') : (babyNickname || 'Giacomo')} 
                             <span className="hc-sex-v4">
                                 {(babySex || pregnancy.sex) === 'M' ? '♂' : ((babySex || pregnancy.sex) === 'F' ? '♀' : '')}
                             </span>
@@ -330,7 +330,7 @@ export default function Home() {
             <div
                 className={`home-task-progress-card ru d${isBorn ? '6' : '3'}`}
                 onClick={() => navigate('/agenda')}
-                style={{ margin: '0 20px 12px' }}
+                style={{ margin: '0 20px 24px' }}
             >
                 <div className="htp-content">
                     <div className="htp-info">
@@ -395,7 +395,7 @@ export default function Home() {
 
 
             {/* SYNC & SMART WIDGETS */}
-            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -463,8 +463,8 @@ export default function Home() {
             </div>
 
             {/* CONSIGLI UTILI */}
-            <div className="sec-head ru d6" style={{ marginTop: '4px' }}>
-                <div className="sec-title">Consigli per te {isMamma ? 'Mamma' : 'Papà'}</div>
+            <div className="sec-head ru d6" style={{ marginTop: '24px' }}>
+                <div className="sec-title">Consigli per te</div>
                 <div className="sec-more" onClick={() => navigate('/tips-list')}>Vedi tutti</div>
             </div>
             <div className="consigli-row ru d6">

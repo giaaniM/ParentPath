@@ -221,7 +221,7 @@ export default function BabyDev() {
                 {/* SECTION 3: CONSIGLI & ESAMI */}
                 <div className="bd-section-v4 ru d3">
                     <h2 className="bd-v4-section-title">
-                        Consigli e Visite <span className="bd-v4-title-tag">(per questa settimana)</span>
+                        Consigli per la Settimana {currentWeek}
                     </h2>
                     
                     {/* Personalized Tip Card */}
