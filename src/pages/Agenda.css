@@ -342,9 +342,9 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 14px 16px;
+    padding: 12px;
     background: var(--white);
-    border-radius: 16px;
+    border-radius: 12px;
     border: 1px solid var(--border);
     cursor: pointer;
     transition: all 0.2s;
@@ -357,8 +357,7 @@
 
 .agenda-task-row.suggested {
     position: relative;
-    border-left: 4px solid var(--aqua);
-    background: linear-gradient(to right, rgba(61, 191, 184, 0.03), var(--white));
+    background: var(--white);
 }
 
 .agenda-task-suggested-indicator {
@@ -368,11 +367,12 @@
     background: var(--aqua);
     color: var(--white);
     padding: 4px 8px 4px 12px;
-    border-radius: 0 16px 0 16px;
+    border-radius: 0 12px 0 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: -2px 2px 4px rgba(0,0,0,0.05);
+    z-index: 2;
 }
 
 /* Removed empty .agenda-task-row.completed */

@@ -69,6 +69,18 @@ export default function TipBottomSheet({ tip, onClose }) {
         }
     };
 
+    // Simple bold formatter
+    const renderFormattedText = (text) => {
+        if (!text) return text;
+        const parts = text.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i}>{part.slice(2, -2)}</strong>;
+            }
+            return part;
+        });
+    };
+
     const style = getCategoryConfig(tip.category);
 
     // Calculate dynamic transform
@@ -145,12 +157,12 @@ export default function TipBottomSheet({ tip, onClose }) {
                                 case 'heading':
                                     return <h3 key={idx} className="tip-bs-heading">{block.text}</h3>;
                                 case 'paragraph':
-                                    return <p key={idx} className="tip-bs-text">{block.text}</p>;
+                                    return <p key={idx} className="tip-bs-text">{renderFormattedText(block.text)}</p>;
                                 case 'list':
                                     return (
                                         <ul key={idx} className="tip-bs-list">
                                             {block.items.map((item, i) => (
-                                                <li key={i}>{item}</li>
+                                                <li key={i}>{renderFormattedText(item)}</li>
                                             ))}
                                         </ul>
                                     );

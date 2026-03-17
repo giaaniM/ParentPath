@@ -122,7 +122,7 @@ export default function Agenda() {
 
     const getAssigneeBadge = (assignee) => {
         if (assignee === 'mamma') return { label: 'MAMMA', className: 'badge-mamma' };
-        if (assignee === 'partner') return { label: partnerName?.toUpperCase() || 'PARTNER', className: 'badge-partner' };
+        if (assignee === 'partner' || assignee === 'papa') return { label: 'PAPÀ', className: 'badge-partner' };
         return { label: 'ENTRAMBI', className: 'badge-entrambi' };
     };
 
@@ -270,11 +270,6 @@ export default function Agenda() {
                                     <div className="agenda-task-text">{task.text || 'Task senza descrizione'}</div>
                                     <div className="agenda-task-badges">
                                         <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
-                                        {task.suggested && (
-                                            <span className="agenda-badge badge-suggerito">
-                                                <Sparkles size={10} /> SUGGERITO
-                                            </span>
-                                        )}
                                         {priority && (
                                             <span className={`agenda-badge ${priority.className}`}>{priority.label}</span>
                                         )}
@@ -318,7 +313,7 @@ export default function Agenda() {
                                             className={`agenda-assignee-opt ${newTaskAssignee === a ? 'active' : ''}`}
                                             onClick={() => setNewTaskAssignee(a)}
                                         >
-                                            {a === 'mamma' ? 'Io' : a === 'partner' ? (partnerName || 'Partner') : 'Entrambi'}
+                                            {a === 'mamma' ? 'Mamma' : a === 'partner' || a === 'papa' ? 'Papà' : 'Entrambi'}
                                         </button>
                                     ))}
                                 </div>

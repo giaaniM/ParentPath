@@ -487,7 +487,7 @@ export const articles = [
     content: [
       {
         type: 'paragraph',
-        text: 'A 24 settimane, il sistema uditivo del tuo bambino ha raggiunto un livello di maturazione straordinario. Le strutture dell\'orecchio interno sono completamente formate e il cervello inizia a elaborare i suoni che arrivano dall\'esterno.',
+        text: 'A **24 settimane**, il sistema uditivo del tuo bambino ha raggiunto un livello di **maturazione straordinario**. Le strutture dell\'orecchio interno sono completamente formate e il **cervello** inizia a elaborare i suoni che arrivano dall\'esterno.',
       },
       {
         type: 'heading',
@@ -495,15 +495,15 @@ export const articles = [
       },
       {
         type: 'paragraph',
-        text: 'Il liquido amniotico trasmette le vibrazioni sonore in modo diverso dall\'aria: i suoni arrivano attutiti ma chiari. La tua voce è il suono più presente e familiare — viaggia attraverso le vibrazioni del tuo corpo oltre che dall\'esterno.',
+        text: 'Il **liquido amniotico** trasmette le vibrazioni sonore in modo diverso dall\'aria: i suoni arrivano attutiti ma chiari. La **tua voce** è il suono più presente e familiare — viaggia attraverso le vibrazioni del tuo corpo oltre che dall\'esterno.',
       },
       {
         type: 'list',
         items: [
-          'Il battito del tuo cuore — il suo ritmo preferito',
-          'La tua voce e quella del papà',
-          'Musica e suoni ambientali',
-          'Rumori forti improvvisi (che possono farlo sussultare)',
+          'Il **battito del tuo cuore** — il suo ritmo preferito',
+          'La **tua voce** e quella del **papà**',
+          '**Musica** e suoni ambientali',
+          '**Rumori forti** improvvisi (che possono farlo sussultare)',
         ],
       },
       {
@@ -512,7 +512,7 @@ export const articles = [
       },
       {
         type: 'paragraph',
-        text: 'Parla con il tuo bambino, leggigli una storia, cantagli una canzone. Non sentirti a disagio — studi dimostrano che i neonati riconoscono la voce della mamma già dal primo istante. Anche il papà può iniziare: i bambini reagiscono alle voci maschili con calma e attenzione.',
+        text: 'Parla con il tuo bambino, leggigli una storia, cantagli una canzone. Non sentirti a disagio — studi dimostrano che i **neonati riconoscono la voce della mamma** già dal primo istante. Anche il **papà** può iniziare: i bambini reagiscono alle voci maschili con **calma e attenzione**.',
       },
       {
         type: 'tip',

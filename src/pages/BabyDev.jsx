@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus } from 'lucide-react';
+import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock } from 'lucide-react';
 import { pregnancy, milestones, getWeekData, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import EarlyYears from '../components/EarlyYears';
@@ -10,8 +10,13 @@ export default function BabyDev() {
     const isBorn = babyStatus === 'nato';
     const currentWeek = isBorn ? 0 : getWeeksPregnant();
     const percent = isBorn ? 100 : Math.min(100, Math.round((currentWeek / pregnancy.totalWeeks) * 100));
-    const dueDate = getDueDate();
-    const dueDateStr = dueDate ? dueDate.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' }) : null;
+    const dueDate = getDueDate() ? new Date(getDueDate()) : new Date();
+    const conceptionDate = new Date(dueDate);
+    conceptionDate.setDate(conceptionDate.getDate() - 280); // 40 weeks back
+    
+    const dateOptions = { day: 'numeric', month: 'short' };
+    const conceptionStr = conceptionDate.toLocaleDateString('it-IT', dateOptions);
+    const dueDateStr = dueDate.toLocaleDateString('it-IT', dateOptions);
 
     // Dynamic Phase Data
     const phaseDev = isBorn ? newbornDevelopment.month1 : getWeekData(currentWeek);
@@ -61,100 +66,110 @@ export default function BabyDev() {
             )}
 
             {/* PREGNANCY VIEW */}
-            <div className={`bd-pregnancy-wrap ${isBorn ? 'bd-collapsed' : ''}`}>                {/* HERO CARD (COMPACTED) */}
-                <div className="bd-hero fi" style={{ padding: '20px', borderRadius: '0 0 32px 32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={`bd-pregnancy-wrap ${isBorn ? 'bd-collapsed' : ''}`}>
+                
+                {/* PREMIUM HERO SECTION */}
+                <div className="bd-premium-hero fi">
+                    <div className="bd-mesh-gradient"></div>
                     
-                    <div className="hc-eyebrow" style={{ color: 'var(--stone)', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0px' }}>
-                        {isBorn ? 'IL TUO NEONATO' : `LA TUA SETTIMANA ${currentWeek}`}
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%', marginTop: '-10px' }}>
-                        <div className="bd-circle-clear" style={{ width: '90px', height: '90px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <img src={isBorn ? "/baby-newborn.png" : "/baby-24w-alpha.png"} alt="Fetus" className="bd-fetus" style={{ width: isBorn ? '80px' : '95px', animation: 'float 6s ease-in-out infinite', mixBlendMode: 'multiply' }} />
+                    <div className="bd-hero-top">
+                        <div className="bd-hc-eyebrow">
+                            {isBorn ? 'Il tuo neonato' : `Settimana ${currentWeek}`}
                         </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                            <div className="bd-name" style={{ fontSize: '24px', marginBottom: '4px' }}>
-                                {pregnancy.babyNickname} <span style={{ fontSize: '20px' }}>{pregnancy.babySex === 'M' ? '♂' : '♀'}</span>
-                            </div>
-                            <div className="bd-pill" style={{ padding: '4px 10px', alignSelf: 'flex-start' }}>
-                                <span style={{ fontSize: '12px' }}>{phaseDev?.sizeEmoji || '✨'} {isBorn ? (phaseDev?.sizeLabel || 'Neonato') : `Grande come ${phaseDev?.sizeLabel?.toLowerCase() || '...'}`}</span>
+                        <h1 className="bd-hc-title">
+                            {pregnancy.babyNickname} <span className="bd-hc-sex">{pregnancy.babySex === 'M' ? '♂' : '♀'}</span>
+                        </h1>
+                        <div className="bd-hc-pill-container">
+                            <div className="bd-hc-pill glass">
+                                <span>{phaseDev?.sizeEmoji || '✨'} {isBorn ? (phaseDev?.sizeLabel || 'Neonato') : `Grande come ${phaseDev?.sizeLabel?.toLowerCase() || '...'}`}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bd-stats-grid" style={{ marginBottom: 0, gap: '8px' }}>
-                        <div className="bd-stat-box" style={{ padding: '10px 8px' }}>
-                            <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--midnight)' }}>{phaseDev?.length || '--'}</div>
-                            <div style={{ fontSize: '10px', color: 'var(--stone)', fontWeight: 700 }}>LUNGHEZZA</div>
+                    <div className="bd-hero-center">
+                        <div className="bd-fetus-container">
+                            <div className="bd-fetus-glow"></div>
+                            <img 
+                                src={isBorn ? "/baby-newborn.png" : "/baby-24w-alpha.png"} 
+                                alt="Baby" 
+                                className="bd-fetus-img animated-float"
+                            />
                         </div>
-                        <div className="bd-stat-box" style={{ padding: '10px 8px' }}>
-                            <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--midnight)' }}>{phaseDev?.weight || '--'}</div>
-                            <div style={{ fontSize: '10px', color: 'var(--stone)', fontWeight: 700 }}>PESO</div>
-                        </div>
-                        <div className="bd-stat-box" style={{ padding: '10px 8px' }}>
-                            <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--midnight)' }}>{isBorn ? 'Nato' : `${percent}%`}</div>
-                            <div style={{ fontSize: '10px', color: 'var(--stone)', fontWeight: 700 }}>{isBorn ? 'STATO' : 'PERCORSO'}</div>
+                        
+                        <div className="bd-stats-floating">
+                            <div className="bd-stat-item glass">
+                                <span className="bd-stat-val">{phaseDev?.length || '--'}</span>
+                                <span className="bd-stat-lbl">CM</span>
+                            </div>
+                            <div className="bd-stat-item glass">
+                                <span className="bd-stat-val">{phaseDev?.weight || '--'}</span>
+                                <span className="bd-stat-lbl">GRAMMI</span>
+                            </div>
                         </div>
                     </div>
 
-                    {/* FULL TERM LOADING BAR */}
-                    <div className="bd-hero-loading-container">
-                        <div className="bd-tl-bar-container">
-                            <div className="bd-tl-bar-bg"></div>
-                            <div className="bd-tl-bar-fill" style={{ width: `${percent}%` }}></div>
-                            <div className="bd-tl-point active" style={{ left: `${percent}%` }}></div>
+                    {/* REFINED TIMELINE V2 */}
+                    <div className="bd-premium-timeline glass">
+                        <div className="bd-ptl-bar">
+                            <div className="bd-ptl-fill" style={{ width: `${percent}%` }}>
+                                <div className="bd-ptl-marker">
+                                    <div className="bd-ptl-week-label">{isBorn ? 'Nato' : `Sett. ${currentWeek}`}</div>
+                                    <div className="bd-ptl-percent">{percent}%</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="bd-tl-weeks">
-                            <span>Inizio</span>
-                            <span className="active">Oggi (Sett. {currentWeek})</span>
-                            <span>Parto</span>
+                        <div className="bd-ptl-labels">
+                            <div className="bd-ptl-date-box">
+                                <span className="bd-ptl-date-lbl">Concepimento</span>
+                                <span className="bd-ptl-date-val">{conceptionStr}</span>
+                            </div>
+                            <div className="bd-ptl-date-box align-right">
+                                <span className="bd-ptl-date-lbl">Nascita (Prevista)</span>
+                                <span className="bd-ptl-date-val">{dueDateStr}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-
-                {/* SECTION 2: CURIOSITÀ (MEDICAL FACT) */}
-                <div className="bd-section ru d2">
-                    <div className="bd-curiosity-card">
-                        <div className="bd-curiosity-icon">
-                            <Sparkles size={24} color="var(--white)" />
+                {/* SECTION 2: INSIGHTS CARD (GLASSMORPHISM) */}
+                <div className="bd-section-v4 ru d2">
+                    <div className="bd-insight-card glass">
+                        <div className="bd-insight-header">
+                            <div className="bd-insight-icon-box">
+                                <Sparkles size={20} className="sparkle-anim" />
+                            </div>
+                            <div className="bd-insight-title-box">
+                                <span className="bd-insight-eyebrow">{phaseDev.developmentDetails?.title || 'Lo sviluppo di questa settimana'}</span>
+                                <h3 className="bd-insight-title">{phaseDev.developmentDetails?.fact || 'Crescita costante'}</h3>
+                            </div>
                         </div>
-                        <div className="bd-curiosity-content">
-                            <div className="bd-curiosity-eyebrow">{phaseDev.developmentDetails?.title || 'Curiosità della settimana'}</div>
-                            <div className="bd-curiosity-fact">{phaseDev.developmentDetails?.fact || 'Il tuo bimbo sta crescendo!'}</div>
-                            <p className="bd-curiosity-desc">{phaseDev.developmentDetails?.longDesc}</p>
-                        </div>
+                        <p className="bd-insight-text">{phaseDev.developmentDetails?.longDesc}</p>
                     </div>
                 </div>
 
                 {/* SECTION 3: CONSIGLI & ESAMI */}
-                <div className="bd-section ru d3">
-                    <div className="bd-section-header">
-                        <div className="bd-section-title">Consigli e Visite</div>
-                    </div>
-                    <div className="bd-tips-grid">
+                <div className="bd-section-v4 ru d3">
+                    <h2 className="bd-v4-section-title">Consigli e Visite</h2>
+                    <div className="bd-tips-stack">
                         {(phaseDev.essentialTips || []).map(tip => (
-                            <div key={tip.id} className="bd-tip-card">
-                                <div className={`bd-tip-type-ic ${tip.type}`}>
-                                    {tip.type === 'visit' ? <Check size={16} /> : tip.type === 'health' ? <Plus size={16} /> : <Ear size={16} />}
+                            <div key={tip.id} className="bd-v4-tip-card">
+                                <div className={`bd-v4-tip-icon ${tip.type}`}>
+                                    {tip.type === 'visit' ? <Check size={18} /> : tip.type === 'health' ? <Plus size={18} /> : <Ear size={18} />}
                                 </div>
-                                <div className="bd-tip-info">
-                                    <div className="bd-tip-title">{tip.title}</div>
-                                    <div className="bd-tip-desc">{tip.desc}</div>
+                                <div className="bd-v4-tip-content">
+                                    <span className="bd-v4-tip-label">{tip.title}</span>
+                                    <p className="bd-v4-tip-desc">{tip.desc}</p>
                                 </div>
+                                <ChevronRight size={16} className="bd-v4-tip-arrow" />
                             </div>
                         ))}
                     </div>
 
                     {/* SMART PATH 3.0: SYNTHETIC ROW */}
-                    <div className="bd-smart-path-3" style={{ marginTop: '24px' }}>
+                    <div className="bd-smart-path-3" style={{ marginTop: '16px' }}>
                         <div className="bd-smart-path-card">
                             <div className="bd-smart-path-header-v3">
-                                <div className="bd-sp-h-left">
-                                    <div className="bd-sp-h-dot"></div>
-                                    <div className="bd-sp-h-title">Il tuo percorso</div>
-                                </div>
+                                <h3 className="bd-sp-h-title">Il tuo percorso</h3>
                                 <div className="bd-sp-h-cta" onClick={() => setIsFullJourneyOpen(true)}>
                                     Vedi tutti <ChevronRight size={14} />
                                 </div>
@@ -171,8 +186,8 @@ export default function BabyDev() {
                                             onClick={() => setSelectedMilestone(m)}
                                         >
                                             <div className="bd-sp-mini-icon">{m.icon}</div>
-                                            <div className="bd-sp-mini-title">{m.title}</div>
-                                            <div className="bd-sp-mini-meta">{`SETT. ${m.week}`}</div>
+                                            <div className="bd-sp-mini-lbl">{m.title}</div>
+                                            <div className="bd-sp-mini-meta">{`Sett. ${m.week}`}</div>
                                         </div>
                                     );
                                 })}
@@ -181,24 +196,26 @@ export default function BabyDev() {
                     </div>
                 </div>
 
-                {/* NEXT PHASES SECTION */}
-                <div className="nxph-section ru d4" style={{ marginTop: '30px' }}>
-                    <div className="nxph-title">Prossime fasi</div>
-                    <div className="nxph">
-                        <div className="nxph-ic">👶</div>
-                        <div className="nxph-t">
-                            <div className="nxph-n">Primi Mesi (0–6)</div>
-                            <div className="nxph-w">Disponibile {dueDateStr ? `da ${dueDateStr}` : 'dopo il parto'}</div>
+                {/* NEXT PHASES ROADMAP */}
+                <div className="bd-section-v4 roadmap ru d4">
+                    <h2 className="bd-v4-section-title">Prossime fasi</h2>
+                    <div className="bd-roadmap-grid">
+                        <div className="bd-roadmap-card locked">
+                            <div className="bd-rm-icon glass">👶</div>
+                            <div className="bd-rm-info">
+                                <span className="bd-rm-label">Primi Mesi</span>
+                                <span className="bd-rm-period">0–6 MESI</span>
+                            </div>
+                            <div className="bd-rm-lock"><Lock size={14} /></div>
                         </div>
-                        <div className="nxph-lock">🔒</div>
-                    </div>
-                    <div className="nxph">
-                        <div className="nxph-ic">👣</div>
-                        <div className="nxph-t">
-                            <div className="nxph-n">I Primi Passi (1–3 anni)</div>
-                            <div className="nxph-w">Sbloccabile dopo i 12 mesi</div>
+                        <div className="bd-roadmap-card locked">
+                            <div className="bd-rm-icon glass">👣</div>
+                            <div className="bd-rm-info">
+                                <span className="bd-rm-label">Primi Passi</span>
+                                <span className="bd-rm-period">1–3 ANNI</span>
+                            </div>
+                            <div className="bd-rm-lock"><Lock size={14} /></div>
                         </div>
-                        <div className="nxph-lock">🔒</div>
                     </div>
                 </div>
 
@@ -264,7 +281,7 @@ export default function BabyDev() {
                             </button>
                         </div>
                         
-                        <div className="bd-milestones-grid-v3">
+                        <div className="bd-journey-grid-v4">
                             {milestones.map((m, idx) => {
                                 const isCurrent = milestones.indexOf(m) === actualCurrentIndex;
                                 const isPast = milestones.indexOf(m) < actualCurrentIndex;
@@ -272,12 +289,17 @@ export default function BabyDev() {
                                 return (
                                     <div 
                                         key={m.id} 
-                                        className={`bd-m-card-v3 ${isPast ? 'is-past' : isCurrent ? 'is-current' : 'is-lock'}`}
+                                        className={`bd-journey-item-v4 ${isPast ? 'is-past' : isCurrent ? 'is-current' : 'is-lock'}`}
                                         onClick={() => setSelectedMilestone(m)}
                                     >
-                                        <div className="bd-m-card-icon">{m.icon}</div>
-                                        <div className="bd-m-card-meta">{m.week || m.month}</div>
-                                        {isPast && <div className="bd-m-card-check-mini"><Check size={8} strokeWidth={4} /></div>}
+                                        <div className="bd-journey-icon-v4">{m.icon}</div>
+                                        <div className="bd-journey-info-v4">
+                                            <span className="bd-journey-title-v4">{m.title}</span>
+                                            <span className="bd-journey-week-v4">{m.week || m.month ? `Sett. ${m.week || m.month}` : ''}</span>
+                                        </div>
+                                        <div className="bd-journey-status-v4">
+                                            {isPast ? <Check size={16} /> : !isCurrent ? <Lock size={14} /> : <div className="bd-current-dot-v4"></div>}
+                                        </div>
                                     </div>
                                 );
                             })}

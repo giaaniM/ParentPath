@@ -281,28 +281,31 @@ export default function Home() {
                 </h2>
             </div>
 
-            {/* HERO CARD (REDESIGNED V4 - COMPACT) */}
-            <div className={`hc ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')}>
+            {/* HERO CARD (REDESIGNED V4 - PREMIUM GLASS) */}
+            <div className={`hc-v4 glass ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')}>
+                <div className="hc-mesh-v2"></div>
                 <button
-                    className="hc-edit"
+                    className="hc-edit-v4"
                     onClick={(e) => { e.stopPropagation(); setIsEditOpen(true); }}
                     aria-label="Modifica Profilo"
                 >
-                    <Edit2 size={16} />
+                    <Edit2 size={14} />
                 </button>
                 
-                <div className="hc-mesh"></div>
-                <div className="hc-arr"><ArrowRight size={20} strokeWidth={1.5} /></div>
+                <div className="hc-arr-v4"><ArrowRight size={18} strokeWidth={2} /></div>
                 
-                <div className="hc-flex-v4">
-                    <div className="hc-text-v4">
+                <div className="hc-content-v4">
+                    <div className="hc-fetus-mini animated-float">
+                        <img src={isBorn ? "/baby-newborn.png" : "/baby-24w-alpha.png"} alt="Bimbo" />
+                    </div>
+                    
+                    <div className="hc-info-v4">
                         <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
-                        
                         <h2 className="hc-title-v4">
                             {isBorn ? babyName || 'Il tuo Bimbo' : (babyNickname || 'Piccolo')} 
-                            <span className="hc-sex-v4">{babySex === 'M' ? '♂' : babySex === 'F' ? '♀' : ''}</span>
+                            <span className="hc-sex-v4">{babySex === 'M' ? '♂' : (babySex === 'F' ? '♀' : '')}</span>
                         </h2>
-
+                        
                         {!isBorn ? (
                             <div className="hc-stats-v4">
                                 <div className="hc-stat-row-v4">
@@ -318,21 +321,9 @@ export default function Home() {
                             </div>
                         ) : (
                             <div className="hc-born-v4">
-                                <span className="hc-born-label-v4">NATO</span>
-                                <span className="hc-born-age-v4">{getBabyPreciseAgeString()}</span>
+                                <Sparkles size={16} color="var(--aqua)" />
+                                <span>{getBabyPreciseAgeString()}</span>
                             </div>
-                        )}
-                    </div>
-
-                    <div className="hc-img-v4">
-                        {isBorn ? (
-                            <span style={{ fontSize: '60px' }}>🍼</span>
-                        ) : (
-                            <img 
-                                src="/baby-24w-alpha.png" 
-                                alt="Baby" 
-                                className="hc-baby-png-v4" 
-                            />
                         )}
                     </div>
                 </div>
