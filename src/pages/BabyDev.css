@@ -264,7 +264,7 @@
 /* ── INSIGHTS V4 ── */
 .bd-section-v4 {
     margin: 0 24px 8px;
-    padding-bottom: 32px; /* Extra room at the bottom of each section */
+    padding-bottom: 8px; /* Reduced to raise the background curve */
 }
 
 .bd-insight-card {
@@ -329,7 +329,7 @@
     font-size: 22px;
     font-weight: 700;
     color: #000;
-    margin-top: -6px; /* Slightly looser than -12px to avoid overlap */
+    margin-top: 20px; /* Increased to give air between background curve and title */
     margin-bottom: 24px;
     padding-left: 4px;
     letter-spacing: -0.5px;

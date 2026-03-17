@@ -9,9 +9,9 @@ export default function AnimatedOnboarding() {
     const navigate = useNavigate();
     const { completeOnboarding, devLogin } = useUser();
     const [step, setStep] = useState(0);
-    const [role, setRole] = useState('papa');
-    const [name, setName] = useState('Valerio');
-    const [babyNameInput, setBabyNameInput] = useState('Giacomo');
+    const [role, setRole] = useState(null);
+    const [name, setName] = useState('');
+    const [babyNameInput, setBabyNameInput] = useState('');
     const [babySex, setBabySex] = useState(null);
     const [status, setStatus] = useState('gravidanza');
     const [dateInput, setDateInput] = useState('');
@@ -85,9 +85,14 @@ export default function AnimatedOnboarding() {
 
                     <div className="aonb__splash-bottom">
                         <button className="aonb__btn-primary" onClick={handleNext}>Inizia ora</button>
-                        <button className="aonb__btn-secondary" onClick={() => { devLogin('papa', 'gravidanza'); navigate('/home'); }}>
-                            Entra nella Demo
-                        </button>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+                            <button className="aonb__btn-secondary" onClick={() => { devLogin('papa', 'gravidanza'); navigate('/home'); }}>
+                                Demo Papà
+                            </button>
+                            <button className="aonb__btn-secondary" onClick={() => { devLogin('mamma', 'gravidanza'); navigate('/home'); }}>
+                                Demo Mamma
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -214,13 +219,12 @@ export default function AnimatedOnboarding() {
                                         <div className="aonb__role-text"><div className="aonb__role-label">Siamo in gravidanza</div></div>
                                         {status === 'gravidanza' && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
-                                    <div className={`aonb__role-card ${status === 'nato' ? 'aonb__role-card--selected' : ''}`} onClick={async () => {
-                                        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
-                                        setStatus('nato');
-                                    }}>
+                                    <div className="aonb__role-card aonb__role-card--disabled">
                                         <div className="aonb__role-icon"><Baby strokeWidth={1.5} size={28} /></div>
-                                        <div className="aonb__role-text"><div className="aonb__role-label">Il bimbo è già nato</div></div>
-                                        {status === 'nato' && <CheckCircle2 size={24} color="var(--midnight)" />}
+                                        <div className="aonb__role-text">
+                                            <div className="aonb__role-label">Il bimbo è già nato</div>
+                                            <div className="aonb__role-tag wip">WIP</div>
+                                        </div>
                                     </div>
                                 </div>
 

@@ -52,6 +52,11 @@ export const weeklyDevelopment = {
     ],
     mamaTip: 'Inizia a documentare i movimenti: 10 al giorno è un buon riferimento.',
     papaTip: 'Metti la mano sulla pancia: le vibrazioni della tua voce arrivano benissimo al bimbo.',
+    curiosities: [
+      'Il bambino è ormai grande come una banana 🍌',
+      'Il suo sistema riproduttivo è completamente formato.',
+      'Può deglutire piccole quantità di liquido amniotico per allenare il sistema digerente.'
+    ],
   },
   21: {
     heroTitle: 'Sente e reagisce ai suoni',
@@ -61,6 +66,11 @@ export const weeklyDevelopment = {
     events: ['Udito quasi completo', 'Deglutisce il liquido amniotico', 'Ciclo sonno-veglia attivo'],
     mamaTip: 'Parlagli e cantagli: riconoscerà la tua voce dalla nascita.',
     papaTip: 'Anche la tua voce grave arriva perfettamente. Leggigli una storia.',
+    curiosities: [
+      'Il bambino inizia a percepire i sapori del cibo che mangi attraverso il liquido amniotico.',
+      'Il suo udito è così sviluppato che può sussultare se sente un rumore improvviso.',
+      'Dorme circa 12-14 ore al giorno, alternando fasi di veglia e riposo.'
+    ],
   },
   22: {
     heroTitle: 'Ha già le impronte digitali',
@@ -70,6 +80,11 @@ export const weeklyDevelopment = {
     events: ['Impronte digitali formate', 'Ciglia e sopracciglia visibili', 'La pelle inizia a inspessirsi'],
     mamaTip: 'Inizia a pensare al corso preparto: i posti si esauriscono in fretta.',
     papaTip: 'Partecipa al corso di preparazione al parto: non è "roba da mamme".',
+    curiosities: [
+      'Le sue impronte digitali sono ormai uniche e completamente formate.',
+      'Il bimbo è grande circa come una spiga di mais 🌽',
+      'Inizia a fare dei piccoli movimenti con le labbra, come se stesse provando a succhiare.'
+    ],
   },
   23: {
     heroTitle: 'Il cervello accelera',
@@ -79,6 +94,11 @@ export const weeklyDevelopment = {
     events: ['Sviluppo cerebrale accelerato', 'Orecchino interno completo', 'Polmoni in sviluppo'],
     mamaTip: 'Omega-3 (salmone, noci) supportano lo sviluppo cerebrale del bimbo.',
     papaTip: 'Aiutala a ridurre lo stress: è il miglior nutrimento per il cervello del bimbo.',
+    curiosities: [
+      'Il cervello sta crescendo così velocemente che la sua testa è la parte più grande del corpo.',
+      'Pesa circa 500 grammi: mezzo chilo di puro amore!',
+      'Il suo pancreas inizia a produrre insulina.'
+    ],
   },
   24: {
     heroTitle: 'I polmoni si preparano',
@@ -97,6 +117,11 @@ export const weeklyDevelopment = {
     ],
     mamaTip: 'Questo è il traguardo della viabilità fetale. Un momento importante.',
     papaTip: 'Comincia a guardare i seggiolini auto — richiede ricerca e installazione.',
+    curiosities: [
+      'I suoi polmoni producono già il surfattante, essenziale per respirare alla nascita.',
+      'Può sentire il tuo battito cardiaco e persino il rumore della tua digestione!',
+      'In questa fase ha ancora molto spazio per muoversi e fare capriole.'
+    ],
   },
   25: {
     heroTitle: 'Apre e chiude le mani',
@@ -106,6 +131,11 @@ export const weeklyDevelopment = {
     events: ['Riflesso di prensione attivo', 'Capelli visibili', 'Grasso sottocutaneo in accumulo'],
     mamaTip: 'Bruciori di stomaco frequenti? Pasti piccoli e frequenti aiutano molto.',
     papaTip: 'Falle trovare già preparato il cuscino di supporto quando va a letto.',
+    curiosities: [
+      'Il suo riflesso di prensione è attivo: stringe forte il cordone ombelicale.',
+      'Le unghie delle mani sono quasi completamente formate.',
+      'Inizia ad accumulare grasso bruno, che servirà a scaldarlo dopo la nascita.'
+    ],
   },
   26: {
     heroTitle: 'Apre gli occhi per la prima volta',
@@ -115,6 +145,11 @@ export const weeklyDevelopment = {
     events: ['Occhi aperti per la prima volta', 'Risponde alla luce', 'Sistema immunitario in sviluppo'],
     mamaTip: 'Punta una torcia sulla pancia: reagirà al cambiamento di luce!',
     papaTip: 'Inizia a leggere del travaglio e del parto — capisci cosa accadrà.',
+    curiosities: [
+      'Il bambino apre gli occhi per la prima volta questa settimana!',
+      'Può distinguere tra luce naturale e buio fuori dalla pancia.',
+      'Le sue ciglia sono ora completamente cresciute.'
+    ],
   },
   27: {
     heroTitle: 'Cicli di sonno regolari',
@@ -124,6 +159,11 @@ export const weeklyDevelopment = {
     events: ['Ciclo sonno-veglia stabilizzato', 'Il cervello si sviluppa rapidamente', 'Sviluppo polmonare avanzato'],
     mamaTip: 'È normale sentirlo più attivo di sera — sta prendendo il ritmo inverso!',
     papaTip: 'Iniziate a scegliere il nome: i pediatri dicono che i bimbi reagiscono al loro nome già in utero.',
+    curiosities: [
+      'Il bimbo ha ormai dei ritmi di sonno e veglia abbastanza definiti.',
+      'Sulla sua pelle inizia a formarsi la vernix caseosa per proteggerlo dall\'acqua.',
+      'Pesa quasi un chilo: un traguardo importantissimo!'
+    ],
   },
   28: {
     heroTitle: 'Giacomo sta formando i ricordi',
@@ -140,8 +180,13 @@ export const weeklyDevelopment = {
       { id: 't1', type: 'visit', title: 'Visita di controllo', desc: 'Controllo pressione e urine.' },
       { id: 't2', type: 'health', title: 'Idratazione', desc: 'Bevi 2 litri d\'acqua al giorno.' }
     ],
-    mamaTip: 'Terzo trimestre iniziato! Pianifica le visite con il ginecologo ogni 2 settimane.',
-    papaTip: 'Organizza la valigia ospedale insieme a lei: riduce l\'ansia di entrambi.',
+    mamaTip: 'Sara, il terzo trimestre è iniziato! Goditi questi momenti e riposa.',
+    papaTip: 'Valerio, organizza la valigia ospedale per Sara: Giacomo potrebbe arrivare presto!',
+    curiosities: [
+      'Entriamo ufficialmente nel terzo trimestre!',
+      'Il cervello del bimbo sta iniziando a creare i primi solchi e circonvoluzioni.',
+      'Sogna molto: l\'attività cerebrale mostra cicli di sonno REM simili ai nostri.'
+    ],
   },
   29: {
     heroTitle: 'Accumula grasso prezioso',
@@ -149,8 +194,13 @@ export const weeklyDevelopment = {
     sizeEmoji: '🍆', sizeLabel: 'Melanzana',
     length: '38 cm', weight: '1.25 kg',
     events: ['Strato di grasso in formazione', 'Muscoli si rafforzano', 'Sistema nervoso in maturazione'],
-    mamaTip: 'La posizione sul fianco sinistro migliora la circolazione verso la placenta.',
-    papaTip: 'Prepara la casa: montare la culla può richiedere più del previsto!',
+    mamaTip: 'Sara, dormire sul fianco sinistro aiuta la circolazione per Giacomo.',
+    papaTip: 'Valerio, prepara la stanza! Giacomo avrà bisogno di un posto accogliente.',
+    curiosities: [
+      'La sua pelle sta diventando meno trasparente grazie allo strato di grasso.',
+      'Il midollo osseo ha preso il sopravvento nella produzione dei globuli rossi.',
+      'Muove molto braccia e gambe perché ha ancora un po\' di spazio per girarsi.'
+    ],
   },
   30: {
     heroTitle: 'Respira come prova generale',
@@ -158,8 +208,13 @@ export const weeklyDevelopment = {
     sizeEmoji: '🥥', sizeLabel: 'Cocco',
     length: '40 cm', weight: '1.35 kg',
     events: ['Respirazione ritmica fetale', 'Il cervello elabora suoni e luci', 'Unghie completamente formate'],
-    mamaTip: 'Le smagliature aumentano: l\'olio di mandorle applicato mattina e sera aiuta.',
-    papaTip: 'Fai la lista del corredo neonato insieme — è un momento di connessione bellissimo.',
+    mamaTip: 'Sara, idratati bene: Giacomo cresce e assorbe molti liquidi.',
+    papaTip: 'Valerio, fai la lista degli acquisti per Giacomo insieme a Sara.',
+    curiosities: [
+      'Il bimo compie movimenti ritmici di "respirazione" come esercizio per il futuro.',
+      'Le unghie dei piedi sono ora complete e visibili.',
+      'Il volume del liquido amniotico ha raggiunto il suo picco massimo.'
+    ],
   },
   31: {
     heroTitle: 'Sviluppo dei Sensi',
@@ -173,9 +228,8 @@ export const weeklyDevelopment = {
       longDesc: 'Se il bambino nascesse ora, avrebbe ottime possibilità di respirare quasi autonomamente. Il grasso sottocutaneo aumenta per aiutarlo a regolare la temperatura.'
     },
     essentialTips: [
-      { id: 'w31_t1', type: 'visit', title: 'Ecografia', desc: 'Premi per visualizzare i task' },
-      { id: 'w31_t2', type: 'health', title: 'Posizioni travaglio', desc: 'Premi per visualizzare i task' },
-      { id: 'w31_t3', type: 'prep', title: 'Borsa Ospedale', desc: 'Premi per visualizzare i task' }
+      { id: 'w31_t1', type: 'visit', title: 'Ecografia di Accrescimento', desc: 'Monitora la crescita di Giacomo e la funzionalità della placenta.' },
+      { id: 'w31_t2', type: 'health', title: 'Posizioni Travaglio', desc: 'Scopri le posizioni che aiutano a gestire il dolore e favoriscono il bimbo.' }
     ],
     curiosities: [
       'Il bambino dorme fino a 15 ore al giorno in questa fase.',

@@ -14,11 +14,11 @@ function saveJSON(key, value) {
 }
 
 export function UserProvider({ children }) {
-    const [userRole, setUserRole] = useState('papa'); // Default to papa as requested
-    const [userName, setUserName] = useState('Valerio');
-    const [babyName, setBabyName] = useState('Giacomo');
-    const [babySex, setBabySex] = useState('M'); // 'M' | 'F' | null
-    const [partnerName, setPartnerName] = useState('Sara');
+    const [userRole, setUserRole] = useState(null);
+    const [userName, setUserName] = useState('');
+    const [babyName, setBabyName] = useState('');
+    const [babySex, setBabySex] = useState(null); // 'M' | 'F' | null
+    const [partnerName, setPartnerName] = useState('');
     const [conceptionDate, setConceptionDate] = useState(null);
     const [onboardingDone, setOnboardingDone] = useState(false);
 

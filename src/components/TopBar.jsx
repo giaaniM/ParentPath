@@ -52,7 +52,7 @@ export default function TopBar() {
                         onClick={() => setMenuOpen(!menuOpen)}
                         aria-label="Menu profilo"
                     >
-                        {isMamma ? '🤰' : '👨'}
+                        {isMamma ? (userName === 'Sara' ? '🤰' : '👩') : (userName === 'Valerio' ? '👨' : '👤')}
                     </button>
 
                     {menuOpen && (

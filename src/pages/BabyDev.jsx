@@ -75,8 +75,8 @@ export default function BabyDev() {
     };
 
     // Finding synthetic row milestones (Last, Current, Next)
-    const currentMilestoneIndex = milestones.findIndex(m => !m.completed && m.week > (isBorn ? 40 : currentWeek)) - 1;
-    const actualCurrentIndex = currentMilestoneIndex < 0 ? milestones.findIndex(m => m.week >= (isBorn ? 40 : currentWeek)) : currentMilestoneIndex;
+    const actualCurrentIndex = milestones.reduce((prev, m, idx) => 
+        m.week <= (isBorn ? 40 : currentWeek) ? idx : prev, 0);
     
     // Synthetic 3 (Last, Current, Next)
     const previewMilestones = [
@@ -135,9 +135,9 @@ export default function BabyDev() {
                             className="bd-edit-profile-btn glass"
                             onClick={() => setIsEditOpen(true)}
                             aria-label="Modifica Profilo"
-                            style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 20, width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                            style={{ position: 'absolute', top: '100px', right: '20px', zIndex: 20, width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                         >
-                            <Edit2 size={16} color="var(--midnight)" />
+                            <Edit2 size={18} color="var(--midnight)" />
                         </button>
                         <div className="bd-hero-top">
                             <div className="bd-hc-eyebrow">
@@ -224,22 +224,29 @@ export default function BabyDev() {
                         Consigli per la Settimana {currentWeek}
                     </h2>
                     
-                    {/* Personalized Tip Card */}
-                    <div className="bd-v4-tip-card personalized glass-accent" style={{ marginBottom: '16px' }}>
-                        <div className="bd-v4-tip-icon-special">
-                            <Heart size={20} />
-                        </div>
-                        <div className="bd-v4-tip-content">
-                            <span className="bd-v4-tip-eyebrow">Consiglio per te ({userRole === 'mamma' ? 'Mamma' : 'Papà'})</span>
-                            <p className="bd-v4-tip-text-special">{userRole === 'mamma' ? phaseDev.mamaTip : phaseDev.papaTip}</p>
-                        </div>
-                    </div>
+
 
                     <div className="bd-tips-stack">
-                        {(phaseDev.essentialTips || weekData.essentialTips || []).map(tip => (
+                        {/* VISITE CONSIGLIATE - Consolidated */}
+                        <div className="bd-v4-tip-card visit-variant">
+                            <div className="bd-v4-tip-icon visit">
+                                <Stethoscope size={18} />
+                            </div>
+                            <div className="bd-v4-tip-content">
+                                <span className="bd-v4-tip-label">Visite Consigliate</span>
+                                <p className="bd-v4-tip-desc">
+                                    {isBorn 
+                                        ? "Bilancio di salute 1° mese e controllo ittero." 
+                                        : "Ecografia di accrescimento, controllo pressione e urina."}
+                                </p>
+                            </div>
+                            <ChevronRight size={16} className="bd-v4-tip-arrow" />
+                        </div>
+
+                        {/* HEALTH TIPS */}
+                        {(phaseDev.essentialTips || weekData.essentialTips || []).filter(t => t.type !== 'visit').map(tip => (
                             <div key={tip.id} className="bd-v4-tip-card">
                                 <div className={`bd-v4-tip-icon ${tip.type || 'health'}`}>
-                                    {tip.type === 'visit' && <Stethoscope size={18} />}
                                     {tip.type === 'health' && <Plus size={18} />}
                                     {tip.type === 'prep' && <ShoppingBag size={18} />}
                                     {tip.type === 'tip' && <Heart size={18} />}
@@ -253,26 +260,32 @@ export default function BabyDev() {
                                 <ChevronRight size={16} className="bd-v4-tip-arrow" />
                             </div>
                         ))}
+
+                        {/* SINGLE CURIOSITY CARD */}
+                        {(phaseDev.curiosities || weekData.curiosities || []).length > 0 && (
+                            <div className="bd-v4-tip-card curiosity-variant">
+                                <div className="bd-v4-tip-icon curiosity">
+                                    <Lightbulb size={18} />
+                                </div>
+                                <div className="bd-v4-tip-content">
+                                    <span className="bd-v4-tip-label">Lo sapevi?</span>
+                                    <div style={{ marginTop: '6px' }}>
+                                        {(phaseDev.curiosities || weekData.curiosities || []).map((c, i) => (
+                                            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: i < (phaseDev.curiosities || weekData.curiosities).length - 1 ? '8px' : 0 }}>
+                                                <span className="bd-v4-tip-desc" style={{ color: 'var(--midnight)', fontWeight: 'bold' }}>•</span>
+                                                <p className="bd-v4-tip-desc">
+                                                    {c}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <ChevronRight size={16} className="bd-v4-tip-arrow" />
+                            </div>
+                        )}
                     </div>
 
-                    {/* NEW SECTION: CURIOSITIES */}
-                    {(phaseDev.curiosities || weekData.curiosities) && (
-                        <div className="bd-v4-curiosities ru d4">
-                            <h2 className="bd-v4-section-title" style={{ marginTop: '32px' }}>
-                                Curiosità <span className="bd-v4-title-tag">(per questa settimana)</span>
-                            </h2>
-                            <div className="bd-curiosity-row">
-                                {(phaseDev.curiosities || weekData.curiosities || []).map((c, i) => (
-                                    <div key={i} className="bd-curiosity-card glass">
-                                        <div className="bd-curiosity-icon">
-                                            <Lightbulb size={20} />
-                                        </div>
-                                        <p className="bd-curiosity-text">{c}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+
 
                     {/* SMART PATH 3.0: SYNTHETIC ROW */}
                     <div className="bd-smart-path-3" style={{ marginTop: '16px' }}>

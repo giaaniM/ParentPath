@@ -4,7 +4,7 @@ import { useUser } from '../context/UserContext';
 import { pregnancy, getWeekData, smartTrackerData, pregnancyWeather, newbornWeather, partnerSync, weeklyDevelopment, newbornDevelopment, pregnancyTasks, newbornTasks, getHomeTips } from '../data/mockData';
 import { useWeekData } from '../hooks/useWeekData';
 import {
-    Sparkles, Stethoscope, ShoppingBag, ClipboardCheck,
+    Sparkles, Stethoscope, ShoppingBag, ClipboardCheck, X,
     Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw
 } from 'lucide-react';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -82,6 +82,7 @@ export default function Home() {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSosOpen, setIsSosOpen] = useState(false);
     const [selectedTip, setSelectedTip] = useState(null);
+    const [showRoleTip, setShowRoleTip] = useState(true);
 
     const nextAppointment = useMemo(() => {
         if (!appointments || appointments.length === 0) return null;
@@ -282,6 +283,22 @@ export default function Home() {
                 </h2>
             </div>
 
+            {/* DYNAMIC ROLE TIP */}
+            {showRoleTip && (
+                <div className="home-role-tip ru d1">
+                    <div className="home-rt-icon">✨</div>
+                    <div className="home-rt-text">
+                        <div className="home-rt-title">Consiglio per te</div>
+                        <div className="home-rt-sub">
+                            {isMamma ? legacyWeekData?.mamaTip : legacyWeekData?.papaTip}
+                        </div>
+                    </div>
+                    <button className="home-rt-close" onClick={() => setShowRoleTip(false)}>
+                        <X size={18} />
+                    </button>
+                </div>
+            )}
+
             {/* HERO CARD (REDESIGNED V4 - PREMIUM GLASS) */}
             <div className={`hc-v4 glass ${isBorn ? 'hc--born' : ''} ru d1`} onClick={() => navigate('/baby')} style={{ marginBottom: '24px' }}>
                 <div className="hc-mesh-v2"></div>
@@ -311,8 +328,11 @@ export default function Home() {
                                     <span className="hc-percent-v4">{percent}%</span>
                                 </div>
                                 <div className="hc-size-v4">
-                                    <span style={{ fontSize: '13px' }}>{sizeEmoji}</span>
-                                    <span>Grande come <strong>{sizeLabel}</strong></span>
+                                    <span className="hc-size-emoji">{sizeEmoji}</span>
+                                    <div className="hc-size-info-text">
+                                        <span className="hc-size-label-small">Grande come</span>
+                                        <span className="hc-size-val-bold">{sizeLabel}</span>
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -337,7 +357,7 @@ export default function Home() {
                         <div className="htp-eyebrow">Agenda: {isBorn ? 'Mese 1' : `Settimana ${weeks}`}</div>
                         <div className="htp-title">
                             {completedCount === totalTasks && totalTasks > 0
-                                ? "Tutto pronto! 🎉"
+                                ? "Tutti i Task Completati"
                                 : `${completedCount} di ${totalTasks} completati`}
                         </div>
                         <div className="htp-desc">
