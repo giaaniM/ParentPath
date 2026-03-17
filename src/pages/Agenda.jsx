@@ -38,6 +38,7 @@ export default function Agenda() {
     // New appointment modal state
     const [newApptName, setNewApptName] = useState('');
     const [newApptTime, setNewApptTime] = useState('09:00');
+    const [newApptDate, setNewApptDate] = useState('');
     const [newApptNotes, setNewApptNotes] = useState('');
 
     // Modal swipe logic
@@ -147,11 +148,13 @@ export default function Agenda() {
         addAppointment({
             name: newApptName.trim(),
             time: newApptTime,
+            date: newApptDate, // Added date
             notes: newApptNotes.trim(),
             weekNumber: selectedWeek,
         });
         setNewApptName('');
         setNewApptTime('09:00');
+        setNewApptDate('');
         setNewApptNotes('');
         setShowApptModal(false);
     };
@@ -296,7 +299,7 @@ export default function Agenda() {
                             {appointments.sort((a, b) => a.time.localeCompare(b.time)).map(appt => (
                                 <div key={appt.id} className="agenda-appt-item">
                                     <div className="agenda-appt-time">
-                                        <Clock size={14} /> {appt.time}
+                                        <Clock size={14} /> {appt.date && `${appt.date.split('-').reverse().join('/')} `}{appt.time}
                                     </div>
                                     <div className="agenda-appt-info">
                                         <div className="agenda-appt-name">{appt.name}</div>
@@ -479,14 +482,25 @@ export default function Agenda() {
                                 onChange={e => setNewApptName(e.target.value)}
                                 autoFocus
                             />
-                            <div className="agenda-time-picker">
-                                <label><Clock size={14} /> Orario</label>
-                                <input
-                                    className="agenda-input"
-                                    type="time"
-                                    value={newApptTime}
-                                    onChange={e => setNewApptTime(e.target.value)}
-                                />
+                            <div className="agenda-appt-details-row">
+                                <div className="agenda-time-picker">
+                                    <label><Calendar size={14} /> Data</label>
+                                    <input
+                                        className="agenda-input"
+                                        type="date"
+                                        value={newApptDate}
+                                        onChange={e => setNewApptDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="agenda-time-picker">
+                                    <label><Clock size={14} /> Orario</label>
+                                    <input
+                                        className="agenda-input"
+                                        type="time"
+                                        value={newApptTime}
+                                        onChange={e => setNewApptTime(e.target.value)}
+                                    />
+                                </div>
                             </div>
                             <textarea
                                 className="agenda-input agenda-textarea"

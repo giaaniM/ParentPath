@@ -670,10 +670,16 @@
     color: var(--aqua);
 }
 
+.agenda-appt-details-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
 .agenda-time-picker {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .agenda-time-picker label {

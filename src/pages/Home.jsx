@@ -87,21 +87,43 @@ export default function Home() {
     const nextAppointment = useMemo(() => {
         if (!appointments || appointments.length === 0) return null;
         
-        // Find appointments for future weeks or later today? 
-        // For simple logic, let's take the first one found in the appointments array
-        // (Usually users add them for the selected week in Agenda, so we find upcoming ones)
-        const sorted = [...appointments].sort((a, b) => a.weekNumber - b.weekNumber || a.time.localeCompare(b.time));
-        const now = new Date();
-        // Simple logic: first one in the list for now
+        // Sort by date then by time
+        const sorted = [...appointments].sort((a, b) => {
+            // First priority: items with dates
+            if (a.date && !b.date) return -1;
+            if (!a.date && b.date) return 1;
+            if (a.date && b.date) {
+                if (a.date !== b.date) return a.date.localeCompare(b.date);
+            }
+            // Fallback to week number
+            if (a.weekNumber !== b.weekNumber) return a.weekNumber - b.weekNumber;
+            // Time sort
+            return a.time.localeCompare(b.time);
+        });
+        
         return sorted[0];
     }, [appointments]);
 
     const getVisitDaysRemaining = (appt) => {
         if (!appt) return null;
-        // Mocking logic for "3 giorni" etc.
+        if (appt.date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const apptDate = new Date(appt.date);
+            apptDate.setHours(0, 0, 0, 0);
+            const diffTime = apptDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Oggi';
+            if (diffDays === 1) return 'Domani';
+            if (diffDays < 0) return 'Scaduto';
+            return `Tra ${diffDays} giorni`;
+        }
+        
+        // Fallback to legacy logic
         const diff = appt.weekNumber - weeks;
         if (diff === 0) return 'Oggi';
-        if (diff === 1) return '7 giorni';
+        if (diff === 1) return 'Tra 7 gg';
         return `${diff * 7} giorni`;
     };
 
@@ -394,7 +416,7 @@ export default function Home() {
                         <div className="htp-visit-icon"><Stethoscope size={16} /></div>
                         <div className="htp-visit-info">
                             <span className="htp-visit-label">Prossima Visita:</span>
-                            <span className="htp-visit-text">{nextAppointment.name} · 20 Mar</span>
+                            <span className="htp-visit-text">{nextAppointment.name} {nextAppointment.date && `· ${nextAppointment.date.split('-').reverse().slice(0, 2).join('/')}`}</span>
                         </div>
                         <div className="htp-visit-tag">{getVisitDaysRemaining(nextAppointment)}</div>
                     </div>
