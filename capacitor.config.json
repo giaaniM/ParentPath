@@ -2,7 +2,9 @@
   "appId": "com.valeriopadovano.parentpath",
   "appName": "ParentPath",
   "webDir": "dist",
-  "bundledWebRuntime": false,
+  "ios": {
+    "useSwiftPackageManager": true
+  },
   "server": {
     "cleartext": true
   }
