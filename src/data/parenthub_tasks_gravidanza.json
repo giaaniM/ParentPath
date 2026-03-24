@@ -1,0 +1,962 @@
+[
+  {
+    "id": "S1",
+    "week": 1,
+    "trimester": 1,
+    "baby_development": "Fecondazione e impianto dell'embrione",
+    "comparative_size": "microscopico",
+    "tasks": {
+      "mom": [
+        "Prenota la prima visita ginecologica appena possibile",
+        "Inizia l'acido folico se non lo stai già prendendo",
+        "Evita alcol, fumo e farmaci non prescritti"
+      ],
+      "dad": [
+        "Supporta la partner nella prenotazione della prima visita",
+        "Informati sull'acido folico e perché è importante",
+        "Riduci alcol e fumo — il tuo stile di vita conta anche ora"
+      ],
+      "couple": [
+        "Decidete insieme quando e a chi dare la notizia",
+        "Iniziate a pensare a come cambierà la vostra routine",
+        "Parlate delle vostre aspettative sulla gravidanza"
+      ]
+    }
+  },
+  {
+    "id": "S2",
+    "week": 2,
+    "trimester": 1,
+    "baby_development": "Divisione cellulare rapida",
+    "comparative_size": "microscopico",
+    "tasks": {
+      "mom": [
+        "Inizia a tenere un diario della gravidanza",
+        "Fai attenzione ai primi sintomi — nausea, stanchezza, seno sensibile",
+        "Evita cibi crudi, insaccati e formaggi molli"
+      ],
+      "dad": [
+        "Informati sui sintomi delle prime settimane per supportarla meglio",
+        "Prepara pasti leggeri se ha nausea",
+        "Cerca un ginecologo di fiducia se non ne avete uno"
+      ],
+      "couple": [
+        "Iniziate a documentare questo viaggio — foto, note, emozioni",
+        "Parlate di come gestire l'annuncio al lavoro",
+        "Condividete le vostre paure — è normale averle"
+      ]
+    }
+  },
+  {
+    "id": "S3",
+    "week": 3,
+    "trimester": 1,
+    "baby_development": "Formazione del disco embrionale",
+    "comparative_size": "pochi mm",
+    "tasks": {
+      "mom": [
+        "Prenota l'ecografia delle 8-10 settimane",
+        "Inizia a mangiare più frutta e verdura",
+        "Riposa quando puoi — la stanchezza è normale"
+      ],
+      "dad": [
+        "Cerca di ridurre i suoi impegni domestici",
+        "Preparati a venire alle prime visite — la tua presenza conta",
+        "Leggi qualcosa sullo sviluppo embrionale"
+      ],
+      "couple": [
+        "Parlate di chi volete come ginecologo/ostetrica",
+        "Iniziate a pensare al budget per la gravidanza",
+        "Decidete se fare i test genetici del primo trimestre"
+      ]
+    }
+  },
+  {
+    "id": "S4",
+    "week": 4,
+    "trimester": 1,
+    "baby_development": "Formazione del tubo neurale",
+    "comparative_size": "seme di papavero",
+    "tasks": {
+      "mom": [
+        "Evita sport ad alto impatto",
+        "Bevi almeno 1,5 litri di acqua al giorno",
+        "Parla col medico di eventuali farmaci che stai prendendo"
+      ],
+      "dad": [
+        "Accompagnala alla prima ecografia",
+        "Prenditi cura della casa nei giorni in cui è più stanca",
+        "Informati sul congedo di paternità nella tua azienda"
+      ],
+      "couple": [
+        "Guardate insieme video sullo sviluppo fetale",
+        "Iniziate a parlare dei nomi che vi piacciono",
+        "Condividete la notizia con i genitori se vi sentite pronti"
+      ]
+    }
+  },
+  {
+    "id": "S5",
+    "week": 5,
+    "trimester": 1,
+    "baby_development": "Inizio battito cardiaco",
+    "comparative_size": "seme di sesamo",
+    "tasks": {
+      "mom": [
+        "Prima visita ginecologica — porta la lista di domande",
+        "Inizia a pensare a quale tipo di parto vorresti",
+        "Parla della nausea col medico se è molto forte"
+      ],
+      "dad": [
+        "Sei alla prima visita? Porta un taccuino e prendi appunti",
+        "Prepara domande da fare al ginecologo",
+        "Inizia a informarti sul congedo parentale"
+      ],
+      "couple": [
+        "Prima ecografia — potrete sentire il battito per la prima volta",
+        "Iniziate a pensare a dove partorire",
+        "Parlate di come coinvolgerete i nonni futuri"
+      ]
+    }
+  },
+  {
+    "id": "S6",
+    "week": 6,
+    "trimester": 1,
+    "baby_development": "Formazione occhi, orecchie e arti",
+    "comparative_size": "lenticchia",
+    "tasks": {
+      "mom": [
+        "Fai esami del sangue di routine se prescritti",
+        "Inizia yoga prenatale o stretching leggero",
+        "Evita il calore eccessivo — saune e bagni caldi"
+      ],
+      "dad": [
+        "Fai una passeggiata serale con lei — fa bene a entrambi",
+        "Cucina qualcosa di sano — la nutrizione conta molto ora",
+        "Inizia a leggere un libro sulla gravidanza"
+      ],
+      "couple": [
+        "Iniziate a pensare alla camera del bambino",
+        "Parlate delle vostre tradizioni familiari che volete mantenere",
+        "Fate una serata speciale per celebrare le 6 settimane"
+      ]
+    }
+  },
+  {
+    "id": "S7",
+    "week": 7,
+    "trimester": 1,
+    "baby_development": "Cervello in rapido sviluppo",
+    "comparative_size": "mirtillo",
+    "tasks": {
+      "mom": [
+        "Controlla i livelli di ferro con il medico",
+        "Inizia a idratare la pancia con olio o crema",
+        "Evita stress eccessivo — pratica tecniche di rilassamento"
+      ],
+      "dad": [
+        "Massaggia la schiena o i piedi se è stanca",
+        "Inizia a pensare a come riorganizzare gli spazi in casa",
+        "Parla con amici che sono già padri — chiedi consiglio"
+      ],
+      "couple": [
+        "Iniziate a pensare a chi chiederete di essere presenti al parto",
+        "Fate insieme una lista di cose da comprare per il bebè",
+        "Parlate delle vostre aspettative sul ruolo di genitori"
+      ]
+    }
+  },
+  {
+    "id": "S8",
+    "week": 8,
+    "trimester": 1,
+    "baby_development": "Dita di mani e piedi visibili",
+    "comparative_size": "fagiolo",
+    "tasks": {
+      "mom": [
+        "Prima ecografia ufficiale se non l'hai ancora fatta",
+        "Inizia a tenere traccia dei tuoi sintomi",
+        "Parla col medico delle vaccinazioni consigliate in gravidanza"
+      ],
+      "dad": [
+        "Vieni all'ecografia — è un momento che non dimenticherai",
+        "Chiedi al medico cosa puoi fare per supportarla meglio",
+        "Inizia a seguire account di paternità per ispirazione"
+      ],
+      "couple": [
+        "Vedrete il bebè per la prima volta all'ecografia",
+        "Decidete se scoprire il sesso o aspettare",
+        "Iniziate a parlare dell'assistenza al bambino dopo la nascita"
+      ]
+    }
+  },
+  {
+    "id": "S9",
+    "week": 9,
+    "trimester": 1,
+    "baby_development": "Organi genitali iniziano a formarsi",
+    "comparative_size": "uva",
+    "tasks": {
+      "mom": [
+        "Evita la tintoria dei capelli nel primo trimestre",
+        "Inizia esercizi del pavimento pelvico (Kegel)",
+        "Parla col medico se hai perdite o dolori insoliti"
+      ],
+      "dad": [
+        "Informati sui sintomi del secondo trimestre — migliorerà presto",
+        "Preparati a eventuali sbalzi d'umore — è normale",
+        "Pensa a come vuoi essere presente durante il lavoro del parto"
+      ],
+      "couple": [
+        "Iniziate a seguire corsi online pre-parto",
+        "Parlate di come vi dividerete le notti una volta nato",
+        "Guardate insieme un documentario sulla nascita"
+      ]
+    }
+  },
+  {
+    "id": "S10",
+    "week": 10,
+    "trimester": 1,
+    "baby_development": "Tutte le strutture essenziali presenti",
+    "comparative_size": "fragola",
+    "tasks": {
+      "mom": [
+        "Esami del primo trimestre — translucenza nucale",
+        "Inizia a pensare al tipo di allattamento che preferisci",
+        "Continua con gli esercizi del pavimento pelvico"
+      ],
+      "dad": [
+        "Vieni alla translucenza nucale — è una visita importante",
+        "Inizia a pensare al congedo di paternità obbligatorio (10 giorni)",
+        "Organizza qualcosa di speciale per il completamento del primo mese"
+      ],
+      "couple": [
+        "Translucenza nucale — discutete insieme i risultati col medico",
+        "Iniziate a pensare al corso preparto",
+        "Decidete se condividere la notizia più ampiamente"
+      ]
+    }
+  },
+  {
+    "id": "S11",
+    "week": 11,
+    "trimester": 1,
+    "baby_development": "Fine periodo embrionale, inizio fetale",
+    "comparative_size": "lime",
+    "tasks": {
+      "mom": [
+        "Inizia a comprare reggiseni premaman",
+        "Parla col medico delle integrazioni necessarie",
+        "Inizia a pianificare il congedo di maternità"
+      ],
+      "dad": [
+        "Informati sulle pratiche burocratiche per il riconoscimento del figlio",
+        "Inizia a pensare all'assicurazione sanitaria per il bebè",
+        "Sorprendila con un piccolo gesto — questo periodo è faticoso"
+      ],
+      "couple": [
+        "Fine primo trimestre quasi raggiunta — celebrate!",
+        "Iniziate a visitare le strutture ospedaliere per il parto",
+        "Parlate di come cambiranno le vostre finanze con l'arrivo del bebè"
+      ]
+    }
+  },
+  {
+    "id": "S12",
+    "week": 12,
+    "trimester": 1,
+    "baby_development": "Riflessi iniziali, fine primo trimestre",
+    "comparative_size": "prugna",
+    "tasks": {
+      "mom": [
+        "Fine primo trimestre — la nausea inizia a diminuire per molte",
+        "Inizia yoga prenatale in palestra",
+        "Pianifica la comunicazione al lavoro della gravidanza"
+      ],
+      "dad": [
+        "Accompagnala all'ecografia di fine primo trimestre",
+        "Inizia a informarti su passeggini e seggiolini auto",
+        "Parla con il tuo datore di lavoro del congedo di paternità"
+      ],
+      "couple": [
+        "Ecografia di fine primo trimestre — momento emozionante",
+        "È il momento giusto per dire a tutti la notizia",
+        "Iniziate il corso preparto insieme"
+      ]
+    }
+  },
+  {
+    "id": "S13",
+    "week": 13,
+    "trimester": 2,
+    "baby_development": "Impronta digitale si forma",
+    "comparative_size": "pesca",
+    "tasks": {
+      "mom": [
+        "Inizia il secondo trimestre con energia rinnovata",
+        "Pensa a come annunciare la gravidanza sui social se vuoi",
+        "Continua con gli esercizi del pavimento pelvico"
+      ],
+      "dad": [
+        "Informati sul diritto al congedo di paternità facoltativo",
+        "Inizia a pensare a come allestire la camera del bebè",
+        "Porta a casa un piccolo regalo per celebrare il secondo trimestre"
+      ],
+      "couple": [
+        "Secondo trimestre — il periodo più sereno della gravidanza",
+        "Prenotate un weekend romantico prima che diventi difficile viaggiare",
+        "Iniziate a seguire insieme i corsi preparto"
+      ]
+    }
+  },
+  {
+    "id": "S14",
+    "week": 14,
+    "trimester": 2,
+    "baby_development": "Espressioni facciali possibili",
+    "comparative_size": "limone",
+    "tasks": {
+      "mom": [
+        "Visita ginecologica di controllo del secondo trimestre",
+        "Inizia a dormire sul fianco sinistro — migliora la circolazione",
+        "Idrata quotidianamente la pancia per prevenire le smagliature"
+      ],
+      "dad": [
+        "Parla con lui/lei — sente già la voce dall'esterno",
+        "Inizia a costruire la lista nascita su Amazon",
+        "Informati sui bonus bebè e incentivi statali disponibili"
+      ],
+      "couple": [
+        "Visita insieme — fai domande sul secondo trimestre",
+        "Iniziate a pensare al nome definitivo",
+        "Parlate di come sarà la vostra vita con il bebè"
+      ]
+    }
+  },
+  {
+    "id": "S15",
+    "week": 15,
+    "trimester": 2,
+    "baby_development": "Sente i suoni esterni",
+    "comparative_size": "mela",
+    "tasks": {
+      "mom": [
+        "Il bambino sente — inizia a parlargli o cantargli",
+        "Fai esercizio fisico moderato — camminata, nuoto",
+        "Controlla i valori del ferro negli esami"
+      ],
+      "dad": [
+        "Metti le cuffie sulla pancia e fagli sentire la tua voce",
+        "Leggi ad alta voce con la pancia vicina — il bebè sente",
+        "Prenota un corso di massaggio neonatale"
+      ],
+      "couple": [
+        "Create una playlist musicale da far sentire al bebè",
+        "Iniziate a scrivere lettere al vostro bambino",
+        "Parlate delle vostre aspettative sull'allattamento"
+      ]
+    }
+  },
+  {
+    "id": "S16",
+    "week": 16,
+    "trimester": 2,
+    "baby_development": "Movimenti coordinati",
+    "comparative_size": "avocado",
+    "tasks": {
+      "mom": [
+        "Potresti sentire i primi movimenti — tienine traccia",
+        "Inizia a documentare la pancia con foto mensili",
+        "Parla col medico della morfologica da prenotare"
+      ],
+      "dad": [
+        "Prepara un posto comodo dove può riposare",
+        "Inizia a fare ricerche sul tipo di parto",
+        "Sorprendila con una serata romantica"
+      ],
+      "couple": [
+        "Prenotate l'ecografia morfologica (intorno alla 20a settimana)",
+        "Iniziate a visitare i reparti maternità degli ospedali vicini",
+        "Fate la prima foto della pancia insieme"
+      ]
+    }
+  },
+  {
+    "id": "S17",
+    "week": 17,
+    "trimester": 2,
+    "baby_development": "Grasso sottocutaneo inizia a formarsi",
+    "comparative_size": "pera",
+    "tasks": {
+      "mom": [
+        "Inizia esercizi per il mal di schiena — è comune ora",
+        "Controlla se hai bisogno di scarpe più comode",
+        "Parla col medico se senti contrazioni"
+      ],
+      "dad": [
+        "Informati sul tipo di parto che lei preferisce",
+        "Inizia a leggere libri sulla cura del neonato",
+        "Pensa a come gestire il lavoro nei giorni intorno al parto"
+      ],
+      "couple": [
+        "Iniziate a cercare la pediatra per dopo la nascita",
+        "Parlate di come volete gestire le visite di parenti dopo il parto",
+        "Guardate insieme video su come si fa il bagnetto al neonato"
+      ]
+    }
+  },
+  {
+    "id": "S18",
+    "week": 18,
+    "trimester": 2,
+    "baby_development": "Primi movimenti percepibili dalla mamma",
+    "comparative_size": "peperone",
+    "tasks": {
+      "mom": [
+        "Probabilmente senti i movimenti del bebè — è normale!",
+        "Fai controllare la pressione arteriosa regolarmente",
+        "Inizia a pensare al piano del parto"
+      ],
+      "dad": [
+        "Aspetta con la mano sulla pancia — potresti sentire i calci",
+        "Inizia a informarti sull'epidurale e le opzioni per il parto",
+        "Prepara domande per la prossima visita ginecologica"
+      ],
+      "couple": [
+        "Primo calcio sentito — momento magico da condividere",
+        "Iniziate a scrivere il piano del parto insieme",
+        "Parlate di chi volete presente in sala parto"
+      ]
+    }
+  },
+  {
+    "id": "S19",
+    "week": 19,
+    "trimester": 2,
+    "baby_development": "Reni funzionanti, produce urina",
+    "comparative_size": "pomodoro",
+    "tasks": {
+      "mom": [
+        "Prepara una lista di cose essenziali per la borsa parto",
+        "Inizia a fare esercizi di respirazione per il parto",
+        "Controlla lo stato delle tue vaccinazioni"
+      ],
+      "dad": [
+        "Inizia a preparare la camera del bebè",
+        "Fai una lista delle cose da avere pronte per il giorno del parto",
+        "Parla con il tuo datore di lavoro delle date di congedo"
+      ],
+      "couple": [
+        "Iniziate ad assemblare i mobili della cameretta",
+        "Parlate di come gestirete i turni di notte",
+        "Decidete la pediatra definitiva"
+      ]
+    }
+  },
+  {
+    "id": "S20",
+    "week": 20,
+    "trimester": 2,
+    "baby_development": "Metà gravidanza — ecografia morfologica",
+    "comparative_size": "banana",
+    "tasks": {
+      "mom": [
+        "Ecografia morfologica — visita chiave della gravidanza",
+        "Chiedi al medico la posizione del bambino",
+        "Inizia a pensare all'iscrizione all'asilo nido"
+      ],
+      "dad": [
+        "Vieni assolutamente alla morfologica — scoprirete se volete il sesso",
+        "Porta la macchina fotografica o prepara il telefono",
+        "Inizia a pensare alla festa di benvenuto per il bebè"
+      ],
+      "couple": [
+        "Morfologica — uno dei momenti più emozionanti della gravidanza",
+        "Decidete se scoprire il sesso oggi",
+        "Celebrate questa milestone importante insieme"
+      ]
+    }
+  },
+  {
+    "id": "S21",
+    "week": 21,
+    "trimester": 2,
+    "baby_development": "Sopracciglia e palpebre visibili",
+    "comparative_size": "carota",
+    "tasks": {
+      "mom": [
+        "Fai sentire al bebè musica classica o jazz",
+        "Continua con gli esercizi di Kegel",
+        "Controlla che la tua dieta sia ricca di calcio"
+      ],
+      "dad": [
+        "Leggi una storia al bebè ogni sera — lo sente davvero",
+        "Inizia a montare i mobili della cameretta",
+        "Prenota un servizio fotografico di maternità"
+      ],
+      "couple": [
+        "Create una routine serale di parlare al bebè insieme",
+        "Visitate insieme un negozio di articoli per bambini",
+        "Iniziate a scegliere i colori della cameretta"
+      ]
+    }
+  },
+  {
+    "id": "S22",
+    "week": 22,
+    "trimester": 2,
+    "baby_development": "Senso del tatto sviluppato",
+    "comparative_size": "papaya",
+    "tasks": {
+      "mom": [
+        "Visita ginecologica di controllo",
+        "Inizia a portare con te snack sani ovunque vai",
+        "Parla col medico del test di Coombs se Rh negativa"
+      ],
+      "dad": [
+        "Impara a riconoscere i segnali del travaglio prematuro",
+        "Prepara un kit di emergenza per il parto improvviso",
+        "Accompagnala alla visita di controllo"
+      ],
+      "couple": [
+        "Iniziate a compilare i documenti per l'iscrizione al nido",
+        "Parlate del piano B per il parto se arriva di notte",
+        "Fate una lista di chi chiamare subito quando inizia il travaglio"
+      ]
+    }
+  },
+  {
+    "id": "S23",
+    "week": 23,
+    "trimester": 2,
+    "baby_development": "Polmoni in sviluppo",
+    "comparative_size": "mango",
+    "tasks": {
+      "mom": [
+        "Inizia a dormire con un cuscino tra le gambe",
+        "Parla col medico se hai bruciori di stomaco frequenti",
+        "Inizia a pensare all'allattamento — prenota un corso"
+      ],
+      "dad": [
+        "Compra il cuscino per gravidanza se non l'avete ancora",
+        "Inizia a imparare le tecniche di respirazione per il parto",
+        "Prepara una playlist rilassante per il travaglio"
+      ],
+      "couple": [
+        "Prenotate il corso preparto se non l'avete fatto",
+        "Iniziate a pensare al nome definitivo",
+        "Parlate di come vi volete sentire durante il parto"
+      ]
+    }
+  },
+  {
+    "id": "S24",
+    "week": 24,
+    "trimester": 2,
+    "baby_development": "Udito completamente sviluppato",
+    "comparative_size": "spiga di mais",
+    "tasks": {
+      "mom": [
+        "Test di screening per il diabete gestazionale",
+        "Fai esercizi di respirazione diaframmatica",
+        "Evita di stare in piedi a lungo senza pause"
+      ],
+      "dad": [
+        "Parla con lui ogni sera — lo sente e riconosce la tua voce",
+        "Controlla lo stato della macchina per il viaggio in ospedale",
+        "Inizia a imparare a fare il bagno al neonato guardando tutorial"
+      ],
+      "couple": [
+        "Test diabete gestazionale — fatelo insieme",
+        "Iniziate a comprare i primi vestiti per il neonato",
+        "Parlate delle vostre paure sul parto apertamente"
+      ]
+    }
+  },
+  {
+    "id": "S25",
+    "week": 25,
+    "trimester": 2,
+    "baby_development": "Risponde alla luce",
+    "comparative_size": "cavolfiore",
+    "tasks": {
+      "mom": [
+        "Controlla i movimenti del bebè regolarmente",
+        "Inizia a comprare i vestiti per il neonato",
+        "Parla col medico del posizionamento del bambino"
+      ],
+      "dad": [
+        "Impara a contare i movimenti fetali insieme a lei",
+        "Inizia a comprare i pannolini — approfitta delle offerte",
+        "Prepara una borsa di emergenza per l'ospedale"
+      ],
+      "couple": [
+        "Iniziate a preparare la borsa per l'ospedale",
+        "Visitare il reparto maternità dell'ospedale scelto",
+        "Parlate del piano per il congedo dopo il parto"
+      ]
+    }
+  },
+  {
+    "id": "S26",
+    "week": 26,
+    "trimester": 2,
+    "baby_development": "Occhi iniziano ad aprirsi",
+    "comparative_size": "lattuga",
+    "tasks": {
+      "mom": [
+        "Visita di controllo — controlla la pressione",
+        "Inizia a tenere traccia dei movimenti fetali quotidianamente",
+        "Compra reggiseni da allattamento"
+      ],
+      "dad": [
+        "Accompagnala alla visita di controllo",
+        "Prepara la stazione per il cambio pannolini",
+        "Inizia a cucinare e congelare pasti per il post-parto"
+      ],
+      "couple": [
+        "Iniziate a cucinare e congelare pasti — salverà le notti post-parto",
+        "Parlate di come gestirete i visitatori nelle prime settimane",
+        "Fate un tour del reparto maternità"
+      ]
+    }
+  },
+  {
+    "id": "S27",
+    "week": 27,
+    "trimester": 2,
+    "baby_development": "Fine secondo trimestre",
+    "comparative_size": "cavolo",
+    "tasks": {
+      "mom": [
+        "Fine secondo trimestre — fai un bilancio",
+        "Prenota le visite del terzo trimestre",
+        "Inizia a fare la lista del corredino definitiva"
+      ],
+      "dad": [
+        "Sorprendila celebrando la fine del secondo trimestre",
+        "Controlla che la cameretta sia pronta o quasi",
+        "Parla con amici neo-papà — chiedi consigli pratici"
+      ],
+      "couple": [
+        "Fine secondo trimestre — celebrate insieme",
+        "Aggiornate il piano del parto con le ultime decisioni",
+        "Fate una foto ricordo della pancia a 27 settimane"
+      ]
+    }
+  },
+  {
+    "id": "S28",
+    "week": 28,
+    "trimester": 3,
+    "baby_development": "Inizio terzo trimestre — si gira spesso",
+    "comparative_size": "melanzana",
+    "tasks": {
+      "mom": [
+        "Inizio terzo trimestre — visite più frequenti da ora",
+        "Conta i movimenti del bebè ogni giorno",
+        "Parla col medico della posizione cefalica"
+      ],
+      "dad": [
+        "Inizia terzo trimestre — il grande momento si avvicina",
+        "Controlla che il seggiolino auto sia installato correttamente",
+        "Prepara un piano per ogni scenario del parto"
+      ],
+      "couple": [
+        "Terzo trimestre iniziato — ultimi preparativi",
+        "Finite la borsa per l'ospedale",
+        "Parlate di come vi supporterete durante il travaglio"
+      ]
+    }
+  },
+  {
+    "id": "S29",
+    "week": 29,
+    "trimester": 3,
+    "baby_development": "Muscoli e polmoni più forti",
+    "comparative_size": "zucca butternut",
+    "tasks": {
+      "mom": [
+        "Visita ginecologica — controlla la posizione del bebè",
+        "Inizia a fare esercizi specifici per favorire la posizione cefalica",
+        "Riposa il più possibile — il corpo si sta preparando"
+      ],
+      "dad": [
+        "Impara le tecniche di massaggio per il travaglio",
+        "Installa l'app dell'ospedale o del punto nascita",
+        "Prepara il numero del ginecologo in un posto facilmente accessibile"
+      ],
+      "couple": [
+        "Corso preparto — ultimo momento per imparare le tecniche",
+        "Decidete il piano B se non si riesce ad arrivare in ospedale",
+        "Iniziate a pensare al nome definitivo — è quasi ora"
+      ]
+    }
+  },
+  {
+    "id": "S30",
+    "week": 30,
+    "trimester": 3,
+    "baby_development": "Cervello in crescita rapida",
+    "comparative_size": "cavolo cappuccio",
+    "tasks": {
+      "mom": [
+        "Esami del terzo trimestre — streptococco gruppo B",
+        "Compila i documenti per il congedo di maternità",
+        "Inizia a prepararti mentalmente per il parto"
+      ],
+      "dad": [
+        "Finisci di preparare la cameretta completamente",
+        "Controlla di avere tutto per accogliere il bebè a casa",
+        "Pianifica come gestire il lavoro nelle settimane intorno al parto"
+      ],
+      "couple": [
+        "Visita pre-ricovero all'ospedale",
+        "Finire la lista nascita e fare gli acquisti mancanti",
+        "Parlate di come vi direte 'grazie' a vicenda dopo il parto"
+      ]
+    }
+  },
+  {
+    "id": "S31",
+    "week": 31,
+    "trimester": 3,
+    "baby_development": "Processa informazioni, testa verso il basso",
+    "comparative_size": "cocco",
+    "tasks": {
+      "mom": [
+        "Visita di controllo — cardiotocografia se necessaria",
+        "Inizia il congedo di maternità anticipato se necessario",
+        "Prepara mentalmente la lista delle cose da sbrigare prima del parto"
+      ],
+      "dad": [
+        "Aggiorna il tuo numero di telefono con tutti — potrebbe chiamarti chiunque",
+        "Assicurati che la macchina abbia il pieno",
+        "Prepara uno zaino con le tue cose per l'ospedale"
+      ],
+      "couple": [
+        "Ultime visite alle famiglie prima del grande evento",
+        "Fate una lista di chi chiamare subito dopo la nascita",
+        "Decidete le regole per le visite in ospedale"
+      ]
+    }
+  },
+  {
+    "id": "S32",
+    "week": 32,
+    "trimester": 3,
+    "baby_development": "Unghie complete, capelli presenti",
+    "comparative_size": "zucchina grande",
+    "tasks": {
+      "mom": [
+        "Ecografia di crescita fetale",
+        "Prepara la borsa per l'ospedale definitivamente",
+        "Riposa — il corpo accumula energie per il parto"
+      ],
+      "dad": [
+        "Ecografia di crescita — vieni assolutamente",
+        "Fai una prova del percorso in ospedale a diverse ore",
+        "Cucina e congela pasti per le prime settimane post-parto"
+      ],
+      "couple": [
+        "Ecografia crescita — uno degli ultimi sguardi prima della nascita",
+        "Borsa per l'ospedale — controllate insieme che ci sia tutto",
+        "Parlate di come sarà il primo giorno a casa con il bebè"
+      ]
+    }
+  },
+  {
+    "id": "S33",
+    "week": 33,
+    "trimester": 3,
+    "baby_development": "Sistema immunitario si rafforza",
+    "comparative_size": "ananas",
+    "tasks": {
+      "mom": [
+        "Visita di controllo — monitora la pressione",
+        "Fai pratica con le tecniche di respirazione per il travaglio",
+        "Decidi il tuo piano per le ultime settimane di lavoro"
+      ],
+      "dad": [
+        "Inizia il congedo di paternità il giorno dopo il parto — programmalo ora",
+        "Prepara il benvenuto a casa — fiori, candele, musica",
+        "Compra i regali per il bebè che volete avere pronti"
+      ],
+      "couple": [
+        "Prenotate il servizio fotografico newborn",
+        "Parlate di come gestirete il primo mese a casa",
+        "Celebrate la vostra ultima settimana come coppia senza figli"
+      ]
+    }
+  },
+  {
+    "id": "S34",
+    "week": 34,
+    "trimester": 3,
+    "baby_development": "Sistema nervoso centrale maturo",
+    "comparative_size": "melone",
+    "tasks": {
+      "mom": [
+        "Test streptococco gruppo B",
+        "Inizia a prepararti psicologicamente per l'allattamento",
+        "Parla col medico del piano per il dopo-parto"
+      ],
+      "dad": [
+        "Hai finito tutto in cameretta? Ultimo controllo",
+        "Prepara una playlist rilassante per il rientro a casa",
+        "Parla con i nonni futuri di come vorreste gestire le visite"
+      ],
+      "couple": [
+        "Ultima ecografia di controllo in molti casi",
+        "Decidete il nome definitivamente",
+        "Fate una cena romantica — le ultime prima della nascita"
+      ]
+    }
+  },
+  {
+    "id": "S35",
+    "week": 35,
+    "trimester": 3,
+    "baby_development": "Reni completamente sviluppati",
+    "comparative_size": "melone invernale",
+    "tasks": {
+      "mom": [
+        "Visita settimanale da ora in molti casi",
+        "Prepara tutto ciò che serve per l'allattamento",
+        "Parla col medico dei segnali del travaglio"
+      ],
+      "dad": [
+        "Tieni il telefono sempre carico e vicino",
+        "Finisci qualsiasi pendenza lavorativa urgente",
+        "Scrivi una lettera al vostro bambino che sta per arrivare"
+      ],
+      "couple": [
+        "Ultima serata romantica — godetevela",
+        "Rileggi insieme il piano del parto",
+        "Scrivete insieme una lettera al vostro bambino"
+      ]
+    }
+  },
+  {
+    "id": "S36",
+    "week": 36,
+    "trimester": 3,
+    "baby_development": "Considerato quasi a termine",
+    "comparative_size": "lattuga romana",
+    "tasks": {
+      "mom": [
+        "Visita settimanale — controlla la dilatazione",
+        "Finisci tutto ciò che hai in sospeso al lavoro",
+        "Dormi quando puoi — il tuo corpo si sta preparando"
+      ],
+      "dad": [
+        "Fai smartworking o prendi giorni di ferie se possibile",
+        "Prepara tutto per essere reperibile 24/7",
+        "Porta una sorpresa — siete quasi alla fine"
+      ],
+      "couple": [
+        "Visita settimanale — andate insieme",
+        "Iniziate a parlare del parto come qualcosa di imminente",
+        "Fate la foto della pancia a 36 settimane"
+      ]
+    }
+  },
+  {
+    "id": "S37",
+    "week": 37,
+    "trimester": 3,
+    "baby_development": "Polmoni pronti per respirare",
+    "comparative_size": "bietola",
+    "tasks": {
+      "mom": [
+        "Gravidanza a termine — il bebè potrebbe arrivare in qualsiasi momento",
+        "Riconosci i segnali del travaglio — contrazioni regolari, perdita del tappo",
+        "Riposa il più possibile"
+      ],
+      "dad": [
+        "Non andare mai lontano senza dirle dove sei",
+        "Tieni la borsa in macchina già da ora",
+        "Rileggi le istruzioni su cosa fare quando inizia il travaglio"
+      ],
+      "couple": [
+        "È il momento — il bebè è pronto",
+        "Ripassate insieme i segnali del travaglio",
+        "Godetevi gli ultimi momenti in due"
+      ]
+    }
+  },
+  {
+    "id": "S38",
+    "week": 38,
+    "trimester": 3,
+    "baby_development": "Riflessi completi",
+    "comparative_size": "porro",
+    "tasks": {
+      "mom": [
+        "Visita settimanale — controlla lo stato del collo dell'utero",
+        "Mantieni la calma — il corpo sa cosa fare",
+        "Fai cose rilassanti — cinema, libri, musica"
+      ],
+      "dad": [
+        "Stai vicino — questo è il momento più importante",
+        "Prepara un messaggio di gruppo da mandare appena nasce",
+        "Sorprendila con qualcosa di speciale — è quasi ora"
+      ],
+      "couple": [
+        "Ultimi giorni in due — viveteli appieno",
+        "Ripassate insieme il percorso per l'ospedale",
+        "Parlate di come sarà il momento in cui lo/la vedrete per la prima volta"
+      ]
+    }
+  },
+  {
+    "id": "S39",
+    "week": 39,
+    "trimester": 3,
+    "baby_development": "Tutto pronto per la nascita",
+    "comparative_size": "anguria piccola",
+    "tasks": {
+      "mom": [
+        "Tutto pronto — ora aspetta con pazienza",
+        "Cammina se ti fa star bene — aiuta la discesa del bebè",
+        "Chiama il medico se le contrazioni sono ogni 5 minuti per un'ora"
+      ],
+      "dad": [
+        "Sii presente e calmo — lei ha bisogno di te ora più che mai",
+        "Tieni il telefono carico sempre",
+        "Prepara uno spuntino per l'ospedale — il travaglio può durare ore"
+      ],
+      "couple": [
+        "È quasi ora — respira e godetevi questi ultimi momenti",
+        "Chiamate il medico se avete dubbi — non abbiate paura di disturbare",
+        "Ricordate che qualunque cosa succeda, lo farete insieme"
+      ]
+    }
+  },
+  {
+    "id": "S40",
+    "week": 40,
+    "trimester": 3,
+    "baby_development": "Termine gravidanza — nascita imminente",
+    "comparative_size": "zucca",
+    "tasks": {
+      "mom": [
+        "Termine ufficiale — il bebè arriva quando è pronto",
+        "Parla col medico di induzione se superi la 41a settimana",
+        "Mantieni la calma — è quasi finita"
+      ],
+      "dad": [
+        "Sei il suo supporto più importante in questo momento",
+        "Tieni tutto pronto — potrebbe essere oggi",
+        "Dicci come stai andando — sei quasi papà"
+      ],
+      "couple": [
+        "Il grande giorno è arrivato o è imminente",
+        "Ricordate di fotografare tutto — anche i momenti difficili",
+        "Siete pronti — lo farete meravigliosamente"
+      ]
+    }
+  }
+]

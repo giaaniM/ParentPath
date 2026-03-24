@@ -1,23 +1,24 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import { useWeekData } from '../hooks/useWeekData';
 import { pregnancyTasks, newbornTasks } from '../data/mockData';
 import {
     ChevronLeft, ChevronRight, Plus, Calendar, Clock,
-    MapPin, Sparkles, X, Check
+    MapPin, Sparkles, X, Check, Info, Stethoscope
 } from 'lucide-react';
+import AddAppointmentModal from '../components/AddAppointmentModal';
 import './Agenda.css';
 
 const PRIORITY_ORDER = { critica: 0, alta: 1, media: 2, bassa: 3 };
 
 export default function Agenda() {
     const {
-        getWeeksPregnant, babyStatus, partnerName,
+        babyStatus, partnerName,
         toggleTaskCompleted, isTaskCompleted,
         getWeekNote, setWeekNote,
         getAppointmentsForWeek, addAppointment, removeAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
-        dismissTask, isTaskDismissed,
+        dismissTask, isTaskDismissed, getWeeksPregnant, setMockWeek, mockWeek
     } = useUser();
 
     const currentWeek = getWeeksPregnant();
@@ -26,22 +27,18 @@ export default function Agenda() {
     const [showApptModal, setShowApptModal] = useState(false);
     const [editingNote, setEditingNote] = useState(false);
     const [noteText, setNoteText] = useState('');
+    const [selectedTaskWhy, setSelectedTaskWhy] = useState(null);
 
     // New task modal state
     const [newTaskText, setNewTaskText] = useState('');
+    const [newTaskNote, setNewTaskNote] = useState('');
     const [newTaskAssignee, setNewTaskAssignee] = useState('entrambi');
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [editingTaskText, setEditingTaskText] = useState('');
     const [swipingTaskId, setSwipingTaskId] = useState(null);
     const touchStartX = useRef(null);
 
-    // New appointment modal state
-    const [newApptName, setNewApptName] = useState('');
-    const [newApptTime, setNewApptTime] = useState('09:00');
-    const [newApptDate, setNewApptDate] = useState('');
-    const [newApptNotes, setNewApptNotes] = useState('');
-
-    // Modal swipe logic
+    // Modal swipe logic (shared with task modal)
     const taskModalRef = useRef(null);
     const apptModalRef = useRef(null);
     const modalDragY = useRef(0);
@@ -73,16 +70,16 @@ export default function Agenda() {
 
     const weekData = useWeekData(selectedWeek);
     const weekNote = getWeekNote(selectedWeek);
-    const appointments = getAppointmentsForWeek(selectedWeek);
+    const userAppointments = getAppointmentsForWeek(selectedWeek);
     const customTasks = getCustomTasksForWeek(selectedWeek);
 
-    // Combine JSON suggested tasks + site-wide mock tasks + user custom tasks
+    const appointments = getAppointmentsForWeek(selectedWeek);
+
+    // Combine JSON suggested tasks + user custom tasks
     const allTasks = useMemo(() => {
         const jsonTasks = weekData?.tasks || [];
-        const baseTasks = (babyStatus === 'nato' ? newbornTasks : pregnancyTasks).map(t => ({ ...t, suggested: true }));
         
-        // Filter base tasks that might be relevant for this week (simplified: show all if no week match)
-        const combined = [...jsonTasks, ...baseTasks, ...customTasks];
+        const combined = [...jsonTasks, ...customTasks];
         // Filter out empty tasks, dismissed tasks, and sort
         return combined
             .filter(t => t.text && t.text.trim())
@@ -94,6 +91,12 @@ export default function Agenda() {
                 return (PRIORITY_ORDER[a.priority] || 3) - (PRIORITY_ORDER[b.priority] || 3);
             });
     }, [weekData, customTasks, selectedWeek, isTaskCompleted, isTaskDismissed]);
+
+    // Reset swiping and editing when week changes
+    useEffect(() => {
+        setSwipingTaskId(null);
+        setEditingTaskId(null);
+    }, [selectedWeek]);
 
     // Calculate the date range for a given week
     const getWeekDateRange = (week) => {
@@ -133,32 +136,18 @@ export default function Agenda() {
         if (!newTaskText.trim()) return;
         addCustomTask({
             text: newTaskText.trim(),
+            note: newTaskNote.trim(),
             assignee: newTaskAssignee,
             priority: 'media',
             category: 'preparazione',
             weekNumber: selectedWeek,
         });
         setNewTaskText('');
+        setNewTaskNote('');
         setNewTaskAssignee('entrambi');
         setShowTaskModal(false);
     };
 
-    const handleAddAppointment = () => {
-        if (!newApptName.trim()) return;
-        addAppointment({
-            name: newApptName.trim(),
-            time: newApptTime,
-            date: newApptDate, // Added date
-            notes: newApptNotes.trim(),
-            weekNumber: selectedWeek,
-        });
-        setNewApptName('');
-        setNewApptTime('09:00');
-        setNewApptDate('');
-        setNewApptNotes('');
-        setShowApptModal(false);
-    };
-    
     const handleDeleteTask = (task) => {
         if (task.suggested) {
             dismissTask(task.id);
@@ -182,6 +171,7 @@ export default function Agenda() {
     };
 
     const handleTouchStart = (e, taskId) => {
+        if (selectedWeek !== currentWeek) return;
         if (swipingTaskId && swipingTaskId !== taskId) {
             setSwipingTaskId(null);
         }
@@ -189,6 +179,7 @@ export default function Agenda() {
     };
 
     const handleTouchMove = (e, taskId) => {
+        if (selectedWeek !== currentWeek) return;
         if (!touchStartX.current) return;
         const deltaX = touchStartX.current - e.touches[0].clientX;
         if (deltaX > 50) {
@@ -298,15 +289,33 @@ export default function Agenda() {
                         <div className="agenda-appt-list">
                             {appointments.sort((a, b) => a.time.localeCompare(b.time)).map(appt => (
                                 <div key={appt.id} className="agenda-appt-item">
-                                    <div className="agenda-appt-time">
-                                        <Clock size={14} /> {appt.date && `${appt.date.split('-').reverse().join('/')} `}{appt.time}
+                                    <div className="agenda-appt-icon">
+                                        <Stethoscope size={20} />
                                     </div>
                                     <div className="agenda-appt-info">
                                         <div className="agenda-appt-name">{appt.name}</div>
+                                        <div className="agenda-appt-meta">
+                                            {appt.date && (
+                                                <span className="agenda-appt-meta-pill">
+                                                    <Calendar size={12} strokeWidth={2.5} />
+                                                    {appt.date.split('-').reverse().slice(0, 2).join('/')}
+                                                </span>
+                                            )}
+                                            <span className="agenda-appt-meta-pill">
+                                                <Clock size={12} strokeWidth={2.5} />
+                                                {appt.time}
+                                            </span>
+                                            {appt.location && (
+                                                <span className="agenda-appt-meta-text">
+                                                    <MapPin size={12} strokeWidth={2.5} />
+                                                    {appt.location}
+                                                </span>
+                                            )}
+                                        </div>
                                         {appt.notes && <div className="agenda-appt-notes">{appt.notes}</div>}
                                     </div>
                                     <button className="agenda-appt-del" onClick={() => removeAppointment(appt.id)}>
-                                        <X size={14} />
+                                        <X size={16} />
                                     </button>
                                 </div>
                             ))}
@@ -330,7 +339,7 @@ export default function Agenda() {
                         const assignee = getAssigneeBadge(task.assignee);
                         const priority = getPriorityBadge(task.priority);
                         const isEditing = editingTaskId === task.id;
-                        const isSwiping = swipingTaskId === task.id;
+                        const isSwiping = swipingTaskId && swipingTaskId === task.id;
 
                         return (
                             <div
@@ -340,15 +349,18 @@ export default function Agenda() {
                                 onTouchMove={(e) => handleTouchMove(e, task.id)}
                             >
                                 <div
-                                    className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''}`}
+                                    className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''} ${selectedWeek !== currentWeek ? 'disabled' : ''}`}
                                     onClick={() => {
                                         if (isEditing) return;
                                         if (isSwiping) {
                                             setSwipingTaskId(null);
                                         } else {
-                                            toggleTaskCompleted(selectedWeek, task.id);
+                                            if (selectedWeek === currentWeek) {
+                                                toggleTaskCompleted(selectedWeek, task.id);
+                                            }
                                         }
                                     }}
+                                    style={selectedWeek !== currentWeek ? { opacity: 0.6 } : {}}
                                 >
                                     {task.suggested && (
                                         <div className="agenda-task-suggested-indicator">
@@ -374,7 +386,33 @@ export default function Agenda() {
                                                 autoFocus
                                             />
                                         ) : (
-                                            <div className="agenda-task-text">{task.text || 'Task senza descrizione'}</div>
+                                            <div className="agenda-task-text" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                                                <span style={{ flex: 1, paddingTop: '2px' }}>{task.text || 'Task senza descrizione'}</span>
+                                                {(task.why || task.note) && (
+                                                    <div 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedTaskWhy({ 
+                                                                text: task.text, 
+                                                                why: task.why || task.note 
+                                                            });
+                                                        }}
+                                                        style={{ 
+                                                            color: 'var(--primary)', 
+                                                            cursor: 'pointer', 
+                                                            display: 'flex', 
+                                                            alignItems: 'center', 
+                                                            backgroundColor: 'var(--stone-light)', 
+                                                            padding: '6px', 
+                                                            borderRadius: '50%', 
+                                                            marginTop: '6px' 
+                                                        }}
+                                                        className="agenda-info-icon"
+                                                    >
+                                                        <Info size={14} />
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
                                         <div className="agenda-task-badges">
                                             <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
@@ -433,6 +471,24 @@ export default function Agenda() {
                                 onChange={e => setNewTaskText(e.target.value)}
                                 autoFocus
                             />
+                            <textarea
+                                className="agenda-textarea"
+                                placeholder="Aggiungi una nota (opzionale)..."
+                                value={newTaskNote}
+                                onChange={e => setNewTaskNote(e.target.value)}
+                                rows={2}
+                                style={{ 
+                                    marginTop: '12px', 
+                                    width: '100%', 
+                                    borderRadius: '12px', 
+                                    padding: '12px', 
+                                    border: '1px solid var(--border)', 
+                                    fontFamily: 'inherit', 
+                                    fontSize: '14px',
+                                    background: 'rgba(0,0,0,0.02)',
+                                    resize: 'none'
+                                }}
+                            />
                             <div className="agenda-assignee-picker">
                                 <label>Assegna a:</label>
                                 <div className="agenda-assignee-options">
@@ -455,67 +511,40 @@ export default function Agenda() {
                 </div>
             )}
 
-            {/* ── ADD APPOINTMENT MODAL ── */}
-            {showApptModal && (
-                <div className="agenda-modal-overlay" onClick={() => setShowApptModal(false)}>
-                    <div 
-                        className={`agenda-modal ${isModalSwiping ? 'swiping' : ''}`}
-                        ref={apptModalRef}
-                        onClick={e => e.stopPropagation()}
-                        onTouchStart={handleModalTouchStart}
-                        onTouchMove={(e) => handleModalTouchMove(e, apptModalRef)}
-                        onTouchEnd={() => handleModalTouchEnd(setShowApptModal, apptModalRef)}
-                    >
+            {/* ── TASK INFO MODAL ── */}
+            {selectedTaskWhy && (
+                <div className="agenda-modal-overlay" onClick={() => setSelectedTaskWhy(null)}>
+                    <div className="agenda-modal" onClick={e => e.stopPropagation()}>
                         <div className="bd-bottom-sheet-handle" style={{ margin: '-12px auto 16px', background: 'rgba(0,0,0,0.08)' }} />
                         <div className="agenda-modal-header">
-                            <h3>Nuovo Appuntamento</h3>
-                            <button className="agenda-modal-close" onClick={() => setShowApptModal(false)}>
+                            <h3>Dettaglio Task</h3>
+                            <button className="agenda-modal-close" onClick={() => setSelectedTaskWhy(null)}>
                                 <X size={20} />
                             </button>
                         </div>
-                        <div className="agenda-modal-body">
-                            <input
-                                className="agenda-input"
-                                type="text"
-                                placeholder="Nome appuntamento"
-                                value={newApptName}
-                                onChange={e => setNewApptName(e.target.value)}
-                                autoFocus
-                            />
-                            <div className="agenda-appt-details-row">
-                                <div className="agenda-time-picker">
-                                    <label><Calendar size={14} /> Data</label>
-                                    <input
-                                        className="agenda-input"
-                                        type="date"
-                                        value={newApptDate}
-                                        onChange={e => setNewApptDate(e.target.value)}
-                                    />
+                        <div className="agenda-modal-body" style={{ padding: '0 20px 0px' }}>
+                            <p style={{ fontWeight: 600, marginBottom: '16px', fontSize: '16px', color: 'var(--midnight)' }}>{selectedTaskWhy.text}</p>
+                            <div style={{ backgroundColor: 'var(--stone-light)', padding: '16px', borderRadius: '12px', fontSize: '15px', color: 'var(--midnight)', lineHeight: 1.5 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--primary)' }}>
+                                    <Info size={18} />
+                                    <span style={{ fontWeight: 700 }}>Perché è importante?</span>
                                 </div>
-                                <div className="agenda-time-picker">
-                                    <label><Clock size={14} /> Orario</label>
-                                    <input
-                                        className="agenda-input"
-                                        type="time"
-                                        value={newApptTime}
-                                        onChange={e => setNewApptTime(e.target.value)}
-                                    />
-                                </div>
+                                {selectedTaskWhy.why}
                             </div>
-                            <textarea
-                                className="agenda-input agenda-textarea"
-                                placeholder="Note (opzionale)"
-                                value={newApptNotes}
-                                onChange={e => setNewApptNotes(e.target.value)}
-                                rows={2}
-                            />
                         </div>
-                        <button className="agenda-modal-cta" onClick={handleAddAppointment} disabled={!newApptName.trim()}>
-                            Aggiungi
+                        <button className="agenda-modal-cta" onClick={() => setSelectedTaskWhy(null)} style={{ margin: '20px', width: 'calc(100% - 40px)' }}>
+                            Ho capito
                         </button>
                     </div>
                 </div>
             )}
+
+            {/* SHARED ADD APPOINTMENT MODAL */}
+            <AddAppointmentModal 
+                isOpen={showApptModal}
+                onClose={() => setShowApptModal(false)}
+                weekNumber={selectedWeek}
+            />
         </div>
     );
 }

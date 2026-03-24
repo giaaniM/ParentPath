@@ -5,7 +5,7 @@ import { User, Settings, Shield, LogOut, Bell, Baby } from 'lucide-react';
 import './TopBar.css';
 
 export default function TopBar() {
-    const { isMamma, userName } = useUser();
+    const { isMamma, userName, mockWeek, setMockWeek } = useUser();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -37,6 +37,18 @@ export default function TopBar() {
 
             {/* Right side: Bell + Profile */}
             <div className="topbar__actions">
+                {/* TOOL DI DEBUG PER TESTARE LE SETTIMANE */}
+                <select 
+                    value={mockWeek || ''} 
+                    onChange={e => setMockWeek(e.target.value ? Number(e.target.value) : null)}
+                    style={{ marginRight: '12px', padding: '4px', borderRadius: '4px', border: '1px solid var(--stone)', fontSize: '12px', background: 'var(--surface)', color: 'var(--midnight)', height: '30px' }}
+                >
+                    <option value="">S. Reale</option>
+                    {[...Array(42)].map((_, i) => (
+                        <option key={i+1} value={i+1}>Settimana {i+1}</option>
+                    ))}
+                </select>
+
                 <button
                     className="topbar__bell"
                     onClick={() => navigate('/notifications')}

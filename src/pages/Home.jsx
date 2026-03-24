@@ -39,6 +39,17 @@ const PRIORITY_ORDER = { critica: 0, alta: 1, media: 2, bassa: 3 };
 // Used to make sure we only trigger the welcome push once per session
 let hasTriggeredWelcomePush = false;
 
+const APP_TIPS = [
+    "Per vedere l'avanzamento della crescita del tuo bambino, scorri verso il basso o vai nella tab Bimbo.",
+    "Per segnare i suoi calcetti usa il rapido counter qui nella schermata Home.",
+    "Vai nell'Agenda per gestire le cose da fare e visualizzare gli appuntamenti.",
+    "Tieni traccia di quanto bevi ogni giorno usando il contatore Acqua in Home.",
+    "Aggiorna l'umore ogni giorno per tenere traccia di come ti senti col passare del tempo.",
+    "Puoi segnare gli eventi e le visite mediche direttamente dalla tab Bimbo, finiranno nell'Agenda.",
+    "Sincronizza il tuo stato con il partner per fargli sapere come procede la giornata.",
+    "Aggiungi un nuovo task personalizzato dall'Agenda per non dimenticare la spesa ospedaliera."
+];
+
 const DotIndicator = ({ current, total, color }) => {
     return (
         <div className="dot-indicator">
@@ -83,6 +94,7 @@ export default function Home() {
     const [isSosOpen, setIsSosOpen] = useState(false);
     const [selectedTip, setSelectedTip] = useState(null);
     const [showRoleTip, setShowRoleTip] = useState(true);
+    const [randomTip] = useState(() => APP_TIPS[Math.floor(Math.random() * APP_TIPS.length)]);
 
     const nextAppointment = useMemo(() => {
         if (!appointments || appointments.length === 0) return null;
@@ -230,10 +242,9 @@ export default function Home() {
     // Task logic - Sync with Agenda.jsx
     const allTasks = useMemo(() => {
         const jsonTasks = weekJsonData?.tasks || [];
-        const baseTasks = babyStatus === 'nato' ? newbornTasks : pregnancyTasks;
         
-        // Combine JSON suggested tasks + site-wide static tasks + user custom tasks
-        const combined = [...jsonTasks, ...baseTasks, ...getCustomTasksForWeek(weeks)];
+        // Combine JSON suggested tasks + user custom tasks only
+        const combined = [...jsonTasks, ...getCustomTasksForWeek(weeks)];
         
         // Filter out empty tasks, those missing text, AND DISMISSED TASKS
         return combined.filter(t => t.text && t.text.trim() && !isTaskDismissed(t.id));
@@ -308,11 +319,11 @@ export default function Home() {
             {/* DYNAMIC ROLE TIP */}
             {showRoleTip && (
                 <div className="home-role-tip ru d1">
-                    <div className="home-rt-icon">✨</div>
+                    <div className="home-rt-icon">💡</div>
                     <div className="home-rt-text">
                         <div className="home-rt-title">Consiglio per te</div>
                         <div className="home-rt-sub">
-                            {isMamma ? legacyWeekData?.mamaTip : legacyWeekData?.papaTip}
+                            {randomTip}
                         </div>
                     </div>
                     <button className="home-rt-close" onClick={() => setShowRoleTip(false)}>
@@ -349,13 +360,15 @@ export default function Home() {
                                     </div>
                                     <span className="hc-percent-v4">{percent}%</span>
                                 </div>
-                                <div className="hc-size-v4">
-                                    <span className="hc-size-emoji">{sizeEmoji}</span>
-                                    <div className="hc-size-info-text">
-                                        <span className="hc-size-label-small">Grande come</span>
-                                        <span className="hc-size-val-bold">{sizeLabel}</span>
+                                {sizeLabel && (
+                                    <div className="hc-size-v4">
+                                        <span className="hc-size-emoji">{sizeEmoji}</span>
+                                        <div className="hc-size-info-text">
+                                            <span className="hc-size-label-small">Grande come</span>
+                                            <span className="hc-size-val-bold">{sizeLabel}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         ) : (
                             <div className="hc-born-v4">
@@ -378,12 +391,14 @@ export default function Home() {
                     <div className="htp-info">
                         <div className="htp-eyebrow">Agenda: {isBorn ? 'Mese 1' : `Settimana ${weeks}`}</div>
                         <div className="htp-title">
-                            {completedCount === totalTasks && totalTasks > 0
-                                ? "Tutti i Task Completati"
-                                : `${completedCount} di ${totalTasks} completati`}
+                            {totalTasks === 0 
+                                ? "Nessun task da fare" 
+                                : completedCount === totalTasks 
+                                    ? "Tutti i Task Completati"
+                                    : `${completedCount} di ${totalTasks} completati`}
                         </div>
                         <div className="htp-desc">
-                            Premi per visualizzare i task
+                            {totalTasks === 0 ? "Tocca qui per creare task in Agenda" : "Premi per visualizzare i task"}
                         </div>
                     </div>
 

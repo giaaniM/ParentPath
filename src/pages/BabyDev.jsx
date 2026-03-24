@@ -1,13 +1,15 @@
 import { useState, useRef } from 'react';
-import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2 } from 'lucide-react';
-import { pregnancy, milestones, getWeekData, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
+import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2, Calendar } from 'lucide-react';
+import { pregnancy, milestones, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
 import { useUser } from '../context/UserContext';
+import { useWeekData } from '../hooks/useWeekData';
 import EarlyYears from '../components/EarlyYears';
 import EditProfileModal from '../components/EditProfileModal';
+import AddAppointmentModal from '../components/AddAppointmentModal';
 import './BabyDev.css';
 
 export default function BabyDev() {
-    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex } = useUser();
+    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment } = useUser();
     const isBorn = babyStatus === 'nato';
     const currentWeek = isBorn ? 0 : getWeeksPregnant();
     const percent = isBorn ? 100 : Math.min(100, Math.round((currentWeek / pregnancy.totalWeeks) * 100));
@@ -20,8 +22,9 @@ export default function BabyDev() {
     const dueDateStr = dueDate.toLocaleDateString('it-IT', dateOptions);
 
     // Dynamic Phase Data
-    const phaseDev = isBorn ? newbornDevelopment.month1 : getWeekData(currentWeek);
-    const weekData = getWeekData(currentWeek);
+    const hookWeekData = useWeekData(currentWeek);
+    const phaseDev = isBorn ? newbornDevelopment.month1 : hookWeekData;
+    const weekData = hookWeekData;
 
     const weeklyEvents = (phaseDev?.events || []).map((desc, i) => ({
         id: i + 1,
@@ -34,7 +37,13 @@ export default function BabyDev() {
     const [showBornModal, setShowBornModal] = useState(false);
     const [isFullJourneyOpen, setIsFullJourneyOpen] = useState(false);
     const [selectedMilestone, setSelectedMilestone] = useState(null);
+    const [selectedVisit, setSelectedVisit] = useState(null);
+    const [showAddApptModal, setShowAddApptModal] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
+
+    // Appointment pre-fill state
+    const [apptInitialName, setApptInitialName] = useState('');
+    const [apptInitialNotes, setApptInitialNotes] = useState('');
 
     // Swipe-to-dismiss logic for Journey Modal
     const sheetRef = useRef(null);
@@ -88,6 +97,13 @@ export default function BabyDev() {
     const toggleBabyStatus = () => {
         // Inhibited for now as requested - we'll work on Primi Mesi later
         setShowBornModal(true);
+    };
+
+    const handleAddToAgenda = (visit) => {
+        setApptInitialName(visit.name || visit.title || visit.text);
+        setApptInitialNotes(visit.note || '');
+        setSelectedVisit(null);
+        setShowAddApptModal(true);
     };
 
     const getMilestoneIcon = (milestoneId, size = 20) => {
@@ -150,9 +166,11 @@ export default function BabyDev() {
                                 </span>
                             </h1>
                             <div className="bd-hc-pill-container">
-                                <div className="bd-hc-pill glass">
-                                    <span>{phaseDev?.sizeEmoji || '✨'} {isBorn ? (phaseDev?.sizeLabel || 'Neonato') : `Grande come ${phaseDev?.sizeLabel?.toLowerCase() || '...'}`}</span>
-                                </div>
+                                {phaseDev?.sizeLabel && (
+                                    <div className="bd-hc-pill glass">
+                                        <span style={{ whiteSpace: 'nowrap' }}>{phaseDev?.sizeEmoji || '✨'} {isBorn ? phaseDev?.sizeLabel : `Grande come ${phaseDev?.sizeLabel.toLowerCase()}`}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -209,7 +227,7 @@ export default function BabyDev() {
                                     <Sparkles size={20} className="sparkle-anim" />
                                 </div>
                                 <div className="bd-insight-title-box">
-                                    <span className="bd-insight-eyebrow">{phaseDev.developmentDetails?.title || 'Lo sviluppo di questa settimana'}</span>
+                                    <span className="bd-insight-eyebrow">{phaseDev.developmentDetails?.title || 'Curiosità'}</span>
                                     <h3 className="bd-insight-title">{phaseDev.developmentDetails?.fact || 'Crescita costante'}</h3>
                                 </div>
                             </div>
@@ -227,21 +245,36 @@ export default function BabyDev() {
 
 
                     <div className="bd-tips-stack">
-                        {/* VISITE CONSIGLIATE - Consolidated */}
-                        <div className="bd-v4-tip-card visit-variant">
-                            <div className="bd-v4-tip-icon visit">
-                                <Stethoscope size={18} />
-                            </div>
-                            <div className="bd-v4-tip-content">
-                                <span className="bd-v4-tip-label">Visite Consigliate</span>
-                                <p className="bd-v4-tip-desc">
-                                    {isBorn 
-                                        ? "Bilancio di salute 1° mese e controllo ittero." 
-                                        : "Ecografia di accrescimento, controllo pressione e urina."}
-                                </p>
-                            </div>
-                            <ChevronRight size={16} className="bd-v4-tip-arrow" />
-                        </div>
+                        {/* VISITE CONSIGLIATE - Individual Cards */}
+                        {(isBorn || (phaseDev?.recommendedVisits && phaseDev.recommendedVisits.length > 0)) && (
+                            <>
+                                {isBorn ? (
+                                    <div className="bd-v4-tip-card visit-variant">
+                                        <div className="bd-v4-tip-icon visit">
+                                            <Stethoscope size={18} />
+                                        </div>
+                                        <div className="bd-v4-tip-content">
+                                            <span className="bd-v4-tip-label">Visite Consigliate</span>
+                                            <p className="bd-v4-tip-desc">Bilancio di salute 1° mese e controllo ittero.</p>
+                                        </div>
+                                        <ChevronRight size={16} className="bd-v4-tip-arrow" />
+                                    </div>
+                                ) : (
+                                    phaseDev.recommendedVisits.map((v, i) => (
+                                        <div key={i} className="bd-v4-tip-card visit-variant" onClick={() => setSelectedVisit(v)}>
+                                            <div className="bd-v4-tip-icon visit">
+                                                <Stethoscope size={18} />
+                                            </div>
+                                            <div className="bd-v4-tip-content">
+                                                <span className="bd-v4-tip-label">Visita Consigliata</span>
+                                                <p className="bd-v4-tip-desc">{v.name || v.title || v.text}</p>
+                                            </div>
+                                            <ChevronRight size={16} className="bd-v4-tip-arrow" />
+                                        </div>
+                                    ))
+                                )}
+                            </>
+                        )}
 
                         {/* HEALTH TIPS */}
                         {(phaseDev.essentialTips || weekData.essentialTips || []).filter(t => t.type !== 'visit').map(tip => (
@@ -268,7 +301,7 @@ export default function BabyDev() {
                                     <Lightbulb size={18} />
                                 </div>
                                 <div className="bd-v4-tip-content">
-                                    <span className="bd-v4-tip-label">Lo sapevi?</span>
+                                    <span className="bd-v4-tip-label">Curiosità</span>
                                     <div style={{ marginTop: '6px' }}>
                                         {(phaseDev.curiosities || weekData.curiosities || []).map((c, i) => (
                                             <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: i < (phaseDev.curiosities || weekData.curiosities).length - 1 ? '8px' : 0 }}>
@@ -447,6 +480,54 @@ export default function BabyDev() {
                     </div>
                 </div>
             )}
+
+            {/* VISIT DETAILS POPUP */}
+            {selectedVisit && (
+                <div className="bd-modal-overlay popup-view" onClick={() => setSelectedVisit(null)}>
+                    <div className="bd-popup-card" onClick={e => e.stopPropagation()}>
+                        <div className="bd-popup-icon-ring visit">
+                            <Stethoscope size={32} />
+                        </div>
+                        <h3 className="bd-popup-title">{selectedVisit.name || selectedVisit.title || selectedVisit.text}</h3>
+                        
+                        <div className="bd-visit-info-grid">
+                            {selectedVisit.window && (
+                                <div className="bd-visit-info-item">
+                                    <span className="bd-visit-info-lbl">PERIODO</span>
+                                    <span className="bd-visit-info-val">{selectedVisit.window}</span>
+                                </div>
+                            )}
+                            {selectedVisit.urgency && (
+                                <div className="bd-visit-info-item">
+                                    <span className="bd-visit-info-lbl">URGENZA</span>
+                                    <span className={`bd-visit-info-val urgency-${selectedVisit.urgency}`}>{selectedVisit.urgency.toUpperCase()}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <p className="bd-popup-desc">
+                            {selectedVisit.note || "Questa visita è raccomandata per monitorare la tua salute e quella del tuo bambino in questa fase della gravidanza."}
+                        </p>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: 'auto' }}>
+                            <button className="bd-popup-btn" onClick={() => handleAddToAgenda(selectedVisit)}>
+                                <Calendar size={18} style={{ marginRight: '8px' }} />
+                                Aggiungi all'Agenda
+                            </button>
+                            <button className="bd-popup-btn secondary" onClick={() => setSelectedVisit(null)}>Ho capito</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* SHARED ADD APPOINTMENT MODAL */}
+            <AddAppointmentModal 
+                isOpen={showAddApptModal}
+                onClose={() => setShowAddApptModal(false)}
+                initialName={apptInitialName}
+                initialNotes={apptInitialNotes}
+                weekNumber={currentWeek}
+            />
 
             {/* MILESTONE DETAILS POPUP */}
             {selectedMilestone && (

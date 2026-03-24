@@ -26,6 +26,7 @@ export function UserProvider({ children }) {
     const [babyStatus, setBabyStatus] = useState('gravidanza'); // 'gravidanza' | 'nato'
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
     const [hospitalBag, setHospitalBag] = useState({}); // { itemId: boolean }
+    const [mockWeek, setMockWeek] = useState(null); // per debug/test
 
     // --- MVP Agenda / Task State (persisted) ---
     const [completedTasks, setCompletedTasks] = useState(() => loadJSON('pp_completedTasks', {}));
@@ -205,6 +206,7 @@ export function UserProvider({ children }) {
 
     // Compute weeks from conception
     const getWeeksPregnant = () => {
+        if (mockWeek !== null) return mockWeek;
         if (!conceptionDate) return 31; // fallback to demo week
         const now = new Date();
         const diffMs = now - new Date(conceptionDate);
@@ -353,6 +355,7 @@ export function UserProvider({ children }) {
             completeOnboarding, devLogin, login,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
+            mockWeek, setMockWeek,
         }}>
             {children}
         </UserContext.Provider>

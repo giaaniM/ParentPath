@@ -1,0 +1,925 @@
+[
+  {
+    "id": "S1",
+    "week": 1,
+    "trimester": 1,
+    "fetus": {
+      "note": "Settimane 1-2: la gravidanza è calcolata dall'ultimo ciclo mestruale. La fecondazione avviene intorno al giorno 14. In queste settimane non esiste ancora un embrione.",
+      "length_mm": null,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": null
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Inizia l'acido folico (400 mcg/die) se non lo stai già assumendo.",
+          "why": "Riduce il rischio di difetti del tubo neurale del 50-70%. L'effetto protettivo è massimo nelle prime 4 settimane dopo la fecondazione, spesso prima che la gravidanza sia confermata."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S2",
+    "week": 2,
+    "trimester": 1,
+    "fetus": {
+      "note": "Settimana dell'ovulazione e della fecondazione. L'ovulo fecondato (zigote) inizia a dividersi mentre percorre le tube di Falloppio verso l'utero.",
+      "length_mm": null,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": null
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S3",
+    "week": 3,
+    "trimester": 1,
+    "fetus": {
+      "note": "La blastocisti si impianta nell'endometrio. Inizia la produzione di hCG, l'ormone che rende positivo il test di gravidanza.",
+      "length_mm": null,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": "Impianto nell'endometrio. L'hCG inizia a essere prodotto."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Fai il test di gravidanza da farmacia se il ciclo è in ritardo.",
+          "why": "I test urinari moderni rilevano l'hCG già 10-12 giorni dopo la fecondazione. Un test negativo con ritardo del ciclo va ripetuto dopo 48-72 ore."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S4",
+    "week": 4,
+    "trimester": 1,
+    "fetus": {
+      "note": "L'embrione misura circa 1-2 mm. Si formano i tre foglietti germinativi (ectoderma, mesoderma, endoderma) da cui deriveranno tutti gli organi.",
+      "length_mm": 2,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": "Formazione del disco embrionale trilaminar. Inizio della gastrulazione."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Prenota la prima visita ginecologica: idealmente entro la settimana 10 (linee guida ISS 2023).",
+          "why": "La visita precoce permette la datazione accurata della gravidanza, il counselling sugli screening del primo trimestre e la prescrizione degli esami del sangue di base (gruppo sanguigno, Rh, emocromo, toxo-IgG, CMV-IgG, HIV, lue, HBsAg, HCV — ora offerto a tutte)."
+        },
+        {
+          "text": "Smetti di fumare e di bere alcol da oggi.",
+          "why": "Non esiste una soglia sicura di alcol in gravidanza. Il fumo aumenta il rischio di aborto spontaneo, parto pretermine e basso peso alla nascita."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S5",
+    "week": 5,
+    "trimester": 1,
+    "fetus": {
+      "note": "L'embrione misura circa 2 mm. Il cuore primitivo inizia a battere intorno al giorno 22-23 dal concepimento (settimana 5-6 di gravidanza). Si formano gli abbozzi degli arti superiori.",
+      "length_mm": 2,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": "Il cuore primitivo inizia a contrarsi. Inizio dell'organogenesi. Si forma il tubo neurale."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S6",
+    "week": 6,
+    "trimester": 1,
+    "fetus": {
+      "note": "L'embrione misura circa 6 mm (CRL). Il cuore batte e può essere visibile all'ecografia transvaginale. Si chiude il tubo neurale — da cui deriveranno cervello e midollo spinale. Si formano gli abbozzi degli arti e le cavità oculari.",
+      "length_mm": 6,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": "Chiusura del tubo neurale. Formazione del cuore a due camere. Abbozzi degli arti visibili."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S7",
+    "week": 7,
+    "trimester": 1,
+    "fetus": {
+      "note": "L'embrione misura circa 9-10 mm (CRL). Si formano esofago, pancreas, fegato, reni, milza e intestino. Si sviluppano i recettori tattili cutanei — l'elaborazione degli stimoli tattili inizierà più avanti.",
+      "length_mm": 10,
+      "weight_g": null,
+      "visual_comparison": null,
+      "milestone": "Formazione di fegato, reni, intestino. I reni iniziano a filtrare."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S8",
+    "week": 8,
+    "trimester": 1,
+    "fetus": {
+      "note": "Le dita delle mani iniziano a separarsi. I reni iniziano a produrre urina. L'attività sinaptica è sufficiente a permettere flessione del collo e del tronco.",
+      "length_mm": 15,
+      "weight_g": 1,
+      "visual_comparison": null,
+      "milestone": "Dita in formazione. Reni funzionanti. Prime risposte riflesse al tatto."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Prima ecografia ostetrica",
+        "window": "Idealmente tra 8 e 10 settimane",
+        "urgency": "alta",
+        "note": "Conferma la vitalità, la sede intrauterina, il numero di feti e permette la datazione precisa tramite CRL. Questa è la misura più accurata per stabilire l'EDD (margine d'errore ±5-7 giorni)."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [
+        {
+          "text": "Vieni alla prima ecografia.",
+          "why": "Sentire il battito cardiaco per la prima volta è un momento che non puoi recuperare. Porta il telefono per un video."
+        }
+      ],
+      "couple": []
+    }
+  },
+  {
+    "id": "S9",
+    "week": 9,
+    "trimester": 1,
+    "fetus": {
+      "note": "Le dita dei piedi iniziano a formarsi. Si sviluppano le palpebre. Il feto inizia a muoversi in modo riflesso, non ancora percepito dalla madre.",
+      "length_mm": 22,
+      "weight_g": 2,
+      "visual_comparison": null,
+      "milestone": "Fine del periodo embrionale critico. Tutti gli organi principali sono in formazione. Da ora il rischio di malformazioni da farmaci diminuisce significativamente."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami del sangue di primo trimestre (LEA)",
+        "window": "Prima visita — entro la settimana 10",
+        "urgency": "alta",
+        "note": "Emocromo, gruppo sanguigno e Rh, sierologia toxoplasma, CMV, HIV, sifilide, HBsAg, HCV. Glicemia a digiuno. Se CMV-IgG negativa: ripetere ogni 4-6 settimane fino alla 24a settimana (novità ISS 2023)."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S10",
+    "week": 10,
+    "trimester": 1,
+    "fetus": {
+      "note": "Il capo occupa ancora circa metà delle dimensioni totali. Si formano le corde vocali. Inizia la formazione delle unghie.",
+      "length_mm": 31,
+      "weight_g": 4,
+      "visual_comparison": null,
+      "milestone": "Termine del periodo embrionale. Da questa settimana si parla di feto. Il cervello produce neuroni a un ritmo di 250.000 al minuto."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": [
+        {
+          "text": "Decidete se fare il test combinato o il DNA fetale (NIPT) per lo screening delle aneuploidie.",
+          "why": "Entrambi si eseguono tra 11+0 e 13+6 settimane. Il test combinato (ecografia TN + PAPP-A + beta-hCG) è offerto gratuitamente dal SSN. Il NIPT (test del DNA fetale) è più accurato ma a pagamento (150-400€). Sono screening, non diagnosi: un risultato ad alto rischio richiede amniocentesi o villocentesi per la certezza. Discutetene con il ginecologo questa settimana per avere il tempo di scegliere."
+        }
+      ]
+    }
+  },
+  {
+    "id": "S11",
+    "week": 11,
+    "trimester": 1,
+    "fetus": {
+      "note": "Si formano le corde vocali. I follicoli piliferi iniziano a svilupparsi. Il feto può fare espressioni facciali involontarie.",
+      "length_mm": 41,
+      "weight_g": 7,
+      "visual_comparison": null,
+      "milestone": "I reni producono urina che finisce nel liquido amniotico. Il feto deglutisce."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Translucenza nucale (TN) + test combinato",
+        "window": "11+0 — 13+6 settimane (finestra stretta)",
+        "urgency": "critica",
+        "note": "Questa è la finestra diagnostica per lo screening delle anomalie cromosomiche (trisomia 21, 18, 13). Dopo le 14 settimane non è più eseguibile. Le liste d'attesa al pubblico possono essere di 2-3 settimane: prenota adesso se non l'hai già fatto."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [
+        {
+          "text": "Vieni alla translucenza nucale.",
+          "why": "È una visita diagnostica importante. Le sue conclusioni riguardano entrambi."
+        }
+      ],
+      "couple": []
+    }
+  },
+  {
+    "id": "S12",
+    "week": 12,
+    "trimester": 1,
+    "fetus": {
+      "note": "Il feto riempie l'intera cavità uterina. Tutti gli organi principali sono formati e iniziano a funzionare. Si può fare espressioni facciali non controllate consciamente.",
+      "length_mm": 52,
+      "weight_g": 14,
+      "visual_comparison": null,
+      "milestone": "Fine del primo trimestre. Il rischio di aborto spontaneo scende significativamente dopo questa settimana."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Comunica la gravidanza al lavoro se vuoi accedere ai diritti di tutela della maternità.",
+          "why": "Dal momento della comunicazione scattano le tutele contro il licenziamento e il diritto a permessi per visite mediche (retribuiti al 100% per le lavoratrici dipendenti — D.lgs. 151/2001)."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S13",
+    "week": 13,
+    "trimester": 1,
+    "fetus": {
+      "note": "Si formano le impronte digitali. La placenta assume il controllo della produzione ormonale (prima lo faceva il corpo luteo). Il feto produce urina che entra nel liquido amniotico.",
+      "length_mm": 65,
+      "weight_g": 23,
+      "visual_comparison": null,
+      "milestone": "La placenta è ora pienamente funzionante. Il sesso è determinato geneticamente da settimane, ma i genitali esterni iniziano ora a differenziarsi."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S14",
+    "week": 14,
+    "trimester": 2,
+    "fetus": {
+      "note": "Il sesso può essere identificato ecograficamente. Il feto fa movimenti coordinati ma la madre non li percepisce ancora. Si formano i nuclei ossei e le fasce muscolari.",
+      "length_mm": 140,
+      "weight_g": 43,
+      "visual_comparison": null,
+      "milestone": "Il sesso è visibile ecograficamente. Inizio ossificazione dello scheletro."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami di secondo trimestre (LEA — finestra 14+0 a 18+6)",
+        "window": "14-18 settimane",
+        "urgency": "media",
+        "note": "Emocromo, toxoplasma IgG/IgM (se sieronegativa a inizio gravidanza: ripetere ogni 4-6 settimane). Urine + urinocoltura. Se CMV-IgG negativa: proseguire controllo mensile fino alla 24a settimana."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S15",
+    "week": 15,
+    "trimester": 2,
+    "fetus": {
+      "note": "L'orecchio interno è in sviluppo. Il feto inizia a rispondere a stimoli sonori dall'interno (suoni corporei materni). I polmoni iniziano i movimenti respiratori praticatori con il liquido amniotico.",
+      "length_mm": 160,
+      "weight_g": 70,
+      "visual_comparison": null,
+      "milestone": "Inizio dei movimenti respiratori praticatori. L'udito interno inizia a svilupparsi."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S16",
+    "week": 16,
+    "trimester": 2,
+    "fetus": {
+      "note": "I primi movimenti fetali avvengono intorno a questa settimana, ma la madre alla prima gravidanza li percepisce tipicamente tra la 18a e la 22a settimana. Chi ha avuto gravidanze precedenti può sentirli già ora.",
+      "length_mm": 180,
+      "weight_g": 100,
+      "visual_comparison": null,
+      "milestone": "Primi movimenti fetali coordinati. Il cervello stabilisce connessioni con i muscoli e inizia ad avere controllo sul cuore."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S17",
+    "week": 17,
+    "trimester": 2,
+    "fetus": {
+      "note": "Si sviluppano i sensi: dalla 17a settimana il feto inizia a percepire l'ambiente circostante. Si forma il grasso bruno sottocutaneo (termoregolazione).",
+      "length_mm": 200,
+      "weight_g": 140,
+      "visual_comparison": null,
+      "milestone": "Inizio sviluppo sensoriale attivo. Si forma il grasso bruno, essenziale per la termoregolazione dopo la nascita."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Inizia gli esercizi del pavimento pelvico (Kegel): 3 serie da 10 contrazioni al giorno.",
+          "why": "Riduce il rischio di incontinenza urinaria post-parto del 30-50% (review Cochrane 2020). Iniziare adesso, quando la pressione uterina è ancora moderata, permette di consolidare il gesto prima del terzo trimestre."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S18",
+    "week": 18,
+    "trimester": 2,
+    "fetus": {
+      "note": "Il feto sente i suoni esterni in modo sempre più distinto. La pelle è ancora trasparente — si vedono i vasi sanguigni. Si formano le impronte plantari.",
+      "length_mm": 220,
+      "weight_g": 190,
+      "visual_comparison": null,
+      "milestone": "L'udito è abbastanza sviluppato da rispondere a suoni forti dall'esterno. Si formano le impronte plantari."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Ecocardiografia fetale",
+        "window": "18-22 settimane",
+        "urgency": "media",
+        "note": "Non è un esame di routine per tutte, ma è consigliata in caso di familiarità per cardiopatie congenite, diabete materno, o sospetto all'ecografia morfologica. Identifica oltre il 90% delle malformazioni cardiache congenite."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S19",
+    "week": 19,
+    "trimester": 2,
+    "fetus": {
+      "note": "Si forma la vernice caseosa (strato protettivo sulla pelle). Il feto sviluppa un ritmo sonno-veglia riconoscibile.",
+      "length_mm": 240,
+      "weight_g": 240,
+      "visual_comparison": null,
+      "milestone": "Formazione della vernice caseosa. Il feto ha un ritmo sonno-veglia. I polmoni iniziano a produrre surfactante."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Ecografia morfologica (morfologica)",
+        "window": "19+0 — 21+6 settimane (finestra ottimale)",
+        "urgency": "critica",
+        "note": "Esame chiave della gravidanza. Valuta le strutture anatomiche del feto (cervello, cuore, reni, colonna vertebrale, arti). Prenota con sufficiente anticipo: al pubblico le liste possono essere di 3-4 settimane. Non è sostituibile con altre ecografie."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [
+        {
+          "text": "Vieni alla morfologica.",
+          "why": "È l'ecografia più dettagliata e più lunga della gravidanza. Spesso è l'unica in cui si vede chiaramente il viso, le mani, i piedi. Porta il telefono."
+        }
+      ],
+      "couple": [
+        {
+          "text": "Decidete oggi se volete sapere il sesso.",
+          "why": "All'ecografia morfologica il sesso è visibile nella quasi totalità dei casi. Se non volete saperlo, ditelo al medico prima che inizi."
+        }
+      ]
+    }
+  },
+  {
+    "id": "S20",
+    "week": 20,
+    "trimester": 2,
+    "fetus": {
+      "note": "Il feto può sentire e reagire a stimoli esterni. Si sviluppano le impronte digitali e plantari. Metà gravidanza.",
+      "length_mm": 250,
+      "weight_g": 300,
+      "visual_comparison": null,
+      "milestone": "Metà gravidanza. La madre inizia a percepire i movimenti (primipare: 18-22a settimana; multipare: anche dalla 16a)."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S21",
+    "week": 21,
+    "trimester": 2,
+    "fetus": {
+      "note": "Le sopracciglia e le palpebre sono visibili. Il feto apre e chiude la bocca. L'udito si raffina: riconosce la voce della madre, trasmessa per conduzione attraverso i tessuti.",
+      "length_mm": 270,
+      "weight_g": 360,
+      "visual_comparison": null,
+      "milestone": "Il feto riconosce e preferisce la voce materna. Alla nascita la ricorderà."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S22",
+    "week": 22,
+    "trimester": 2,
+    "fetus": {
+      "note": "Il tatto è pienamente sviluppato: il feto tocca il proprio viso, il cordone, le pareti uterine. È il primo limite di sopravvivenza extrauterina con cure intensive (sopravvivenza ~10-20% a questa età gestazionale con supporto neonatologico).",
+      "length_mm": 280,
+      "weight_g": 430,
+      "visual_comparison": null,
+      "milestone": "Il senso del tatto è completamente sviluppato (processo completato intorno ai 6 mesi e mezzo, Oliverio Ferraris). Primo limite di viabilità extrauterina."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami LEA — finestra 19+0 a 23+6",
+        "window": "19-23 settimane",
+        "urgency": "media",
+        "note": "Emocromo. Toxoplasma (se sieronegativa). Urine + urinocoltura."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S23",
+    "week": 23,
+    "trimester": 2,
+    "fetus": {
+      "note": "I polmoni producono surfactante, fondamentale per respirare dopo la nascita. I polmoni sono l'ultimo organo a maturare.",
+      "length_mm": 290,
+      "weight_g": 500,
+      "visual_comparison": null,
+      "milestone": "Inizio produzione di surfactante polmonare. Senza surfactante, i polmoni collasserebbero alla prima espirazione."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S24",
+    "week": 24,
+    "trimester": 2,
+    "fetus": {
+      "note": "Gli occhi iniziano ad aprirsi. Il sistema uditivo è pienamente funzionante — il feto risponde a suoni esterni con variazioni della frequenza cardiaca. Probabilmente ode suoni già da questa settimana (Treccani).",
+      "length_mm": 300,
+      "weight_g": 600,
+      "visual_comparison": null,
+      "milestone": "Udito completamente sviluppato. Gli occhi si aprono per la prima volta. Il feto reagisce a suoni forti."
+    },
+    "clinical_anchors": [
+      {
+        "name": "OGTT — Curva glicemica (test di O'Sullivan / OGTT)",
+        "window": "24-28 settimane",
+        "urgency": "alta",
+        "note": "Screening per il diabete gestazionale. Dura 2-3 ore: si beve una soluzione glucosata e si fanno prelievi a intervalli. Non mangiare nelle 8-12 ore precedenti. Organizza il trasporto: non si può guidare comodamente dopo il prelievo."
+      },
+      {
+        "name": "Misurazione fondo uterino-sinfisi pubica",
+        "window": "Da 24 settimane a ogni visita",
+        "urgency": "bassa",
+        "note": "Nuova raccomandazione ISS 2026. Il medico misura manualmente la distanza tra fondo uterino e sinfisi pubica per monitorare la crescita fetale senza ricorrere all'ecografia."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [
+        {
+          "text": "Accompagnala all'OGTT.",
+          "why": "Il test dura 2-3 ore. Avere compagnia rende l'attesa più tollerabile. Non può mangiare prima, quindi organizzate uno spuntino per dopo."
+        }
+      ],
+      "couple": []
+    }
+  },
+  {
+    "id": "S25",
+    "week": 25,
+    "trimester": 2,
+    "fetus": {
+      "note": "Il feto risponde alla luce: se si illumina l'addome, può girare la testa nella direzione opposta. Si accumula grasso sottocutaneo che darà al viso i contorni tipici del neonato.",
+      "length_mm": 340,
+      "weight_g": 660,
+      "visual_comparison": null,
+      "milestone": "Risposta alla luce documentata. Il viso inizia ad acquisire i contorni tipici del neonato."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S26",
+    "week": 26,
+    "trimester": 2,
+    "fetus": {
+      "note": "Gli occhi sono aperti e il feto percepisce luce e buio. Il cervello cresce rapidamente: tra 12a e 16a settimana c'è stata la grande proliferazione neuronale; ora prosegue la migrazione e la mielinizzazione.",
+      "length_mm": 360,
+      "weight_g": 760,
+      "visual_comparison": null,
+      "milestone": "Occhi aperti e funzionanti. Mielinizzazione del sistema nervoso in corso — le fibre nervose iniziano a guadagnare velocità di conduzione."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami LEA — finestra 24+0 a 27+6",
+        "window": "24-27 settimane",
+        "urgency": "media",
+        "note": "Emocromo. Toxoplasma (se sieronegativa). CMV (se IgG negativa — ultimo mese di monitoraggio mensile). Urine + urinocoltura."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S27",
+    "week": 27,
+    "trimester": 2,
+    "fetus": {
+      "note": "Fine del secondo trimestre. Il feto si gira frequentemente e ha movimenti sempre più forti e coordinati.",
+      "length_mm": 360,
+      "weight_g": 875,
+      "visual_comparison": null,
+      "milestone": "Fine del secondo trimestre. Il feto ha sviluppato un ritmo circadiano — è più attivo di notte."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Inizia a monitorare i movimenti fetali quotidianamente.",
+          "why": "Le linee guida ISS 2026 sottolineano che la percezione e il monitoraggio dei movimenti fetali è un indicatore importante del benessere del feto. Se noti una riduzione significativa dei movimenti rispetto al tuo normale, contatta il medico lo stesso giorno — non aspettare."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S28",
+    "week": 28,
+    "trimester": 3,
+    "fetus": {
+      "note": "Inizio del terzo trimestre. Il cervello sviluppa le prime circonvoluzioni (giri). La maggior parte dei feti nati dopo la 28a settimana sopravvive con cure intensive (sopravvivenza ~90%).",
+      "length_mm": 370,
+      "weight_g": 1000,
+      "visual_comparison": null,
+      "milestone": "Il cervello sviluppa le prime circonvoluzioni. I polmoni sono abbastanza maturi da permettere la sopravvivenza con cure intensive."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami LEA — finestra 28+0 a 32+6",
+        "window": "28-32 settimane",
+        "urgency": "alta",
+        "note": "Emocromo. Toxoplasma (se sieronegativa). Urine. Se Rh negativa: test di Coombs indiretto (anticorpi anti-Rh) — e profilassi con immunoglobuline anti-D a 28 settimane se test negativo."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": [
+        {
+          "text": "Iscrivetevi al corso preparto.",
+          "why": "I corsi preparto frequentati dalla coppia sono associati a minore ansia durante il travaglio, migliore soddisfazione per l'esperienza del parto e migliori competenze nei primi giorni con il neonato. Molti ospedali hanno liste d'attesa di 4-6 settimane."
+        }
+      ]
+    }
+  },
+  {
+    "id": "S29",
+    "week": 29,
+    "trimester": 3,
+    "fetus": {
+      "note": "I muscoli sono più forti e i movimenti sono vigorosi e a volte visibili dall'esterno. I polmoni continuano a maturare.",
+      "length_mm": 380,
+      "weight_g": 1150,
+      "visual_comparison": null,
+      "milestone": "Il feto ha i sensi del gusto sviluppati — reagisce alle variazioni di sapore del liquido amniotico (a sua volta influenzato da quello che mangia la madre)."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S30",
+    "week": 30,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il cervello cresce in modo accelerato. Inizia l'accumulo di ferro nelle riserve fetali (fondamentale per i primi 6 mesi di vita dopo la nascita).",
+      "length_mm": 400,
+      "weight_g": 1300,
+      "visual_comparison": null,
+      "milestone": "Crescita cerebrale accelerata. Accumulo di riserve di ferro. Il feto si gira spesso — la posizione cefalica è ancora variabile."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Presenta la domanda di congedo di maternità obbligatorio all'INPS.",
+          "why": "Il congedo obbligatorio inizia 2 mesi prima del parto (flessibile: 1 mese prima + 3 mesi dopo, con certificato medico). La domanda si presenta online su INPS.it. Farlo adesso evita stress nelle ultime settimane."
+        }
+      ],
+      "partner": [
+        {
+          "text": "Verifica le condizioni del congedo di paternità obbligatorio nella tua azienda.",
+          "why": "Il congedo di paternità obbligatorio è di 10 giorni lavorativi (legge di bilancio 2023), da fruire entro i 5 mesi dalla nascita. Va comunicato al datore di lavoro con almeno 15 giorni di anticipo. Alcune aziende offrono condizioni migliori — verificalo."
+        }
+      ],
+      "couple": []
+    }
+  },
+  {
+    "id": "S31",
+    "week": 31,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il feto elabora informazioni sensoriali in modo sempre più integrato. La testa si orienta spesso verso il basso (posizione cefalica).",
+      "length_mm": 410,
+      "weight_g": 1500,
+      "visual_comparison": null,
+      "milestone": "Il sistema nervoso integra stimoli sensoriali multipli simultaneamente. Il riflesso di suzione è presente — il feto si succhia il pollice."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S32",
+    "week": 32,
+    "trimester": 3,
+    "fetus": {
+      "note": "Le unghie sono complete. I capelli sono presenti. Il lanugo (peluria fetale) inizia a scomparire. Il feto ha sensi molto attivi e reagisce a stimoli esterni (luce, suono, tatto).",
+      "length_mm": 420,
+      "weight_g": 1700,
+      "visual_comparison": null,
+      "milestone": "Il feto è completamente sviluppato nella struttura. Da ora fino al parto guadagna principalmente peso e matura i polmoni."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Visita ostetrica + esami LEA — finestra 28+0 a 32+6",
+        "window": "32 settimane",
+        "urgency": "alta",
+        "note": "Visita ostetrica. Emocromo. Toxoplasma (se sieronegativa). Urine. Il medico valuta la posizione del feto — se è podalico, si discutono le opzioni (versione cefalica esterna, taglio cesareo programmato)."
+      }
+    ],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Prepara la borsa per l'ospedale.",
+          "why": "I parti pretermine sono rari ma non rarissimi. Avere la borsa pronta da questa settimana elimina uno stress inutile nelle settimane finali."
+        }
+      ],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S33",
+    "week": 33,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il sistema immunitario si rafforza grazie al trasferimento placentare di anticorpi materni (IgG). Questo trasferimento è massimo nelle ultime settimane e protegge il neonato nei primi mesi.",
+      "length_mm": 440,
+      "weight_g": 1900,
+      "visual_comparison": null,
+      "milestone": "Trasferimento attivo di anticorpi materni al feto. Il sistema immunitario neonatale dipende da questo trasferimento per i primi 3-6 mesi."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S34",
+    "week": 34,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il sistema nervoso centrale è maturo. I sensi sono molto attivi. Un neonato nato a 34 settimane ha ottime probabilità di sopravvivenza con supporto neonatologico minimo.",
+      "length_mm": 450,
+      "weight_g": 2100,
+      "visual_comparison": null,
+      "milestone": "Sistema nervoso centrale maturo. Dall'occhio è sensibile alla luce (da circa 28 settimane); ora anche la capacità di percepire le forme si sviluppa."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Esami LEA — finestra 33+0 a 37+6",
+        "window": "33-37 settimane",
+        "urgency": "alta",
+        "note": "Prima visita ostetrica del terzo trimestre tardivo. Emocromo. Toxoplasma (se sieronegativa). Urine. HCV (novità ISS 2023: ora offerto a tutte nel terzo trimestre). HIV (ripetuto). Sifilide."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": [
+        {
+          "text": "Visitate il reparto maternità dell'ospedale dove partorirete.",
+          "why": "Conoscere i percorsi, i tempi di accesso, dove parcheggiare e come funziona l'accettazione riduce l'ansia il giorno del parto. Molti ospedali offrono visite guidate al punto nascita."
+        }
+      ]
+    }
+  },
+  {
+    "id": "S35",
+    "week": 35,
+    "trimester": 3,
+    "fetus": {
+      "note": "I reni sono completamente sviluppati. Il feto produce circa mezzo litro di urina al giorno nel liquido amniotico. I polmoni sono quasi maturi.",
+      "length_mm": 460,
+      "weight_g": 2400,
+      "visual_comparison": null,
+      "milestone": "Reni completamente maturi. Polmoni quasi pronti — la produzione di surfactante è quasi completa."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Tampone vagino-rettale per Streptococco di gruppo B (GBS)",
+        "window": "35-37 settimane",
+        "urgency": "alta",
+        "note": "Il GBS è presente nella flora vaginale del 10-30% delle donne senza causare problemi alla madre. Se positivo, viene somministrata profilassi antibiotica in travaglio per proteggere il neonato. Il tampone è semplice e indolore."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S36",
+    "week": 36,
+    "trimester": 3,
+    "fetus": {
+      "note": "Considerato 'quasi a termine'. La testa scende nel bacino (engagement) in preparazione al parto. Il lanugo è quasi completamente scomparso.",
+      "length_mm": 470,
+      "weight_g": 2600,
+      "visual_comparison": null,
+      "milestone": "La testa inizia a 'impegnarsi' nel bacino (engagement). Diminuisce la pressione sul diaframma materno — la respirazione si fa più facile, ma aumenta la pressione sulla vescica."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [
+        {
+          "text": "Impara a riconoscere i segnali del travaglio vero.",
+          "why": "Contrazioni regolari ogni 5 minuti per almeno 1 ora, rottura delle membrane (acqua), perdita del tappo mucoso con sangue. Il travaglio falso (contrazioni di Braxton Hicks) è irregolare e scompare con il movimento. In caso di dubbio, chiama il reparto maternità."
+        }
+      ],
+      "partner": [
+        {
+          "text": "Tieni il telefono sempre carico e accessibile.",
+          "why": "Da questa settimana il parto può avvenire in qualsiasi momento. Assicurati che lei sappia sempre dove sei e che il percorso per l'ospedale sia chiaro."
+        }
+      ],
+      "couple": []
+    }
+  },
+  {
+    "id": "S37",
+    "week": 37,
+    "trimester": 3,
+    "fetus": {
+      "note": "Gravidanza a termine dalla settimana 37+0. I polmoni sono pronti per respirare aria. Il feto ha le riserve di grasso necessarie per regolare la temperatura corporea.",
+      "length_mm": 480,
+      "weight_g": 2900,
+      "visual_comparison": null,
+      "milestone": "Gravidanza a termine. Il bambino è biologicamente pronto per la vita extrauterina. Il parto può avvenire in qualsiasi momento da ora."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S38",
+    "week": 38,
+    "trimester": 3,
+    "fetus": {
+      "note": "Tutti i riflessi neonatali sono presenti (suzione, Moro, prensione, rooting). Il cervello è sufficientemente sviluppato da coordinare la respirazione autonoma.",
+      "length_mm": 500,
+      "weight_g": 3100,
+      "visual_comparison": null,
+      "milestone": "Tutti i riflessi neonatali sono attivi. Il cervello coordina autonomamente respirazione, circolazione e termoregolazione."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S39",
+    "week": 39,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il feto continua ad accumulate grasso. Il cranio è composto da ossa separate non ancora fuse (le fontanelle) per permettere la compressione durante il passaggio nel canale del parto.",
+      "length_mm": 500,
+      "weight_g": 3300,
+      "visual_comparison": null,
+      "milestone": "Le fontanelle del cranio permettono la 'modellatura' della testa durante il parto. Si chiuderanno nei mesi successivi alla nascita."
+    },
+    "clinical_anchors": [],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  },
+  {
+    "id": "S40",
+    "week": 40,
+    "trimester": 3,
+    "fetus": {
+      "note": "Il parto è atteso questa settimana ma il 60% delle gravidanze supera la settimana 40.",
+      "length_mm": 510,
+      "weight_g": 3338,
+      "visual_comparison": null,
+      "milestone": "Termine ufficiale. Solo il 5% delle donne partorisce esattamente alla settimana 40. La finestra normale è 38-42 settimane."
+    },
+    "clinical_anchors": [
+      {
+        "name": "Monitoraggio post-termine",
+        "window": "Da 41+0 settimane",
+        "urgency": "alta",
+        "note": "Se la gravidanza supera le 41 settimane, vengono programmati controlli ravvicinati (NST / cardiotocografia + valutazione del liquido amniotico). L'induzione del travaglio viene di solito proposta tra 41+0 e 42+0 settimane per ridurre il rischio di complicazioni placentari."
+      }
+    ],
+    "tasks": {
+      "mom": [],
+      "partner": [],
+      "couple": []
+    }
+  }
+]

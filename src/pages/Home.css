@@ -344,6 +344,7 @@
     color: var(--stone);
     letter-spacing: 0.5px;
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 .hc-size-val-bold {
