@@ -133,6 +133,10 @@ export function UserProvider({ children }) {
         setAppointments(prev => prev.filter(a => a.id !== id));
     }, []);
 
+    const updateAppointment = useCallback((id, updates) => {
+        setAppointments(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
+    }, []);
+
     // --- Custom task helpers ---
     const addCustomTask = useCallback((task) => {
         setCustomTasks(prev => [...prev, { id: Date.now().toString(), suggested: false, ...task }]);
@@ -340,7 +344,7 @@ export function UserProvider({ children }) {
             // MVP Agenda state
             completedTasks, toggleTaskCompleted, isTaskCompleted,
             weekNotes, setWeekNote, getWeekNote,
-            appointments, addAppointment, removeAppointment, getAppointmentsForWeek,
+            appointments, addAppointment, removeAppointment, updateAppointment, getAppointmentsForWeek,
             customTasks, addCustomTask, removeCustomTask, updateCustomTask, getCustomTasksForWeek,
             dismissedTasks, dismissTask, isTaskDismissed,
             // Pregnancy Tracker

@@ -317,20 +317,15 @@
     border-radius: 20px;
 }
 
-.agenda-appt-meta-text {
+.agenda-appt-location-row {
     display: flex;
     align-items: center;
     gap: 4px;
     color: var(--stone);
     font-size: 11px;
     font-weight: 700;
-}
-
-.agenda-appt-notes {
-    font-size: 12px;
-    color: var(--stone);
     margin-top: 4px;
-    line-height: 1.3;
+    width: 100%;
 }
 
 .agenda-appt-del {

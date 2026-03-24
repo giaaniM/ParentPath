@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2, Calendar } from 'lucide-react';
 import { pregnancy, milestones, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
 import { useUser } from '../context/UserContext';
@@ -9,6 +10,7 @@ import AddAppointmentModal from '../components/AddAppointmentModal';
 import './BabyDev.css';
 
 export default function BabyDev() {
+    const navigate = useNavigate();
     const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment } = useUser();
     const isBorn = babyStatus === 'nato';
     const currentWeek = isBorn ? 0 : getWeeksPregnant();
@@ -527,6 +529,7 @@ export default function BabyDev() {
                 initialName={apptInitialName}
                 initialNotes={apptInitialNotes}
                 weekNumber={currentWeek}
+                onSuccess={() => navigate('/agenda')}
             />
 
             {/* MILESTONE DETAILS POPUP */}

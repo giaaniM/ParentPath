@@ -8,7 +8,8 @@ export default function AddAppointmentModal({
     onClose, 
     initialName = '', 
     initialNotes = '', 
-    weekNumber 
+    weekNumber,
+    onSuccess
 }) {
     const { addAppointment } = useUser();
     const [name, setName] = useState(initialName);
@@ -66,6 +67,7 @@ export default function AddAppointmentModal({
             weekNumber: weekNumber
         });
         onClose();
+        if (onSuccess) onSuccess();
     };
 
     if (!isOpen) return null;

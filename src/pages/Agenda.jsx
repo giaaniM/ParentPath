@@ -16,7 +16,7 @@ export default function Agenda() {
         babyStatus, partnerName,
         toggleTaskCompleted, isTaskCompleted,
         getWeekNote, setWeekNote,
-        getAppointmentsForWeek, addAppointment, removeAppointment,
+        getAppointmentsForWeek, addAppointment, removeAppointment, updateAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
         dismissTask, isTaskDismissed, getWeeksPregnant, setMockWeek, mockWeek
     } = useUser();
@@ -148,6 +148,15 @@ export default function Agenda() {
         setShowTaskModal(false);
     };
 
+    const handleRemoveNote = (id, type) => {
+        if (type === 'custom') {
+            updateCustomTask(id, { note: '' });
+        } else if (type === 'appointment') {
+            updateAppointment(id, { notes: '' });
+        }
+        setSelectedTaskWhy(null);
+    };
+
     const handleDeleteTask = (task) => {
         if (task.suggested) {
             dismissTask(task.id);
@@ -266,11 +275,25 @@ export default function Agenda() {
                             </div>
                         </div>
                     ) : (
-                        <div className="agenda-note-display" onClick={handleStartEditNote}>
-                            {weekNote
-                                ? <p className="agenda-note-text">{weekNote}</p>
-                                : <p className="agenda-note-placeholder">Nessuna nota per questa settimana. Aggiungi nota ✏️</p>
-                            }
+                        <div className="agenda-note-display">
+                            {weekNote ? (
+                                <>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.5px' }}>NOTE:</span>
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); setWeekNote(selectedWeek, ''); }}
+                                            style={{ background: 'none', border: 'none', color: 'var(--stone)', opacity: 0.5, cursor: 'pointer', padding: '2px' }}
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                    <p className="agenda-note-text" onClick={handleStartEditNote}>{weekNote}</p>
+                                </>
+                            ) : (
+                                <p className="agenda-note-placeholder" onClick={handleStartEditNote}>
+                                    Nessuna nota per questa settimana. Aggiungi nota ✏️
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>
@@ -295,28 +318,51 @@ export default function Agenda() {
                                     <div className="agenda-appt-info">
                                         <div className="agenda-appt-name">{appt.name}</div>
                                         <div className="agenda-appt-meta">
-                                            {appt.date && (
-                                                <span className="agenda-appt-meta-pill">
-                                                    <Calendar size={12} strokeWidth={2.5} />
-                                                    {appt.date.split('-').reverse().slice(0, 2).join('/')}
-                                                </span>
-                                            )}
                                             <span className="agenda-appt-meta-pill">
+                                                <Calendar size={12} strokeWidth={2.5} />
+                                                {appt.date ? appt.date.split('-').reverse().slice(0, 2).join('/') : '--/--'}
+                                                <span style={{ margin: '0 4px', opacity: 0.5 }}>•</span>
                                                 <Clock size={12} strokeWidth={2.5} />
                                                 {appt.time}
                                             </span>
                                             {appt.location && (
-                                                <span className="agenda-appt-meta-text">
+                                                <div className="agenda-appt-location-row">
                                                     <MapPin size={12} strokeWidth={2.5} />
                                                     {appt.location}
-                                                </span>
+                                                </div>
                                             )}
                                         </div>
-                                        {appt.notes && <div className="agenda-appt-notes">{appt.notes}</div>}
                                     </div>
-                                    <button className="agenda-appt-del" onClick={() => removeAppointment(appt.id)}>
-                                        <X size={16} />
-                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {appt.notes && (
+                                            <button 
+                                                className="agenda-info-icon"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedTaskWhy({
+                                                        id: appt.id,
+                                                        text: appt.name,
+                                                        why: appt.notes,
+                                                        type: 'appointment'
+                                                    });
+                                                }}
+                                                style={{ 
+                                                    color: 'var(--primary)', 
+                                                    background: 'var(--white)',
+                                                    border: 'none',
+                                                    padding: '6px',
+                                                    borderRadius: '50%',
+                                                    display: 'flex',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                }}
+                                            >
+                                                <Info size={14} />
+                                            </button>
+                                        )}
+                                        <button className="agenda-appt-del" onClick={() => removeAppointment(appt.id)}>
+                                            <X size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -339,7 +385,7 @@ export default function Agenda() {
                         const assignee = getAssigneeBadge(task.assignee);
                         const priority = getPriorityBadge(task.priority);
                         const isEditing = editingTaskId === task.id;
-                        const isSwiping = swipingTaskId && swipingTaskId === task.id;
+                        const isSwiping = swipingTaskId && swipingTaskId === task.id && selectedWeek === currentWeek;
 
                         return (
                             <div
@@ -393,8 +439,10 @@ export default function Agenda() {
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             setSelectedTaskWhy({ 
+                                                                id: task.id,
                                                                 text: task.text, 
-                                                                why: task.why || task.note 
+                                                                why: task.why || task.note,
+                                                                type: task.suggested ? 'suggested' : 'custom'
                                                             });
                                                         }}
                                                         style={{ 
@@ -405,7 +453,8 @@ export default function Agenda() {
                                                             backgroundColor: 'var(--stone-light)', 
                                                             padding: '6px', 
                                                             borderRadius: '50%', 
-                                                            marginTop: '6px' 
+                                                            marginTop: '6px',
+                                                            marginRight: '4px' 
                                                         }}
                                                         className="agenda-info-icon"
                                                     >
@@ -527,7 +576,25 @@ export default function Agenda() {
                             <div style={{ backgroundColor: 'var(--stone-light)', padding: '16px', borderRadius: '12px', fontSize: '15px', color: 'var(--midnight)', lineHeight: 1.5 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--primary)' }}>
                                     <Info size={18} />
-                                    <span style={{ fontWeight: 700 }}>Perché è importante?</span>
+                                    <span style={{ fontWeight: 700 }}>
+                                        {selectedTaskWhy.type === 'suggested' ? 'Perché è importante?' : 'Note:'}
+                                    </span>
+                                    {(selectedTaskWhy.type === 'custom' || selectedTaskWhy.type === 'appointment') && (
+                                        <button 
+                                            onClick={() => handleRemoveNote(selectedTaskWhy.id, selectedTaskWhy.type)}
+                                            style={{ 
+                                                marginLeft: 'auto', 
+                                                background: 'none', 
+                                                border: 'none', 
+                                                color: 'var(--stone)', 
+                                                opacity: 0.6,
+                                                cursor: 'pointer',
+                                                padding: '4px'
+                                            }}
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    )}
                                 </div>
                                 {selectedTaskWhy.why}
                             </div>
