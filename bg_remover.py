@@ -31,4 +31,4 @@ def remove_background(input_path, output_path):
     except Exception as e:
         print(f"Error: {e}")
 
-remove_background("public/baby-24w.png", "public/baby-24w-alpha.png")
+remove_background("public/logo_premium.png", "public/logo_premium.png")

@@ -71,25 +71,25 @@ const DotIndicator = ({ current, total, color }) => {
 
 export default function Home() {
     const navigate = useNavigate();
-    const {
-        babyStatus, setBabyStatus, getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString,
-        userName, isMamma, partnerName,
-        toggleTaskCompleted, isTaskCompleted, isTaskDismissed,
-        hydration, addHydration, kicks, addKick,
-        trackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
-        getCustomTasksForWeek, babyName, babySex, babyNickname,
-        userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
-        appointments,
-        removeHydration, removeKick,
-        mockWeek, setMockWeek
+    const { 
+        userName, babyName, babyStatus, conceptionDate, onboardingDone, 
+        getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString,
+        hydration, kicks, trackers, addHydration, removeHydration, addKick, removeKick,
+        addFeeding, removeFeeding, addDiaper, removeDiaper, appointments,
+        userMood, setUserMood, userActivity, setUserActivity, 
+        partnerStatus, setPartnerStatus, isMamma, partnerName,
+        mockWeek, setMockWeek,
+        toggleTaskCompleted, isTaskCompleted, isTaskDismissed, getCustomTasksForWeek,
+        babySex
     } = useUser();
-    const weeks = getWeeksPregnant();
-    const months = getBabyAgeMonths();
 
-    // New JSON-driven week data
+    const weeks = getWeeksPregnant();
     const weekJsonData = useWeekData(weeks);
-    // Legacy mockData fallback
-    const legacyWeekData = getWeekData(weeks);
+    const isBorn = babyStatus === 'nato';
+
+    // Filter appointments for the current week
+    const weeklyAppts = (appointments || []).filter(a => a.weekNumber === weeks);
+    const totalWeeklyVisits = (weekJsonData.recommendedVisits?.length || 0) + weeklyAppts.length;
 
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSosOpen, setIsSosOpen] = useState(false);
@@ -169,8 +169,6 @@ export default function Home() {
 
     const moods = isMamma ? MOODS : MOODS_PAPA;
 
-    // Greeting Timeframe
-    const isBorn = babyStatus === 'nato';
     const percent = isBorn ? 100 : Math.min(100, Math.round((weeks / pregnancy.totalWeeks) * 100));
 
     // Dynamic Phase Data
@@ -367,7 +365,7 @@ export default function Home() {
                     <div className="hc-info-v4">
                         <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
                         <h2 className="hc-title-v4">
-                            {isBorn ? (babyName || 'Il tuo Bimbo') : (babyNickname || 'Giacomo')} 
+                            {isBorn ? (babyName || 'Il tuo Bimbo') : (pregnancy.babyNickname || 'Giacomo')} 
                             <span className="hc-sex-v4">
                                 {(babySex || pregnancy.sex) === 'M' ? '♂' : ((babySex || pregnancy.sex) === 'F' ? '♀' : '')}
                             </span>
@@ -402,22 +400,22 @@ export default function Home() {
             </div>
 
 
-            {/* RECOMMENDED VISITS CARD */}
-            {weekJsonData.recommendedVisits?.length > 0 && (
+            {/* CONSOLIDATED WEEKLY VISITS NOTIFICATION */}
+            {totalWeeklyVisits > 0 && (
                 <div 
-                    className="home-recommend-card ru d2" 
+                    className="home-visit-notification ru d2" 
                     onClick={() => navigate('/agenda')}
-                    style={{ margin: '0 20px 24px' }}
                 >
-                    <div className="hrc-icon">
+                    <div className="hvn-icon-wrap">
                         <Stethoscope size={24} color="var(--aqua)" />
+                        {totalWeeklyVisits > 1 && <span className="hvn-badge">{totalWeeklyVisits}</span>}
                     </div>
-                    <div className="hrc-content">
-                        <div className="hrc-title">Visite consigliate</div>
-                        <div className="hrc-text">
-                            Ci sono {weekJsonData.recommendedVisits.length} {weekJsonData.recommendedVisits.length === 1 ? 'visita consigliata' : 'visite consigliate'} per questa settimana.
+                    <div className="hvn-content">
+                        <div className="hvn-label">Agenda • Settimana {weeks}</div>
+                        <div className="hvn-text">
+                            Hai {totalWeeklyVisits} {totalWeeklyVisits === 1 ? 'impegno previsto' : 'impegni previsti'} tra visite e appuntamenti questa settimana.
                         </div>
-                        <div className="hrc-cta">Vai in agenda per vederle <ArrowRight size={14} style={{ marginLeft: 4 }} /></div>
+                        <div className="hvn-cta">Vedi in Agenda <ArrowRight size={14} /></div>
                     </div>
                 </div>
             )}
@@ -466,17 +464,7 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* INTEGRATED VISIT PREVIEW */}
-                {nextAppointment && (
-                    <div className="htp-visit-preview">
-                        <div className="htp-visit-icon"><Stethoscope size={16} /></div>
-                        <div className="htp-visit-info">
-                            <span className="htp-visit-label">Prossima Visita:</span>
-                            <span className="htp-visit-text">{nextAppointment.name} {nextAppointment.date && `· ${nextAppointment.date.split('-').reverse().slice(0, 2).join('/')}`}</span>
-                        </div>
-                        <div className="htp-visit-tag">{getVisitDaysRemaining(nextAppointment)}</div>
-                    </div>
-                )}
+
             </div>
 
             {/* SOS NOTTE BANNER (Newborn only) */}

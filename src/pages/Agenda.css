@@ -348,30 +348,29 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 20px;
-    background: #E6FFFA;
-    border-radius: 24px;
-    border: 1px solid rgba(61, 191, 184, 0.1);
+    padding: 16px;
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-bottom: 12px;
 }
 
 .agenda-appt-icon-hero {
-    width: 48px;
-    height: 48px;
-    background: white;
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    background: rgba(61, 191, 184, 0.08);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--aqua);
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(61, 191, 184, 0.1);
 }
 
 .agenda-appt-info-hero {
     flex: 1;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
 }
 
 .agenda-appt-name-row {
@@ -381,19 +380,22 @@
     margin-bottom: 4px;
 }
 
-.agenda-appt-actions-hero {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.agenda-appt-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--midnight);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .agenda-appt-time-pill {
-    background: rgba(61, 191, 184, 0.15);
-    color: var(--aqua);
-    font-size: 12px;
-    font-weight: 800;
-    padding: 4px 12px;
-    border-radius: 20px;
+    background: #F4F7F9;
+    color: var(--midnight);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
     display: inline-block;
 }
 
@@ -402,23 +404,36 @@
     align-items: center;
     gap: 4px;
     color: var(--stone);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    margin-top: 6px;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+.agenda-appt-actions-hero {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .agenda-appt-del-hero, .agenda-appt-info-btn-hero {
     background: none;
     border: none;
     color: var(--stone);
-    opacity: 0.5;
-    padding: 4px;
+    opacity: 0.4;
+    padding: 2px;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.agenda-appt-del-hero:hover {
+    opacity: 1;
+    color: #ff4757;
 }
 
 .agenda-appt-info-btn-hero {
-    color: var(--primary);
-    opacity: 1;
+    color: var(--aqua);
+    opacity: 0.8;
 }
 
 /* ── Task List ── */
