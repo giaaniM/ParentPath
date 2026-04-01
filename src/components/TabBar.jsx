@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { Home, Baby, Calendar, Compass } from 'lucide-react';
+import { Home, Baby, Calendar, Compass, User, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './TabBar.css';
 
@@ -7,6 +7,7 @@ const tabs = [
     { path: '/home', icon: Home, label: 'Home' },
     { path: '/baby', icon: Baby, label: 'Bimbo' },
     { path: '/agenda', icon: Calendar, label: 'Agenda' },
+    { path: '/profile', icon: User, label: 'Profilo' },
 ];
 
 export default function TabBar() {

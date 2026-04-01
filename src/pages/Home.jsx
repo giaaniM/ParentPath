@@ -5,7 +5,7 @@ import { pregnancy, getWeekData, smartTrackerData, pregnancyWeather, newbornWeat
 import { useWeekData } from '../hooks/useWeekData';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck, X,
-    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw
+    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw, Baby, Bell
 } from 'lucide-react';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -80,7 +80,8 @@ export default function Home() {
         getCustomTasksForWeek, babyName, babySex, babyNickname,
         userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
         appointments,
-        removeHydration, removeKick
+        removeHydration, removeKick,
+        mockWeek, setMockWeek
     } = useUser();
     const weeks = getWeeksPregnant();
     const months = getBabyAgeMonths();
@@ -310,10 +311,30 @@ export default function Home() {
     return (
         <div className="page home-wrap">
 
-            <div className="greeting-wrapper fi" style={{ margin: '2px 20px 12px' }}>
-                <h2 className="greeting">
-                    Ciao {userName || 'Genitore'}!
-                </h2>
+            <div className="greeting-wrapper fi" style={{ margin: '2px 20px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+                    <h2 className="greeting" style={{ margin: 0 }}>
+                        Ciao {userName || 'Genitore'}!
+                    </h2>
+                    <div className="home-mock-selector">
+                        <Baby size={14} className="home-mock-icon" />
+                        <select 
+                            className="home-mock-select"
+                            value={mockWeek || ''} 
+                            onChange={e => setMockWeek(e.target.value ? Number(e.target.value) : null)}
+                        >
+                            <option value="">Sett. Reale</option>
+                            {[...Array(42)].map((_, i) => (
+                                <option key={i+1} value={i+1}>Sett {i+1}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <button className="home-notif-btn" onClick={() => navigate('/notifications')}>
+                    <Bell size={24} strokeWidth={1.8} color="var(--midnight)" />
+                    <div className="home-notif-badge">3</div>
+                </button>
             </div>
 
             {/* DYNAMIC ROLE TIP */}
@@ -380,6 +401,26 @@ export default function Home() {
                 </div>
             </div>
 
+
+            {/* RECOMMENDED VISITS CARD */}
+            {weekJsonData.recommendedVisits?.length > 0 && (
+                <div 
+                    className="home-recommend-card ru d2" 
+                    onClick={() => navigate('/agenda')}
+                    style={{ margin: '0 20px 24px' }}
+                >
+                    <div className="hrc-icon">
+                        <Stethoscope size={24} color="var(--aqua)" />
+                    </div>
+                    <div className="hrc-content">
+                        <div className="hrc-title">Visite consigliate</div>
+                        <div className="hrc-text">
+                            Ci sono {weekJsonData.recommendedVisits.length} {weekJsonData.recommendedVisits.length === 1 ? 'visita consigliata' : 'visite consigliate'} per questa settimana.
+                        </div>
+                        <div className="hrc-cta">Vai in agenda per vederle <ArrowRight size={14} style={{ marginLeft: 4 }} /></div>
+                    </div>
+                </div>
+            )}
 
             {/* TASK PROGRESS CARD */}
             <div

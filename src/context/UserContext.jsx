@@ -30,7 +30,23 @@ export function UserProvider({ children }) {
 
     // --- MVP Agenda / Task State (persisted) ---
     const [completedTasks, setCompletedTasks] = useState(() => loadJSON('pp_completedTasks', {}));
-    const [weekNotes, setWeekNotes] = useState(() => loadJSON('pp_weekNotes', {}));
+    
+    // Support migrating old weekNotes if they exist
+    const [notes, setNotes] = useState(() => {
+        const existingNotes = loadJSON('pp_notes', []);
+        if (existingNotes.length === 0) {
+            // Migrate old weekNotes if present
+            const oldNotes = loadJSON('pp_weekNotes', {});
+            const migrated = Object.entries(oldNotes).map(([week, text]) => ({
+                id: `migrated_${week}`,
+                weekNumber: parseInt(week, 10),
+                text
+            })).filter(n => n.text);
+            if (migrated.length > 0) return migrated;
+        }
+        return existingNotes;
+    });
+
     const [appointments, setAppointments] = useState(() => loadJSON('pp_appointments', []));
     const [customTasks, setCustomTasks] = useState(() => loadJSON('pp_customTasks', []));
     const [dismissedTasks, setDismissedTasks] = useState(() => loadJSON('pp_dismissedTasks', []));
@@ -50,7 +66,7 @@ export function UserProvider({ children }) {
 
     // Persist on change
     useEffect(() => { saveJSON('pp_completedTasks', completedTasks); }, [completedTasks]);
-    useEffect(() => { saveJSON('pp_weekNotes', weekNotes); }, [weekNotes]);
+    useEffect(() => { saveJSON('pp_notes', notes); }, [notes]);
     useEffect(() => { saveJSON('pp_appointments', appointments); }, [appointments]);
     useEffect(() => { saveJSON('pp_customTasks', customTasks); }, [customTasks]);
     useEffect(() => { saveJSON('pp_dismissedTasks', dismissedTasks); }, [dismissedTasks]);
@@ -115,14 +131,22 @@ export function UserProvider({ children }) {
         return !!completedTasks[`${weekKey}_${taskId}`];
     }, [completedTasks]);
 
-    // --- Week notes helpers ---
-    const setWeekNote = useCallback((week, text) => {
-        setWeekNotes(prev => ({ ...prev, [week]: text }));
+    // --- Notes helpers ---
+    const addNote = useCallback((note) => {
+        setNotes(prev => [...prev, { id: Date.now().toString(), ...note }]);
     }, []);
 
-    const getWeekNote = useCallback((week) => {
-        return weekNotes[week] || '';
-    }, [weekNotes]);
+    const removeNote = useCallback((id) => {
+        setNotes(prev => prev.filter(n => n.id !== id));
+    }, []);
+
+    const updateNote = useCallback((id, updates) => {
+        setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n));
+    }, []);
+
+    const getNotesForWeek = useCallback((week) => {
+        return notes.filter(n => n.weekNumber === week);
+    }, [notes]);
 
     // --- Appointment helpers ---
     const addAppointment = useCallback((appt) => {
@@ -343,7 +367,7 @@ export function UserProvider({ children }) {
             activeSleepTimer, setActiveSleepTimer,
             // MVP Agenda state
             completedTasks, toggleTaskCompleted, isTaskCompleted,
-            weekNotes, setWeekNote, getWeekNote,
+            notes, addNote, removeNote, updateNote, getNotesForWeek,
             appointments, addAppointment, removeAppointment, updateAppointment, getAppointmentsForWeek,
             customTasks, addCustomTask, removeCustomTask, updateCustomTask, getCustomTasksForWeek,
             dismissedTasks, dismissTask, isTaskDismissed,

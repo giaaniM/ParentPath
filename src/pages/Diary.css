@@ -4,7 +4,7 @@
     padding-right: 20px;
     background-color: #FDFAF7;
     min-height: 100dvh;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 24px) !important;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 100px) !important;
 }
 
 .diary-header {

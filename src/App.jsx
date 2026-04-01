@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import TabBar from './components/TabBar';
-import TopBar from './components/TopBar';
 import DiaryFAB from './components/DiaryFAB';
 import AnimatedOnboarding from './pages/AnimatedOnboarding';
 import Home from './pages/Home';
@@ -16,6 +15,7 @@ import DueDateCalculator from './pages/DueDateCalculator';
 import HospitalBag from './pages/HospitalBag';
 import Diary from './pages/Diary';
 import Agenda from './pages/Agenda';
+import Profile from './pages/Profile';
 import ScrollToTop from './components/ScrollToTop';
 import StickyBackButton from './components/StickyBackButton';
 import './styles/global.css';
@@ -28,7 +28,6 @@ function AppContent() {
   return (
     <div className="app-shell">
       <ScrollToTop />
-      {!hideGlobalBars && <TopBar />}
       <StickyBackButton />
       <Routes>
         <Route path="/" element={<AnimatedOnboarding />} />
@@ -44,6 +43,7 @@ function AppContent() {
         <Route path="/tips-list" element={<TipListView />} />
         <Route path="/agenda" element={<Agenda />} />
         <Route path="/diary" element={<Diary />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {!hideGlobalBars && <TabBar />}

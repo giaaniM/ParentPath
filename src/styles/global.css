@@ -103,7 +103,7 @@ textarea {
 .page {
     width: 100%;
     min-height: 100vh;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 90px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
     padding-bottom: calc(var(--tab-bar-height) + var(--space-xl) + var(--bottom-safe));
     background: var(--page-bg);
 }

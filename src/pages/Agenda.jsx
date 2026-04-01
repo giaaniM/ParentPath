@@ -15,7 +15,7 @@ export default function Agenda() {
     const {
         babyStatus, partnerName,
         toggleTaskCompleted, isTaskCompleted,
-        getWeekNote, setWeekNote,
+        getNotesForWeek, addNote, removeNote, updateNote,
         getAppointmentsForWeek, addAppointment, removeAppointment, updateAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
         dismissTask, isTaskDismissed, getWeeksPregnant, setMockWeek, mockWeek
@@ -69,7 +69,7 @@ export default function Agenda() {
     };
 
     const weekData = useWeekData(selectedWeek);
-    const weekNote = getWeekNote(selectedWeek);
+    const notesForWeek = getNotesForWeek(selectedWeek);
     const userAppointments = getAppointmentsForWeek(selectedWeek);
     const customTasks = getCustomTasksForWeek(selectedWeek);
 
@@ -98,6 +98,18 @@ export default function Agenda() {
         setEditingTaskId(null);
     }, [selectedWeek]);
 
+    const pillsScrollRef = useRef(null);
+
+    // Auto-scroll to current week on mount
+    useEffect(() => {
+        if (pillsScrollRef.current) {
+            const currentPill = pillsScrollRef.current.querySelector('.agenda-pill.current');
+            if (currentPill) {
+                currentPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+    }, [currentWeek]);
+
     // Calculate the date range for a given week
     const getWeekDateRange = (week) => {
         const diffFromCurrent = week - currentWeek;
@@ -113,6 +125,16 @@ export default function Agenda() {
         return `${fmt(startOfTargetWeek)} – ${fmt(endOfTargetWeek)}`;
     };
 
+    const getWeekMonthInfo = (week) => {
+        const diffFromCurrent = week - currentWeek;
+        const now = new Date();
+        const startOfCurrentWeek = new Date(now);
+        startOfCurrentWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+        const startOfTargetWeek = new Date(startOfCurrentWeek);
+        startOfTargetWeek.setDate(startOfTargetWeek.getDate() + diffFromCurrent * 7);
+        return startOfTargetWeek.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
+    };
+
     // Week pill strip
     const weekPills = useMemo(() => {
         const pills = [];
@@ -122,15 +144,7 @@ export default function Agenda() {
         return pills;
     }, [selectedWeek]);
 
-    const handleStartEditNote = () => {
-        setNoteText(weekNote);
-        setEditingNote(true);
-    };
-
-    const handleSaveNote = () => {
-        setWeekNote(selectedWeek, noteText);
-        setEditingNote(false);
-    };
+    // Replaced simple note handlers with inline logic for Array of notes
 
     const handleAddTask = () => {
         if (!newTaskText.trim()) return;
@@ -212,285 +226,282 @@ export default function Agenda() {
 
     return (
         <div className="page agenda-page">
-            {/* ── WEEK NAVIGATION ── */}
-            <div className="agenda-nav">
-                <div className="agenda-nav-header">
-                    <button className="agenda-nav-arrow" onClick={() => setSelectedWeek(w => Math.max(1, w - 1))}>
-                        <ChevronLeft size={22} />
-                    </button>
+            {/* ── SMART NAVIGATION ── */}
+            <div className="agenda-smart-nav">
+                <div className="agenda-smart-header">
                     <div className="agenda-nav-center">
-                        <div className="agenda-nav-title">
-                            {babyStatus === 'nato' ? `Mese ${selectedWeek}` : `Settimana ${selectedWeek}`}
-                        </div>
-                        <div className="agenda-nav-dates">{getWeekDateRange(selectedWeek)}</div>
+                        <h1 className="agenda-nav-title">Settimana {selectedWeek}</h1>
+                        <p className="agenda-nav-dates">{getWeekDateRange(selectedWeek)}</p>
                     </div>
-                    <button className="agenda-nav-arrow" onClick={() => setSelectedWeek(w => Math.min(42, w + 1))}>
-                        <ChevronRight size={22} />
-                    </button>
                 </div>
 
-                {/* Pill strip */}
-                <div className="agenda-pills-scroll">
+                <div className="agenda-pills-scroll" ref={pillsScrollRef}>
                     <div className="agenda-pills">
-                        {weekPills.map(w => (
-                            <button
-                                key={w}
-                                className={`agenda-pill ${w === selectedWeek ? 'selected' : ''} ${w === currentWeek ? 'current' : ''}`}
-                                onClick={() => setSelectedWeek(w)}
-                            >
-                                {w}
-                                {w === currentWeek && <span className="agenda-pill-dot" />}
-                            </button>
-                        ))}
+                        {Array.from({ length: 42 }, (_, i) => i + 1).map(w => {
+                            const isSelected = selectedWeek === w;
+                            const isCurrent = currentWeek === w;
+                            const monthStr = getWeekMonthInfo(w);
+                            
+                            return (
+                                <div key={w} className="agenda-pill-item">
+                                    <button
+                                        id={isCurrent ? 'current-week-pill' : undefined}
+                                        className={`agenda-pill ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
+                                        onClick={() => setSelectedWeek(w)}
+                                    >
+                                        <span className="agenda-pill-label">SETT</span>
+                                        <span className="agenda-pill-num">{w}</span>
+                                        <span className="agenda-pill-month">{monthStr}</span>
+                                        {isCurrent && !isSelected && <div className="agenda-pill-dot" />}
+                                    </button>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* ── HERO CARD ── */}
+            {/* ── HERO CARD (Notes + Appointments) ── */}
             <div className="agenda-hero-card">
-                <div className="agenda-hero-header">
-                    <span className="agenda-hero-label">
-                        Settimana {selectedWeek}
-                    </span>
-                    {selectedWeek === currentWeek && (
-                        <span className="agenda-badge-attuale">ATTUALE</span>
-                    )}
+
+                <div className="agenda-section-header-inline">
+                    <span className="agenda-section-title-small">NOTE</span>
+                    <button className="agenda-add-inline-link" onClick={() => setEditingNote(true)}>
+                        <Plus size={14} /> Aggiungi
+                    </button>
                 </div>
 
-                {/* Note */}
                 <div className="agenda-note-section">
-                    {editingNote ? (
-                        <div className="agenda-note-editor">
-                            <textarea
-                                className="agenda-note-textarea"
-                                value={noteText}
-                                onChange={e => setNoteText(e.target.value)}
-                                placeholder="Scrivi una nota per questa settimana..."
-                                autoFocus
-                                rows={3}
-                            />
-                            <div className="agenda-note-actions">
-                                <button className="agenda-btn-secondary" onClick={() => setEditingNote(false)}>Annulla</button>
-                                <button className="agenda-btn-primary" onClick={handleSaveNote}>Salva</button>
+                    {editingNote && (
+                        <div className="agenda-note-display" onClick={e => e.stopPropagation()} style={{ marginBottom: '12px' }}>
+                            <div className="agenda-note-editor">
+                                <textarea
+                                    className="agenda-note-textarea"
+                                    value={noteText}
+                                    onChange={e => setNoteText(e.target.value)}
+                                    autoFocus
+                                    placeholder="Scrivi una nota per questa settimana..."
+                                />
+                                <div className="agenda-note-actions">
+                                    <button className="agenda-btn-secondary" onClick={() => { setEditingNote(false); setNoteText(''); }}>Annulla</button>
+                                    <button className="agenda-btn-primary" onClick={() => {
+                                        if(noteText.trim()) {
+                                            addNote({ weekNumber: selectedWeek, text: noteText.trim() });
+                                        }
+                                        setEditingNote(false);
+                                        setNoteText('');
+                                    }}>Salva</button>
+                                </div>
                             </div>
                         </div>
-                    ) : (
-                        <div className="agenda-note-display">
-                            {weekNote ? (
-                                <>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.5px' }}>NOTE:</span>
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); setWeekNote(selectedWeek, ''); }}
-                                            style={{ background: 'none', border: 'none', color: 'var(--stone)', opacity: 0.5, cursor: 'pointer', padding: '2px' }}
-                                        >
-                                            <X size={14} />
-                                        </button>
-                                    </div>
-                                    <p className="agenda-note-text" onClick={handleStartEditNote}>{weekNote}</p>
-                                </>
-                            ) : (
-                                <p className="agenda-note-placeholder" onClick={handleStartEditNote}>
-                                    Nessuna nota per questa settimana. Aggiungi nota ✏️
-                                </p>
-                            )}
-                        </div>
                     )}
-                </div>
 
-                {/* Appointments */}
-                <div className="agenda-appt-section">
-                    <div className="agenda-appt-header">
-                        <span className="agenda-appt-title">Appuntamenti</span>
-                        <button className="agenda-add-btn" onClick={() => setShowApptModal(true)}>
-                            <Plus size={16} /> Aggiungi
-                        </button>
-                    </div>
-                    {appointments.length === 0 ? (
-                        <div className="agenda-appt-empty">Nessun appuntamento</div>
-                    ) : (
-                        <div className="agenda-appt-list">
-                            {appointments.sort((a, b) => a.time.localeCompare(b.time)).map(appt => (
-                                <div key={appt.id} className="agenda-appt-item">
-                                    <div className="agenda-appt-icon">
-                                        <Stethoscope size={20} />
-                                    </div>
-                                    <div className="agenda-appt-info">
-                                        <div className="agenda-appt-name">{appt.name}</div>
-                                        <div className="agenda-appt-meta">
-                                            <span className="agenda-appt-meta-pill">
-                                                <Calendar size={12} strokeWidth={2.5} />
-                                                {appt.date ? appt.date.split('-').reverse().slice(0, 2).join('/') : '--/--'}
-                                                <span style={{ margin: '0 4px', opacity: 0.5 }}>•</span>
-                                                <Clock size={12} strokeWidth={2.5} />
-                                                {appt.time}
-                                            </span>
-                                            {appt.location && (
-                                                <div className="agenda-appt-location-row">
-                                                    <MapPin size={12} strokeWidth={2.5} />
-                                                    {appt.location}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {appt.notes && (
-                                            <button 
-                                                className="agenda-info-icon"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setSelectedTaskWhy({
-                                                        id: appt.id,
-                                                        text: appt.name,
-                                                        why: appt.notes,
-                                                        type: 'appointment'
-                                                    });
-                                                }}
-                                                style={{ 
-                                                    color: 'var(--primary)', 
-                                                    background: 'var(--white)',
-                                                    border: 'none',
-                                                    padding: '6px',
-                                                    borderRadius: '50%',
-                                                    display: 'flex',
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                                                }}
-                                            >
-                                                <Info size={14} />
-                                            </button>
-                                        )}
-                                        <button className="agenda-appt-del" onClick={() => removeAppointment(appt.id)}>
+                    <div className="agenda-appt-list-hero" style={{ marginBottom: '24px' }}>
+                        {notesForWeek.length === 0 && !editingNote ? (
+                            <div className="agenda-appt-empty">Nessuna nota per questa settimana</div>
+                        ) : (
+                            notesForWeek.map(note => (
+                                <div key={note.id} className="agenda-note-display" style={{ padding: '16px', marginBottom: '8px', cursor: 'default' }}>
+                                    <div className="agenda-note-header-row" style={{ alignItems: 'flex-start' }}>
+                                        <p className="agenda-note-text" style={{ flex: 1, margin: 0, paddingRight: '12px', whiteSpace: 'pre-wrap' }}>{note.text}</p>
+                                        <button 
+                                            className="agenda-note-clear-btn" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                removeNote(note.id);
+                                            }}
+                                            style={{ padding: '4px', marginTop: '-4px' }}
+                                        >
                                             <X size={16} />
                                         </button>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                <div className="agenda-section-header-inline">
+                    <span className="agenda-section-title-small">APPUNTAMENTI</span>
+                    <button className="agenda-add-inline-link" onClick={() => setShowApptModal(true)}>
+                        <Plus size={14} /> Aggiungi
+                    </button>
+                </div>
+
+                <div className="agenda-appt-list-hero">
+                    {appointments.length === 0 ? (
+                        <div className="agenda-appt-empty">Nessun appuntamento in programma</div>
+                    ) : (
+                        appointments.map(appt => (
+                            <div key={appt.id} className="agenda-appt-item-hero">
+                                <div className="agenda-appt-icon-hero">
+                                    <Stethoscope size={20} />
+                                </div>
+                                <div className="agenda-appt-info-hero">
+                                    <div className="agenda-appt-name-row">
+                                        <span className="agenda-appt-name">{appt.name}</span>
+                                        <div className="agenda-appt-actions-hero">
+                                            {(appt.location || appt.note) && (
+                                                <button 
+                                                    className="agenda-appt-info-btn-hero"
+                                                    onClick={() => setSelectedTaskWhy({ 
+                                                        id: appt.id,
+                                                        text: appt.name, 
+                                                        why: appt.note || appt.location, 
+                                                        type: 'appointment' 
+                                                    })}
+                                                >
+                                                    <Info size={14} />
+                                                </button>
+                                            )}
+                                            <button className="agenda-appt-del-hero" onClick={() => removeAppointment(appt.id)}>
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="agenda-appt-meta-hero">
+                                        <span className="agenda-appt-time-pill">{appt.date} • {appt.time}</span>
+                                    </div>
+                                    {appt.location && (
+                                        <div className="agenda-appt-loc-hero">
+                                            <MapPin size={10} /> {appt.location}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
             </div>
 
             {/* ── TASK LIST ── */}
             <div className="agenda-tasks-section">
-                <div className="agenda-tasks-header">
-                    <span className="agenda-tasks-title">Task della Settimana</span>
-                    <span className="agenda-tasks-count">
-                        {allTasks.filter(t => isTaskCompleted(selectedWeek, t.id)).length} / {allTasks.length}
+                <div className="agenda-section-header">
+                    <span className="agenda-section-title">Task della Settimana</span>
+                    <span className="agenda-task-ratio">
+                        {allTasks.filter(t => isTaskCompleted(selectedWeek, t.id)).length}/{allTasks.length}
                     </span>
                 </div>
 
-                <div className="agenda-task-list">
-                    {allTasks.map(task => {
-                        const completed = isTaskCompleted(selectedWeek, task.id);
-                        const assignee = getAssigneeBadge(task.assignee);
-                        const priority = getPriorityBadge(task.priority);
-                        const isEditing = editingTaskId === task.id;
-                        const isSwiping = swipingTaskId && swipingTaskId === task.id && selectedWeek === currentWeek;
+                <div className="agenda-tasks-card">
+                    <div className="agenda-task-list-unified">
+                        {allTasks.length === 0 ? (
+                            <div className="agenda-tasks-empty">Nessun task per questa settimana</div>
+                        ) : (
+                            allTasks.map(task => {
+                                const completed = isTaskCompleted(selectedWeek, task.id);
+                                const assignee = getAssigneeBadge(task.assignee);
+                                const priority = getPriorityBadge(task.priority);
+                                const isEditing = editingTaskId === task.id;
+                                const isSwiping = swipingTaskId && swipingTaskId === task.id && selectedWeek === currentWeek;
 
-                        return (
-                            <div
-                                key={task.id}
-                                className={`agenda-task-item-container ${isSwiping ? 'swiping' : ''}`}
-                                onTouchStart={(e) => handleTouchStart(e, task.id)}
-                                onTouchMove={(e) => handleTouchMove(e, task.id)}
-                            >
-                                <div
-                                    className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''} ${selectedWeek !== currentWeek ? 'disabled' : ''}`}
-                                    onClick={() => {
-                                        if (isEditing) return;
-                                        if (isSwiping) {
-                                            setSwipingTaskId(null);
-                                        } else {
-                                            if (selectedWeek === currentWeek) {
-                                                toggleTaskCompleted(selectedWeek, task.id);
-                                            }
-                                        }
-                                    }}
-                                    style={selectedWeek !== currentWeek ? { opacity: 0.6 } : {}}
-                                >
-                                    {task.suggested && (
-                                        <div className="agenda-task-suggested-indicator">
-                                            <Sparkles size={12} />
-                                        </div>
-                                    )}
-                                    <div className={`agenda-task-check ${completed ? 'checked' : ''}`}>
-                                        {completed && <Check size={14} strokeWidth={3} />}
-                                    </div>
-                                    <div className="agenda-task-content" onClick={(e) => {
-                                        if (!task.suggested) {
-                                            e.stopPropagation();
-                                            handleStartEditTask(task);
-                                        }
-                                    }}>
-                                        {isEditing ? (
-                                            <input
-                                                className="agenda-task-edit-input"
-                                                value={editingTaskText}
-                                                onChange={(e) => setEditingTaskText(e.target.value)}
-                                                onBlur={handleSaveTaskEdit}
-                                                onKeyDown={(e) => e.key === 'Enter' && handleSaveTaskEdit()}
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <div className="agenda-task-text" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                                                <span style={{ flex: 1, paddingTop: '2px' }}>{task.text || 'Task senza descrizione'}</span>
-                                                {(task.why || task.note) && (
-                                                    <div 
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSelectedTaskWhy({ 
-                                                                id: task.id,
-                                                                text: task.text, 
-                                                                why: task.why || task.note,
-                                                                type: task.suggested ? 'suggested' : 'custom'
-                                                            });
-                                                        }}
-                                                        style={{ 
-                                                            color: 'var(--primary)', 
-                                                            cursor: 'pointer', 
-                                                            display: 'flex', 
-                                                            alignItems: 'center', 
-                                                            backgroundColor: 'var(--stone-light)', 
-                                                            padding: '6px', 
-                                                            borderRadius: '50%', 
-                                                            marginTop: '6px',
-                                                            marginRight: '4px' 
-                                                        }}
-                                                        className="agenda-info-icon"
-                                                    >
-                                                        <Info size={14} />
+                                return (
+                                    <div
+                                        key={task.id}
+                                        className={`agenda-task-item-container ${isSwiping ? 'swiping' : ''}`}
+                                        onTouchStart={(e) => handleTouchStart(e, task.id)}
+                                        onTouchMove={(e) => handleTouchMove(e, task.id)}
+                                    >
+                                        <div
+                                            className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''} ${selectedWeek !== currentWeek ? 'disabled' : ''}`}
+                                            onClick={() => {
+                                                if (isEditing) return;
+                                                if (isSwiping) {
+                                                    setSwipingTaskId(null);
+                                                } else {
+                                                    if (selectedWeek === currentWeek) {
+                                                        toggleTaskCompleted(selectedWeek, task.id);
+                                                    }
+                                                }
+                                            }}
+                                            style={selectedWeek !== currentWeek ? { opacity: 0.6 } : {}}
+                                        >
+                                            {task.suggested && (
+                                                <div className="agenda-task-suggested-indicator">
+                                                    <Sparkles size={12} />
+                                                </div>
+                                            )}
+                                            <div className={`agenda-task-check ${completed ? 'checked' : ''}`}>
+                                                {completed && <Check size={14} strokeWidth={3} />}
+                                            </div>
+                                            <div className="agenda-task-content" onClick={(e) => {
+                                                if (!task.suggested) {
+                                                    e.stopPropagation();
+                                                    handleStartEditTask(task);
+                                                }
+                                            }}>
+                                                {isEditing ? (
+                                                    <input
+                                                        className="agenda-task-edit-input"
+                                                        value={editingTaskText}
+                                                        onChange={(e) => setEditingTaskText(e.target.value)}
+                                                        onBlur={handleSaveTaskEdit}
+                                                        onKeyDown={(e) => e.key === 'Enter' && handleSaveTaskEdit()}
+                                                        autoFocus
+                                                    />
+                                                ) : (
+                                                    <div className="agenda-task-text" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                                                        <span style={{ flex: 1, paddingTop: '2px' }}>{task.text || 'Task senza descrizione'}</span>
+                                                        {(task.why || task.note) && (
+                                                            <div 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedTaskWhy({ 
+                                                                        id: task.id,
+                                                                        text: task.text, 
+                                                                        why: task.why || task.note,
+                                                                        type: task.suggested ? 'suggested' : 'custom'
+                                                                    });
+                                                                }}
+                                                                style={{ 
+                                                                    color: 'var(--primary)', 
+                                                                    cursor: 'pointer', 
+                                                                    display: 'flex', 
+                                                                    alignItems: 'center', 
+                                                                    backgroundColor: 'var(--stone-light)', 
+                                                                    padding: '6px', 
+                                                                    borderRadius: '50%', 
+                                                                    marginTop: '6px',
+                                                                    marginRight: '4px' 
+                                                                }}
+                                                                className="agenda-info-icon"
+                                                            >
+                                                                <Info size={14} />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
+                                                <div className="agenda-task-badges">
+                                                    <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
+                                                    {priority && (
+                                                        <span className={`agenda-badge ${priority.className}`}>{priority.label}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Web-only delete button (hidden by default, shows on hover in CSS) */}
+                                            <button className="agenda-task-delete-btn-inline" onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteTask(task);
+                                            }}>
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                        {selectedWeek === currentWeek && (
+                                            <div className="agenda-task-delete-action" onClick={() => handleDeleteTask(task)}>
+                                                <span>Elimina</span>
                                             </div>
                                         )}
-                                        <div className="agenda-task-badges">
-                                            <span className={`agenda-badge ${assignee.className}`}>{assignee.label}</span>
-                                            {priority && (
-                                                <span className={`agenda-badge ${priority.className}`}>{priority.label}</span>
-                                            )}
-                                        </div>
                                     </div>
-                                    
-                                    {/* Web-only delete button (hidden by default, shows on hover in CSS) */}
-                                    <button className="agenda-task-delete-btn-inline" onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteTask(task);
-                                    }}>
-                                        <X size={14} />
-                                    </button>
-                                </div>
-                                
-                                <div className="agenda-task-delete-action" onClick={() => handleDeleteTask(task)}>
-                                    <span>Elimina</span>
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            })
+                        )}
+                    </div>
+                    
+                    <button className="agenda-add-task-dashed-btn" onClick={() => setShowTaskModal(true)}>
+                        <Plus size={16} /> Aggiungi task
+                    </button>
                 </div>
-
-                <button className="agenda-add-task-btn" onClick={() => setShowTaskModal(true)}>
-                    <Plus size={18} /> Aggiungi task
-                </button>
             </div>
 
             {/* ── ADD TASK MODAL ── */}

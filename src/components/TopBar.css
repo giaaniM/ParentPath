@@ -1,22 +1,58 @@
 .topbar {
     position: fixed;
-    top: max(16px, env(safe-area-inset-top));
-    left: 20px;
-    right: 20px;
-    max-width: calc(var(--max-width, 600px) - 40px);
-    margin: 0 auto;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.85);
+    padding-top: env(safe-area-inset-top);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px rgba(15, 32, 53, 0.08);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.topbar__minimal-wrap {
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+    max-width: var(--max-width, 600px);
+    margin: 0 auto;
+}
+
+.topbar__bell--minimal {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.topbar__bell--minimal:active {
+    opacity: 0.6;
+}
+
+.topbar__bell-badge {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    background: var(--blush);
+    border: 2px solid var(--white);
+    font-size: 9px;
+    color: var(--midnight);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 0 2px;
 }
 
 .topbar__logo {
@@ -37,12 +73,18 @@
     font-weight: 700;
     color: var(--midnight);
     letter-spacing: -0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .topbar__actions {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .topbar__bell {
@@ -81,6 +123,54 @@
     border-radius: 9px;
     padding: 0 3px;
     line-height: 1;
+}
+
+/* ── Mock Week Selector UI ── */
+.topbar__mock-selector {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(15, 32, 53, 0.04);
+    padding: 6px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-right: 4px;
+    transition: all 0.2s;
+}
+
+.topbar__mock-selector:focus-within {
+    background: var(--white);
+    border-color: var(--aqua);
+    box-shadow: 0 0 0 3px rgba(61, 191, 184, 0.08);
+}
+
+.topbar__mock-icon {
+    color: var(--aqua);
+    opacity: 0.8;
+}
+
+.topbar__mock-select {
+    border: none;
+    background: transparent;
+    color: var(--midnight);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.topbar__mock-selector::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid var(--stone);
+    margin-left: 2px;
+    opacity: 0.6;
 }
 
 .topbar__profile {

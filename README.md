@@ -1,16 +1,50 @@
-# React + Vite
+# 🍼 ParentPath — Il tuo viaggio, la nostra guida
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**ParentPath** è un'applicazione mobile moderna e premium dedicata a genitori in attesa. Progettata con un'estetica ispirata ai migliori social network, mette al centro la semplicità, l'eleganza e la funzionalità.
 
-Currently, two official plugins are available:
+## ✨ Caratteristiche Principali
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **🏠 Dashboard Intelligente**: Monitora il progresso della gravidanza, ricevi notifiche e visualizza i controlli medici della settimana direttamente in Home.
+- **📅 Agenda Evoluta**: Gestisci appuntamenti e note illimitate con un'interfaccia a schede calendario unica e intuitiva.
+- **👶 Bimbo Hub**: Tutte le informazioni sullo sviluppo del tuo bambino, settimana per settimana.
+- **👤 Profilo Smart**: Un'area personale pulita e moderna per gestire i dati della famiglia senza distrazioni.
+- **⚡ Performance Native**: Sviluppata con React + Vite e integrata con Capacitor per un'esperienza fluida su iOS e Android.
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 19, Vite
+- **Mobile**: Capacitor 8 (Cross-platform)
+- **Styling**: Vanilla CSS (Premium Design System)
+- **Icons**: Lucide React
+- **Utils**: Date-fns, React Router 7
 
-## Expanding the ESLint configuration
+## 🚀 Inizio Rapido
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Sviluppo Locale
+1. Installa le dipendenze:
+   ```bash
+   npm install
+   ```
+2. Avvia il server di sviluppo:
+   ```bash
+   npm run dev
+   ```
+
+### Build per Android
+1. Compila il progetto web e sincronizza Capacitor:
+   ```bash
+   npm run build:native
+   ```
+2. Apri il progetto in Android Studio:
+   ```bash
+   npx cap open android
+   ```
+
+## 🎨 Filosofia di Design
+ParentPath adotta un approccio **User-Centric** e **Minimalista**:
+- **Zero Distractions**: Rimozione di barre superiori fisse per massimizzare lo spazio dei contenuti.
+- **Fluid Connections**: Animazioni sottili e micro-interazioni per guidare l'utente.
+- **Premium Palette**: Colori curati (`#3DBFB8`, `#F4F7F9`) per un'atmosfera rilassante e professionale.
+
+---
+Creato con ❤️ per i genitori del futuro.

@@ -3,55 +3,39 @@
     padding-bottom: 120px;
 }
 
-/* ── Navigation ── */
-.agenda-nav {
-    padding: 0 20px 16px;
+/* ── Smart Navigation ── */
+.agenda-smart-nav {
+    padding: 20px 20px 24px;
+    margin-bottom: 8px;
 }
 
-.agenda-nav-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.agenda-nav-arrow {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 8px;
-    color: var(--midnight);
-    cursor: pointer;
+.agenda-smart-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
-}
-
-.agenda-nav-arrow:active {
-    background: var(--gray-light, #f0f0f0);
+    margin-bottom: 24px;
 }
 
 .agenda-nav-center {
     text-align: center;
-    flex: 1;
 }
 
 .agenda-nav-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--midnight);
+    margin: 0;
     letter-spacing: -0.5px;
 }
 
 .agenda-nav-dates {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--stone);
-    margin-top: 2px;
+    margin-top: 4px;
+    font-weight: 600;
+    opacity: 0.7;
 }
 
-/* ── Pill Strip ── */
 .agenda-pills-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -66,47 +50,92 @@
 
 .agenda-pills {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     padding: 4px 0;
     width: max-content;
 }
 
+.agenda-pill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
 .agenda-pill {
-    min-width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
+    width: 48px;
+    height: 68px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
     background: var(--white);
-    color: var(--stone);
-    font-size: 13px;
-    font-weight: 700;
+    color: var(--midnight);
     cursor: pointer;
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    gap: 3px;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.agenda-pill-label {
+    font-size: 8px;
+    font-weight: 800;
+    opacity: 0.5;
+    text-transform: uppercase;
+}
+
+.agenda-pill-num {
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.agenda-pill-month {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.6;
+    text-transform: capitalize;
 }
 
 .agenda-pill.selected {
-    background: var(--midnight);
+    background: linear-gradient(135deg, #2D9B95 0%, #1c7c77 100%);
     color: var(--white);
-    border-color: var(--midnight);
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(45, 155, 149, 0.3);
+    transform: translateY(-2px);
+}
+
+.agenda-pill.selected .agenda-pill-label,
+.agenda-pill.selected .agenda-pill-month {
+    opacity: 0.9;
+    color: var(--white);
+}
+
+.agenda-pill.selected .agenda-pill-num {
+    color: var(--white);
 }
 
 .agenda-pill.current:not(.selected) {
     border-color: var(--aqua);
+    color: var(--aqua);
+    background: rgba(61, 191, 184, 0.05);
 }
 
 .agenda-pill-dot {
     position: absolute;
-    bottom: -2px;
+    bottom: -6px;
     left: 50%;
     transform: translateX(-50%);
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: var(--aqua);
+    box-shadow: 0 0 0 2px var(--white);
 }
 
 /* ── Hero Card ── */
@@ -119,18 +148,17 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.agenda-hero-header {
+.agenda-hero-title-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
-.agenda-hero-label {
+.agenda-hero-week-label {
     font-size: 15px;
     font-weight: 800;
     color: var(--midnight);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
@@ -146,18 +174,47 @@
 
 /* ── Note Section ── */
 .agenda-note-section {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
 }
 
 .agenda-note-display {
     cursor: pointer;
-    padding: 12px;
-    border-radius: 12px;
-    background: rgba(61, 191, 184, 0.05);
-    border: 1px dashed rgba(61, 191, 184, 0.3);
-    transition: background 0.2s;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(61, 191, 184, 0.03);
+    border: 1.5px dashed rgba(61, 191, 184, 0.2);
+    transition: all 0.2s;
+}
+
+.agenda-note-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.agenda-note-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.agenda-note-title-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--midnight);
+    opacity: 0.8;
+}
+
+.agenda-note-clear-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--stone);
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
 }
 
 .agenda-note-display:active {
@@ -207,71 +264,101 @@
     justify-content: flex-end;
 }
 
-/* ── Appointments ── */
-
-.agenda-appt-header {
+/* ── Section Headers ── */
+.agenda-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin: 24px 20px 12px;
 }
 
-.agenda-appt-title {
+.agenda-section-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--midnight);
+    letter-spacing: -0.5px;
+}
+
+.agenda-add-pill-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #E6FFFA;
+    border: 1px solid rgba(61, 191, 184, 0.2);
+    color: var(--aqua);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.agenda-add-pill-btn:active {
+    background: rgba(61, 191, 184, 0.2);
+    transform: scale(0.95);
+}
+
+.agenda-task-ratio {
     font-size: 13px;
     font-weight: 700;
+    color: var(--stone);
+    background: var(--white);
+    padding: 4px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    opacity: 0.8;
+}
+
+/* ── Appointments ── */
+/* ── Hero Appointments ── */
+.agenda-section-header-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.agenda-section-title-small {
+    font-size: 14px;
+    font-weight: 800;
     color: var(--midnight);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.agenda-add-btn {
+.agenda-add-inline-link {
     display: flex;
     align-items: center;
     gap: 4px;
     background: none;
     border: none;
     color: var(--aqua);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: background 0.2s;
 }
 
-.agenda-add-btn:active {
-    background: rgba(61, 191, 184, 0.1);
-}
-
-.agenda-appt-empty {
-    font-size: 13px;
-    color: var(--stone);
-    opacity: 0.6;
-    text-align: center;
-    padding: 12px 0;
-}
-
-.agenda-appt-list {
+.agenda-appt-list-hero {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.agenda-appt-item {
+.agenda-appt-item-hero {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px;
+    gap: 16px;
+    padding: 20px;
     background: #E6FFFA;
-    border-radius: 20px;
+    border-radius: 24px;
     border: 1px solid rgba(61, 191, 184, 0.1);
 }
 
-.agenda-appt-icon {
-    width: 44px;
-    height: 44px;
+.agenda-appt-icon-hero {
+    width: 48px;
+    height: 48px;
     background: white;
-    border-radius: 14px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -280,74 +367,68 @@
     box-shadow: 0 4px 12px rgba(61, 191, 184, 0.1);
 }
 
-.agenda-appt-info {
+.agenda-appt-info-hero {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
-.agenda-appt-name {
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--midnight);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.agenda-appt-meta {
+.agenda-appt-name-row {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.agenda-appt-actions-hero {
+    display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 2px;
 }
 
-.agenda-appt-meta-pill {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(61, 191, 184, 0.1);
+.agenda-appt-time-pill {
+    background: rgba(61, 191, 184, 0.15);
     color: var(--aqua);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 8px;
+    padding: 4px 12px;
     border-radius: 20px;
+    display: inline-block;
 }
 
-.agenda-appt-location-row {
+.agenda-appt-loc-hero {
     display: flex;
     align-items: center;
     gap: 4px;
     color: var(--stone);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
-    margin-top: 4px;
-    width: 100%;
+    margin-top: 6px;
 }
 
-.agenda-appt-del {
+.agenda-appt-del-hero, .agenda-appt-info-btn-hero {
     background: none;
     border: none;
     color: var(--stone);
-    opacity: 0.4;
-    padding: 8px;
-    margin-right: -8px;
-    border-radius: 50%;
+    opacity: 0.5;
+    padding: 4px;
     cursor: pointer;
-    transition: opacity 0.2s, background 0.2s;
 }
 
-.agenda-appt-del:active {
+.agenda-appt-info-btn-hero {
+    color: var(--primary);
     opacity: 1;
-    background: rgba(0,0,0,0.05);
 }
 
 /* ── Task List ── */
-.agenda-tasks-section {
-    padding: 0 20px;
+.agenda-tasks-card {
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin: 0 20px 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .agenda-tasks-header {
@@ -355,6 +436,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
+    padding: 16px 20px 0;
 }
 
 .agenda-tasks-title {
@@ -373,18 +455,28 @@
     border: 1px solid var(--border);
 }
 
-.agenda-task-list {
+.agenda-tasks-empty {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--stone);
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.agenda-task-list-unified {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
 }
 
 .agenda-task-item-container {
     position: relative;
-    border-radius: 12px;
-    overflow: hidden;
+    border-bottom: 1px solid var(--border-light, #f1f1f1);
     -webkit-tap-highlight-color: transparent;
+}
+
+.agenda-task-item-container:last-child {
+    border-bottom: none;
 }
 
 .agenda-task-item-container.swiping .agenda-task-row {
@@ -416,16 +508,14 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 12px;
+    padding: 16px;
     background: var(--white);
-    border-radius: 12px;
-    border: 1px solid var(--border);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .agenda-task-row:active {
-    transform: scale(0.98);
+    background: #fafafa;
 }
 
 .agenda-task-row.suggested {
@@ -579,27 +669,28 @@
     color: #e67e22;
 }
 
-/* ── Add Task Button ── */
-.agenda-add-task-btn {
+.agenda-add-task-dashed-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 14px;
-    background: var(--white);
+    padding: 16px;
+    margin-top: 16px;
+    background: none;
     border: 2px dashed var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     color: var(--stone);
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 800;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-.agenda-add-task-btn:active {
+.agenda-add-task-dashed-btn:active {
     border-color: var(--aqua);
     color: var(--aqua);
+    background: rgba(61, 191, 184, 0.05);
 }
 
 /* ── Modals ── */
