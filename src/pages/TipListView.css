@@ -1,12 +1,13 @@
 .tiplist-page {
     min-height: 100dvh;
     background-color: var(--page-bg);
-    padding-top: max(80px, calc(env(safe-area-inset-top) + 60px));
+    padding-top: max(110px, calc(env(safe-area-inset-top) + 90px));
     padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom, 20px));
 }
 
 .tiplist-header {
     padding: 0 24px;
+    margin-top: 60px;
     margin-bottom: 20px;
 }
 

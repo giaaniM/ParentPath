@@ -34,8 +34,13 @@ export default function Login() {
         }
 
         const userId = data.user?.id;
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
-        const { data: pregnancy } = await supabase.from('pregnancies').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+        const { data: pregnancy } = await supabase.from('pregnancies')
+            .select('*')
+            .or(`creator_id.eq.${userId},partner_id.eq.${userId}`)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
         if (!profile) {
             // Account esiste ma onboarding non completato

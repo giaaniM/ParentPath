@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { ChevronRight } from 'lucide-react';
-import { pregnancy, pregnancyArticles, newbornArticles } from '../data/mockData';
+import { pregnancy, pregnancyArticles, newbornArticles, articles } from '../data/mockData';
 import { getCategoryConfig } from '../utils/CategoryColors';
 import StickyBackButton from '../components/StickyBackButton';
 import TipBottomSheet from '../components/TipBottomSheet';
@@ -16,10 +16,14 @@ export default function TipListView() {
     const allTips = useMemo(() => {
         const isBorn = babyStatus === 'nato';
         const baseArticles = isBorn ? newbornArticles : pregnancyArticles;
-        return baseArticles.map(a => ({
-            ...a,
-            readingTime: a.duration || '3 min'
-        }));
+        return baseArticles.map(a => {
+            const fullArticle = (articles || []).find(art => art.id === a.id) || {};
+            return {
+                ...a,
+                ...fullArticle,
+                readingTime: a.duration || fullArticle.readingTime || a.readingTime || '3 min'
+            };
+        });
     }, [isMamma, babyStatus]);
 
     const [activeFilter, setActiveFilter] = useState('Tutti');

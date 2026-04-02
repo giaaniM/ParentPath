@@ -64,12 +64,16 @@ export default function Onboarding() {
                     name: name || (role === 'mamma' ? 'Sara' : 'Marco'),
                     role: role === 'entrambi' ? 'papa' : (role || 'papa'),
                 });
+                // Genera un codice invito casuale (es: A8B2CH)
+                const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
                 await supabase.from('pregnancies').insert({
-                    user_id: userId,
+                    creator_id: userId,
                     baby_name: babyNameInput || null,
                     baby_sex: babySex,
                     conception_date: conceptionTime.toISOString().split('T')[0],
                     status,
+                    invite_code: generatedCode
                 });
             }
 

@@ -16,10 +16,26 @@ function saveJSON(key, value) {
 
 export function UserProvider({ children }) {
     const [userRole, setUserRole] = useState(() => loadJSON('pp_userRole', null));
-    const [userName, setUserName] = useState(() => loadJSON('pp_userName', ''));
-    const [babyName, setBabyName] = useState(() => loadJSON('pp_babyName', ''));
+    
+    // Capitalize helper
+    const capitalize = (str) => {
+        if (!str) return '';
+        return str.replace(/\b\w/g, char => char.toUpperCase());
+    };
+
+    const [_userName, _setUserName] = useState(() => loadJSON('pp_userName', ''));
+    const [_babyName, _setBabyName] = useState(() => loadJSON('pp_babyName', ''));
+    const [_partnerName, _setPartnerName] = useState(() => loadJSON('pp_partnerName', ''));
+
+    const setUserName = (name) => _setUserName(capitalize(name));
+    const setBabyName = (name) => _setBabyName(capitalize(name));
+    const setPartnerName = (name) => _setPartnerName(capitalize(name));
+
+    const userName = _userName;
+    const babyName = _babyName;
+    const partnerName = _partnerName;
+
     const [babySex, setBabySex] = useState(() => loadJSON('pp_babySex', null)); // 'M' | 'F' | null
-    const [partnerName, setPartnerName] = useState(() => loadJSON('pp_partnerName', ''));
     const [conceptionDate, setConceptionDate] = useState(() => {
         const raw = loadJSON('pp_conceptionDate', null);
         return raw ? new Date(raw) : null;
@@ -29,6 +45,8 @@ export function UserProvider({ children }) {
 
     // New Feature States
     const [babyStatus, setBabyStatus] = useState(() => loadJSON('pp_babyStatus', 'gravidanza')); // 'gravidanza' | 'nato'
+    const [inviteCode, setInviteCode] = useState(() => loadJSON('pp_inviteCode', null));
+    const [partnerId, setPartnerId] = useState(() => loadJSON('pp_partnerId', null));
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
     const [hospitalBag, setHospitalBag] = useState({}); // { itemId: boolean }
     const [mockWeek, setMockWeek] = useState(null); // per debug/test
@@ -78,6 +96,8 @@ export function UserProvider({ children }) {
     useEffect(() => { saveJSON('pp_conceptionDate', conceptionDate ? conceptionDate.toISOString() : null); }, [conceptionDate]);
     useEffect(() => { saveJSON('pp_onboardingDone', onboardingDone); }, [onboardingDone]);
     useEffect(() => { saveJSON('pp_babyStatus', babyStatus); }, [babyStatus]);
+    useEffect(() => { saveJSON('pp_inviteCode', inviteCode); }, [inviteCode]);
+    useEffect(() => { saveJSON('pp_partnerId', partnerId); }, [partnerId]);
 
     // Ripristina sessione Supabase all'avvio: se c'è una sessione attiva ma nessun profilo in stato, ricarica da DB
     useEffect(() => {
@@ -87,9 +107,14 @@ export function UserProvider({ children }) {
             // Se l'onboarding risulta già fatto (da localStorage), non serve ricaricare
             if (loadJSON('pp_onboardingDone', false)) return;
 
+            // L'onboarding potrebbe essere loggato localmente, ma ricarichiamo i dati di rete silenziosamente
             const userId = session.user.id;
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
-            const { data: pregnancy } = await supabase.from('pregnancies').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+            const { data: pregnancy } = await supabase.from('pregnancies')
+                .select('*')
+                .or(`creator_id.eq.${userId},partner_id.eq.${userId}`)
+                .order('created_at', { ascending: false })
+                .limit(1).maybeSingle();
 
             if (profile) {
                 let conceptionTime = null;
@@ -100,11 +125,49 @@ export function UserProvider({ children }) {
                 setBabySex(pregnancy?.baby_sex || null);
                 setBabyStatus(pregnancy?.status || 'gravidanza');
                 setConceptionDate(conceptionTime);
+                setInviteCode(pregnancy?.invite_code || null);
+                setPartnerId(pregnancy?.creator_id === userId ? pregnancy?.partner_id : pregnancy?.creator_id);
                 setOnboardingDone(true);
             }
         };
         restoreSession();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const [realtimeNotifications, setRealtimeNotifications] = useState([]);
+    
+    // Assegna il listener in realtime a Supabase per le notifiche
+    useEffect(() => {
+        let channel;
+        const attachListener = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+            const userId = session.user.id;
+            
+            // Creiamo il canale e definiamo i listener PRIMA di chiamare subscribe()
+            channel = supabase.channel(`notifs_${userId}_${Date.now()}`)
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'notifications', 
+                    filter: `user_id=eq.${userId}` 
+                }, (payload) => {
+                    const newNotif = payload.new;
+                    setRealtimeNotifications(prev => [newNotif, ...prev]);
+                });
+            
+            channel.subscribe();
+        };
+
+        if (onboardingDone) {
+            attachListener();
+        }
+
+        return () => {
+            if (channel) {
+                supabase.removeChannel(channel);
+            }
+        };
+    }, [onboardingDone]);
 
     // Persist on change
     useEffect(() => { saveJSON('pp_completedTasks', completedTasks); }, [completedTasks]);
@@ -294,6 +357,49 @@ export function UserProvider({ children }) {
         return () => subscription.unsubscribe();
     }, [onboardingDone]);
 
+    // JOIN PREGNANCY (Partner link flow)
+    const joinPregnancy = async (code) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return { success: false, error: 'Non connesso' };
+        
+        const userId = session.user.id;
+        const { data, error } = await supabase
+            .from('pregnancies')
+            .update({ partner_id: userId })
+            .eq('invite_code', code.toUpperCase())
+            .select()
+            .single();
+            
+        if (data && !error) {
+            setBabyName(data.baby_name || '');
+            setBabySex(data.baby_sex || null);
+            setConceptionDate(data.conception_date ? new Date(data.conception_date) : null);
+            setBabyStatus(data.status || 'gravidanza');
+            setInviteCode(data.invite_code);
+            setPartnerId(data.creator_id);
+            return { success: true };
+        }
+        return { success: false, error: 'Codice non valido o scaduto.' };
+    };
+
+    // INVIA NOTIFICA AL PARTNER
+    const sendNotificationToPartner = async (type, title, message) => {
+        if (!partnerId) return false;
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return false;
+
+        const { error } = await supabase.from('notifications').insert({
+            user_id: partnerId,
+            sender_id: session.user.id,
+            type,
+            title,
+            message
+        });
+
+        return !error;
+    };
+
     // Quick login for dev
     const devLogin = (role, status = 'gravidanza') => {
         setUserRole(role);
@@ -303,6 +409,7 @@ export function UserProvider({ children }) {
         setPartnerName(role === 'mamma' ? 'Valerio' : 'Sara');
         setConceptionDate(new Date('2025-08-10'));
         setBabyStatus('gravidanza'); // Force pregnancy
+        setInviteCode('DEV123'); // Fake invite code for testing UI
         setOnboardingDone(true);
         setIsDevUser(true);
     };
@@ -455,8 +562,9 @@ export function UserProvider({ children }) {
             userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
             // Newborn Tracker
             setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
-            //
             isMamma, isPapa, isDevUser,
+            inviteCode, partnerId, realtimeNotifications,
+            joinPregnancy, sendNotificationToPartner,
             completeOnboarding, devLogin, login, logout,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,

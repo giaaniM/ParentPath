@@ -370,7 +370,7 @@ export default function Home() {
                     <div className="hc-info-v4">
                         <div className="hc-eyebrow-v4">{isBorn ? 'Il tuo bimbo' : timeframeLabel}</div>
                         <h2 className="hc-title-v4">
-                            {isBorn ? (babyName || 'Il tuo Bimbo') : (pregnancy.babyNickname || 'Giacomo')} 
+                            {babyName || 'Il tuo Bimbo'} 
                             <span className="hc-sex-v4">
                                 {(babySex || pregnancy.sex) === 'M' ? '♂' : ((babySex || pregnancy.sex) === 'F' ? '♀' : '')}
                             </span>
