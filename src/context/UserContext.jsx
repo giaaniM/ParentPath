@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabase';
 
 const UserContext = createContext(null);
 
@@ -14,16 +15,20 @@ function saveJSON(key, value) {
 }
 
 export function UserProvider({ children }) {
-    const [userRole, setUserRole] = useState(null);
-    const [userName, setUserName] = useState('');
-    const [babyName, setBabyName] = useState('');
-    const [babySex, setBabySex] = useState(null); // 'M' | 'F' | null
-    const [partnerName, setPartnerName] = useState('');
-    const [conceptionDate, setConceptionDate] = useState(null);
-    const [onboardingDone, setOnboardingDone] = useState(false);
+    const [userRole, setUserRole] = useState(() => loadJSON('pp_userRole', null));
+    const [userName, setUserName] = useState(() => loadJSON('pp_userName', ''));
+    const [babyName, setBabyName] = useState(() => loadJSON('pp_babyName', ''));
+    const [babySex, setBabySex] = useState(() => loadJSON('pp_babySex', null)); // 'M' | 'F' | null
+    const [partnerName, setPartnerName] = useState(() => loadJSON('pp_partnerName', ''));
+    const [conceptionDate, setConceptionDate] = useState(() => {
+        const raw = loadJSON('pp_conceptionDate', null);
+        return raw ? new Date(raw) : null;
+    });
+    const [onboardingDone, setOnboardingDone] = useState(() => loadJSON('pp_onboardingDone', false));
+    const [isDevUser, setIsDevUser] = useState(false);
 
     // New Feature States
-    const [babyStatus, setBabyStatus] = useState('gravidanza'); // 'gravidanza' | 'nato'
+    const [babyStatus, setBabyStatus] = useState(() => loadJSON('pp_babyStatus', 'gravidanza')); // 'gravidanza' | 'nato'
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
     const [hospitalBag, setHospitalBag] = useState({}); // { itemId: boolean }
     const [mockWeek, setMockWeek] = useState(null); // per debug/test
@@ -63,6 +68,43 @@ export function UserProvider({ children }) {
         lastUpdate: 'Poco fa',
         activity: 'Occupato'
     }));
+
+    // Persist profile fields
+    useEffect(() => { saveJSON('pp_userRole', userRole); }, [userRole]);
+    useEffect(() => { saveJSON('pp_userName', userName); }, [userName]);
+    useEffect(() => { saveJSON('pp_babyName', babyName); }, [babyName]);
+    useEffect(() => { saveJSON('pp_babySex', babySex); }, [babySex]);
+    useEffect(() => { saveJSON('pp_partnerName', partnerName); }, [partnerName]);
+    useEffect(() => { saveJSON('pp_conceptionDate', conceptionDate ? conceptionDate.toISOString() : null); }, [conceptionDate]);
+    useEffect(() => { saveJSON('pp_onboardingDone', onboardingDone); }, [onboardingDone]);
+    useEffect(() => { saveJSON('pp_babyStatus', babyStatus); }, [babyStatus]);
+
+    // Ripristina sessione Supabase all'avvio: se c'è una sessione attiva ma nessun profilo in stato, ricarica da DB
+    useEffect(() => {
+        const restoreSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+            // Se l'onboarding risulta già fatto (da localStorage), non serve ricaricare
+            if (loadJSON('pp_onboardingDone', false)) return;
+
+            const userId = session.user.id;
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
+            const { data: pregnancy } = await supabase.from('pregnancies').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
+
+            if (profile) {
+                let conceptionTime = null;
+                if (pregnancy?.conception_date) conceptionTime = new Date(pregnancy.conception_date);
+                setUserRole(profile.role || 'papa');
+                setUserName(profile.name || '');
+                setBabyName(pregnancy?.baby_name || '');
+                setBabySex(pregnancy?.baby_sex || null);
+                setBabyStatus(pregnancy?.status || 'gravidanza');
+                setConceptionDate(conceptionTime);
+                setOnboardingDone(true);
+            }
+        };
+        restoreSession();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Persist on change
     useEffect(() => { saveJSON('pp_completedTasks', completedTasks); }, [completedTasks]);
@@ -210,15 +252,47 @@ export function UserProvider({ children }) {
         if (sex) setBabySex(sex);
         if (partner) setPartnerName(partner);
         setOnboardingDone(true);
+        setIsDevUser(false);
     };
 
-    // Main login helper
+    // Main login helper (usato internamente dopo signIn Supabase)
     const login = (role, name) => {
         setUserRole(role);
         setUserName(name);
-        setBabyStatus('gravidanza'); // Force pregnancy for now as requested
+        setBabyStatus('gravidanza');
         setOnboardingDone(true);
     };
+
+    // Logout reale: termina sessione Supabase e pulisce lo stato locale
+    const logout = useCallback(async () => {
+        await supabase.auth.signOut();
+        setUserRole(null);
+        setUserName('');
+        setBabyName('');
+        setBabySex(null);
+        setConceptionDate(null);
+        setBabyStatus('gravidanza');
+        setOnboardingDone(false);
+        setIsDevUser(false);
+        // Pulizia localStorage profilo
+        ['pp_userRole','pp_userName','pp_babyName','pp_babySex','pp_partnerName',
+         'pp_conceptionDate','pp_onboardingDone','pp_babyStatus'].forEach(k => localStorage.removeItem(k));
+    }, []);
+
+    // Ripristina sessione Supabase al riavvio dell'app
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            // Se l'utente era loggato su Supabase ma non in React state, non forziamo nulla:
+            // il flusso login/onboarding chiama già completeOnboarding().
+            // Questo listener serve principalmente per gestire il logout da altri tab.
+            if (!session && onboardingDone) {
+                setUserRole(null);
+                setUserName('');
+                setOnboardingDone(false);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [onboardingDone]);
 
     // Quick login for dev
     const devLogin = (role, status = 'gravidanza') => {
@@ -230,6 +304,7 @@ export function UserProvider({ children }) {
         setConceptionDate(new Date('2025-08-10'));
         setBabyStatus('gravidanza'); // Force pregnancy
         setOnboardingDone(true);
+        setIsDevUser(true);
     };
 
     // Compute weeks from conception
@@ -239,6 +314,8 @@ export function UserProvider({ children }) {
         const now = new Date();
         const diffMs = now - new Date(conceptionDate);
         const weeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+        // Per bimbi nati non applichiamo il cap a 42 così getBabyAgeWeeks() funziona correttamente
+        if (babyStatus === 'nato') return Math.max(weeks, 40);
         return Math.min(Math.max(weeks, 1), 42);
     };
 
@@ -379,8 +456,8 @@ export function UserProvider({ children }) {
             // Newborn Tracker
             setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
             //
-            isMamma, isPapa,
-            completeOnboarding, devLogin, login,
+            isMamma, isPapa, isDevUser,
+            completeOnboarding, devLogin, login, logout,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
             mockWeek, setMockWeek,

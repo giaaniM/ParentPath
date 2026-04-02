@@ -18,11 +18,18 @@ export default function Agenda() {
         getNotesForWeek, addNote, removeNote, updateNote,
         getAppointmentsForWeek, addAppointment, removeAppointment, updateAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
-        dismissTask, isTaskDismissed, getWeeksPregnant, setMockWeek, mockWeek
+        dismissTask, isTaskDismissed, getWeeksPregnant, getBabyAgeMonths, setMockWeek, mockWeek
     } = useUser();
 
+    const isBorn = babyStatus === 'nato';
+    // Post-birth months are stored with weekNumber offset 100 (month 1 = key 101, month 2 = 102, ...)
+    const MONTH_OFFSET = 100;
+    const monthToKey = (m) => MONTH_OFFSET + m;
+
     const currentWeek = getWeeksPregnant();
-    const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+    const currentMonth = getBabyAgeMonths();
+    const currentKey = isBorn ? monthToKey(currentMonth) : currentWeek;
+    const [selectedKey, setSelectedKey] = useState(currentKey);
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showApptModal, setShowApptModal] = useState(false);
     const [editingNote, setEditingNote] = useState(false);
@@ -68,39 +75,37 @@ export default function Agenda() {
         modalDragY.current = 0;
     };
 
-    const weekData = useWeekData(selectedWeek);
-    const notesForWeek = getNotesForWeek(selectedWeek);
-    const userAppointments = getAppointmentsForWeek(selectedWeek);
-    const customTasks = getCustomTasksForWeek(selectedWeek);
-
-    const appointments = getAppointmentsForWeek(selectedWeek);
+    const weekData = useWeekData(isBorn ? 0 : selectedKey);
+    const notesForWeek = getNotesForWeek(selectedKey);
+    const customTasks = getCustomTasksForWeek(selectedKey);
+    const appointments = getAppointmentsForWeek(selectedKey);
 
     // Combine JSON suggested tasks + user custom tasks
     const allTasks = useMemo(() => {
-        const jsonTasks = weekData?.tasks || [];
-        
+        const jsonTasks = isBorn ? [] : (weekData?.tasks || []);
+
         const combined = [...jsonTasks, ...customTasks];
         // Filter out empty tasks, dismissed tasks, and sort
         return combined
             .filter(t => t.text && t.text.trim())
             .filter(t => !isTaskDismissed(t.id))
             .sort((a, b) => {
-                const aCompleted = isTaskCompleted(selectedWeek, a.id) ? 1 : 0;
-                const bCompleted = isTaskCompleted(selectedWeek, b.id) ? 1 : 0;
+                const aCompleted = isTaskCompleted(selectedKey, a.id) ? 1 : 0;
+                const bCompleted = isTaskCompleted(selectedKey, b.id) ? 1 : 0;
                 if (aCompleted !== bCompleted) return aCompleted - bCompleted;
                 return (PRIORITY_ORDER[a.priority] || 3) - (PRIORITY_ORDER[b.priority] || 3);
             });
-    }, [weekData, customTasks, selectedWeek, isTaskCompleted, isTaskDismissed]);
+    }, [weekData, customTasks, selectedKey, isTaskCompleted, isTaskDismissed, isBorn]);
 
-    // Reset swiping and editing when week changes
+    // Reset swiping and editing when key changes
     useEffect(() => {
         setSwipingTaskId(null);
         setEditingTaskId(null);
-    }, [selectedWeek]);
+    }, [selectedKey]);
 
     const pillsScrollRef = useRef(null);
 
-    // Auto-scroll to current week on mount
+    // Auto-scroll to current pill on mount
     useEffect(() => {
         if (pillsScrollRef.current) {
             const currentPill = pillsScrollRef.current.querySelector('.agenda-pill.current');
@@ -108,7 +113,7 @@ export default function Agenda() {
                 currentPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             }
         }
-    }, [currentWeek]);
+    }, [currentKey]);
 
     // Calculate the date range for a given week
     const getWeekDateRange = (week) => {
@@ -135,17 +140,6 @@ export default function Agenda() {
         return startOfTargetWeek.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
     };
 
-    // Week pill strip
-    const weekPills = useMemo(() => {
-        const pills = [];
-        const start = Math.max(1, selectedWeek - 6);
-        const end = Math.min(42, selectedWeek + 6);
-        for (let w = start; w <= end; w++) pills.push(w);
-        return pills;
-    }, [selectedWeek]);
-
-    // Replaced simple note handlers with inline logic for Array of notes
-
     const handleAddTask = () => {
         if (!newTaskText.trim()) return;
         addCustomTask({
@@ -154,7 +148,7 @@ export default function Agenda() {
             assignee: newTaskAssignee,
             priority: 'media',
             category: 'preparazione',
-            weekNumber: selectedWeek,
+            weekNumber: selectedKey,
         });
         setNewTaskText('');
         setNewTaskNote('');
@@ -194,7 +188,7 @@ export default function Agenda() {
     };
 
     const handleTouchStart = (e, taskId) => {
-        if (selectedWeek !== currentWeek) return;
+        if (selectedKey !== currentKey) return;
         if (swipingTaskId && swipingTaskId !== taskId) {
             setSwipingTaskId(null);
         }
@@ -202,7 +196,7 @@ export default function Agenda() {
     };
 
     const handleTouchMove = (e, taskId) => {
-        if (selectedWeek !== currentWeek) return;
+        if (selectedKey !== currentKey) return;
         if (!touchStartX.current) return;
         const deltaX = touchStartX.current - e.touches[0].clientX;
         if (deltaX > 50) {
@@ -230,33 +224,57 @@ export default function Agenda() {
             <div className="agenda-smart-nav">
                 <div className="agenda-smart-header">
                     <div className="agenda-nav-center">
-                        <h1 className="agenda-nav-title">Settimana {selectedWeek}</h1>
-                        <p className="agenda-nav-dates">{getWeekDateRange(selectedWeek)}</p>
+                        {isBorn ? (
+                            <h1 className="agenda-nav-title">Mese {selectedKey - MONTH_OFFSET}</h1>
+                        ) : (
+                            <>
+                                <h1 className="agenda-nav-title">Settimana {selectedKey}</h1>
+                                <p className="agenda-nav-dates">{getWeekDateRange(selectedKey)}</p>
+                            </>
+                        )}
                     </div>
                 </div>
 
                 <div className="agenda-pills-scroll" ref={pillsScrollRef}>
                     <div className="agenda-pills">
-                        {Array.from({ length: 42 }, (_, i) => i + 1).map(w => {
-                            const isSelected = selectedWeek === w;
-                            const isCurrent = currentWeek === w;
-                            const monthStr = getWeekMonthInfo(w);
-                            
-                            return (
-                                <div key={w} className="agenda-pill-item">
-                                    <button
-                                        id={isCurrent ? 'current-week-pill' : undefined}
-                                        className={`agenda-pill ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
-                                        onClick={() => setSelectedWeek(w)}
-                                    >
-                                        <span className="agenda-pill-label">SETT</span>
-                                        <span className="agenda-pill-num">{w}</span>
-                                        <span className="agenda-pill-month">{monthStr}</span>
-                                        {isCurrent && !isSelected && <div className="agenda-pill-dot" />}
-                                    </button>
-                                </div>
-                            );
-                        })}
+                        {isBorn ? (
+                            Array.from({ length: 12 }, (_, i) => i + 1).map(m => {
+                                const key = monthToKey(m);
+                                const isSelected = selectedKey === key;
+                                const isCurrent = currentMonth === m;
+                                return (
+                                    <div key={key} className="agenda-pill-item">
+                                        <button
+                                            className={`agenda-pill ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
+                                            onClick={() => setSelectedKey(key)}
+                                        >
+                                            <span className="agenda-pill-label">MESE</span>
+                                            <span className="agenda-pill-num">{m}</span>
+                                            {isCurrent && !isSelected && <div className="agenda-pill-dot" />}
+                                        </button>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            Array.from({ length: 42 }, (_, i) => i + 1).map(w => {
+                                const isSelected = selectedKey === w;
+                                const isCurrent = currentWeek === w;
+                                const monthStr = getWeekMonthInfo(w);
+                                return (
+                                    <div key={w} className="agenda-pill-item">
+                                        <button
+                                            className={`agenda-pill ${isSelected ? 'selected' : ''} ${isCurrent ? 'current' : ''}`}
+                                            onClick={() => setSelectedKey(w)}
+                                        >
+                                            <span className="agenda-pill-label">SETT</span>
+                                            <span className="agenda-pill-num">{w}</span>
+                                            <span className="agenda-pill-month">{monthStr}</span>
+                                            {isCurrent && !isSelected && <div className="agenda-pill-dot" />}
+                                        </button>
+                                    </div>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
             </div>
@@ -286,7 +304,7 @@ export default function Agenda() {
                                     <button className="agenda-btn-secondary" onClick={() => { setEditingNote(false); setNoteText(''); }}>Annulla</button>
                                     <button className="agenda-btn-primary" onClick={() => {
                                         if(noteText.trim()) {
-                                            addNote({ weekNumber: selectedWeek, text: noteText.trim() });
+                                            addNote({ weekNumber: selectedKey, text: noteText.trim() });
                                         }
                                         setEditingNote(false);
                                         setNoteText('');
@@ -298,7 +316,7 @@ export default function Agenda() {
 
                     <div className="agenda-appt-list-hero" style={{ marginBottom: '24px' }}>
                         {notesForWeek.length === 0 && !editingNote ? (
-                            <div className="agenda-appt-empty">Nessuna nota per questa settimana</div>
+                            <div className="agenda-appt-empty">{isBorn ? 'Nessuna nota per questo mese' : 'Nessuna nota per questa settimana'}</div>
                         ) : (
                             notesForWeek.map(note => (
                                 <div key={note.id} className="agenda-note-display" style={{ padding: '16px', marginBottom: '8px', cursor: 'default' }}>
@@ -377,23 +395,23 @@ export default function Agenda() {
             {/* ── TASK LIST ── */}
             <div className="agenda-tasks-section">
                 <div className="agenda-section-header">
-                    <span className="agenda-section-title">Task della Settimana</span>
+                    <span className="agenda-section-title">{isBorn ? 'Task del Mese' : 'Task della Settimana'}</span>
                     <span className="agenda-task-ratio">
-                        {allTasks.filter(t => isTaskCompleted(selectedWeek, t.id)).length}/{allTasks.length}
+                        {allTasks.filter(t => isTaskCompleted(selectedKey, t.id)).length}/{allTasks.length}
                     </span>
                 </div>
 
                 <div className="agenda-tasks-card">
                     <div className="agenda-task-list-unified">
                         {allTasks.length === 0 ? (
-                            <div className="agenda-tasks-empty">Nessun task per questa settimana</div>
+                            <div className="agenda-tasks-empty">{isBorn ? 'Nessun task per questo mese' : 'Nessun task per questa settimana'}</div>
                         ) : (
                             allTasks.map(task => {
-                                const completed = isTaskCompleted(selectedWeek, task.id);
+                                const completed = isTaskCompleted(selectedKey, task.id);
                                 const assignee = getAssigneeBadge(task.assignee);
                                 const priority = getPriorityBadge(task.priority);
                                 const isEditing = editingTaskId === task.id;
-                                const isSwiping = swipingTaskId && swipingTaskId === task.id && selectedWeek === currentWeek;
+                                const isSwiping = swipingTaskId && swipingTaskId === task.id && selectedKey === currentKey;
 
                                 return (
                                     <div
@@ -403,18 +421,18 @@ export default function Agenda() {
                                         onTouchMove={(e) => handleTouchMove(e, task.id)}
                                     >
                                         <div
-                                            className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''} ${selectedWeek !== currentWeek ? 'disabled' : ''}`}
+                                            className={`agenda-task-row ${completed ? 'completed' : ''} ${task.suggested ? 'suggested' : ''} ${selectedKey !== currentKey ? 'disabled' : ''}`}
                                             onClick={() => {
                                                 if (isEditing) return;
                                                 if (isSwiping) {
                                                     setSwipingTaskId(null);
                                                 } else {
-                                                    if (selectedWeek === currentWeek) {
-                                                        toggleTaskCompleted(selectedWeek, task.id);
+                                                    if (selectedKey === currentKey) {
+                                                        toggleTaskCompleted(selectedKey, task.id);
                                                     }
                                                 }
                                             }}
-                                            style={selectedWeek !== currentWeek ? { opacity: 0.6 } : {}}
+                                            style={selectedKey !== currentKey ? { opacity: 0.6 } : {}}
                                         >
                                             {task.suggested && (
                                                 <div className="agenda-task-suggested-indicator">
@@ -487,7 +505,7 @@ export default function Agenda() {
                                                 <X size={14} />
                                             </button>
                                         </div>
-                                        {selectedWeek === currentWeek && (
+                                        {selectedKey === currentKey && (
                                             <div className="agenda-task-delete-action" onClick={() => handleDeleteTask(task)}>
                                                 <span>Elimina</span>
                                             </div>
@@ -618,10 +636,10 @@ export default function Agenda() {
             )}
 
             {/* SHARED ADD APPOINTMENT MODAL */}
-            <AddAppointmentModal 
+            <AddAppointmentModal
                 isOpen={showApptModal}
                 onClose={() => setShowApptModal(false)}
-                weekNumber={selectedWeek}
+                weekNumber={selectedKey}
             />
         </div>
     );

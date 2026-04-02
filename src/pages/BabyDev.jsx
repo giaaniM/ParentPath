@@ -11,7 +11,7 @@ import './BabyDev.css';
 
 export default function BabyDev() {
     const navigate = useNavigate();
-    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment } = useUser();
+    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment, getBabyAgeMonths } = useUser();
     const isBorn = babyStatus === 'nato';
     const currentWeek = isBorn ? 0 : getWeeksPregnant();
     const percent = isBorn ? 100 : Math.min(100, Math.round((currentWeek / pregnancy.totalWeeks) * 100));
@@ -241,7 +241,7 @@ export default function BabyDev() {
                 {/* SECTION 3: CONSIGLI & ESAMI */}
                 <div className="bd-section-v4 ru d3">
                     <h2 className="bd-v4-section-title">
-                        Consigli per la Settimana {currentWeek}
+                        {isBorn ? `Consigli per il Mese ${getBabyAgeMonths()}` : `Consigli per la Settimana ${currentWeek}`}
                     </h2>
                     
 

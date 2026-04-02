@@ -3,6 +3,9 @@ import { UserProvider } from './context/UserContext';
 import TabBar from './components/TabBar';
 import DiaryFAB from './components/DiaryFAB';
 import AnimatedOnboarding from './pages/AnimatedOnboarding';
+import Register from './pages/Register';
+import OnboardingFlow from './pages/Onboarding';
+import Login from './pages/Login';
 import Home from './pages/Home';
 import BabyDev from './pages/BabyDev';
 import ArticleHub from './pages/ArticleHub';
@@ -22,7 +25,7 @@ import './styles/global.css';
 
 function AppContent() {
   const location = useLocation();
-  const subViewsNoBars = ['/diary', '/tools', '/notifications', '/tip', '/tips-list', '/article/', '/tools/due-date', '/tools/hospital-bag'];
+  const subViewsNoBars = ['/diary', '/tools', '/notifications', '/tip', '/tips-list', '/article/', '/tools/due-date', '/tools/hospital-bag', '/login', '/register', '/onboarding'];
   const hideGlobalBars = location.pathname === '/' || subViewsNoBars.some(path => location.pathname.startsWith(path));
 
   return (
@@ -31,6 +34,9 @@ function AppContent() {
       <StickyBackButton />
       <Routes>
         <Route path="/" element={<AnimatedOnboarding />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/onboarding" element={<OnboardingFlow />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/baby" element={<BabyDev />} />
         <Route path="/article" element={<ArticleHub />} />

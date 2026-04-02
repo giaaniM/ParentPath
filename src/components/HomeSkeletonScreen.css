@@ -1,0 +1,134 @@
+/* ── SKELETON SHIMMER SYSTEM ── */
+
+/* Base shimmer animation */
+@keyframes sk-shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.sk-box {
+    background: linear-gradient(
+        90deg,
+        var(--border) 25%,
+        rgba(255,255,255,0.7) 50%,
+        var(--border) 75%
+    );
+    background-size: 800px 100%;
+    animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-mt-8 { margin-top: 8px; }
+
+/* Skeleton screen container */
+.hsk {
+    position: fixed;
+    inset: 0;
+    background: var(--page-bg);
+    z-index: 999;
+    padding: max(56px, calc(env(safe-area-inset-top) + 20px)) 20px 100px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: sk-fadein 0.15s ease forwards;
+}
+
+@keyframes sk-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Fade out when done */
+.hsk--out {
+    animation: sk-fadeout 0.3s ease forwards;
+    pointer-events: none;
+}
+
+@keyframes sk-fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+/* Header */
+.hsk__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.hsk__section {
+    display: flex;
+}
+
+/* Mood strip */
+.hsk__mood-strip {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+    padding: 4px 0;
+}
+
+.hsk__mood-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+/* Cards */
+.hsk__cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.hsk__card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(15,32,53,0.04);
+}
+
+.hsk__card--tall {
+    min-height: 120px;
+    justify-content: space-between;
+}
+
+.hsk__card--wide {
+    width: 100%;
+}
+
+.hsk__card--short {
+    min-height: unset;
+}
+
+.hsk__dots-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.sk-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Progress bar */
+.hsk__progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hsk__progress-fill {
+    height: 100%;
+    border-radius: 8px;
+}

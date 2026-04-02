@@ -120,6 +120,37 @@
     opacity: 0.8;
 }
 
+.aonb__btn-login {
+    width: 100%;
+    background: transparent;
+    color: var(--stone);
+    border: none;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 400;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--font-family-sans);
+}
+
+.aonb__btn-login strong {
+    color: var(--midnight);
+    font-weight: 700;
+}
+
+.aonb__btn-dev {
+    background: rgba(0,0,0,0.05);
+    color: var(--stone);
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-family-sans);
+}
+
 /* Step 1-4 standard layout */
 .aonb__step--standard {
     flex: 1;
@@ -280,6 +311,44 @@
 /* Generic Input */
 .aonb__input-group {
     margin-top: 24px;
+}
+
+/* Input con icone */
+.aonb__input-icon-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.aonb__input-left-icon {
+    position: absolute;
+    left: 18px;
+    color: var(--stone);
+    pointer-events: none;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.aonb__input-right-icon {
+    position: absolute;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--stone);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+.aonb__input--icon-left {
+    padding-left: 48px;
+}
+
+.aonb__input--icon-right {
+    padding-right: 48px;
 }
 
 .aonb__label {

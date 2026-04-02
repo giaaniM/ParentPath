@@ -140,7 +140,7 @@ export default function EarlyYears() {
                             <span className="bd-pill-em" style={{ fontSize: '13px' }}>🎉</span>
                             <span className="bd-pill-tx" style={{ fontSize: '12px' }}>I Primi Mesi</span>
                         </div>
-                        <div className="bd-name" style={{ color: pregnancy?.sex === 'M' ? '#4A90E2' : 'var(--midnight)', margin: 0, fontSize: '26px' }}>
+                        <div className="bd-name" style={{ color: pregnancy?.sex === 'M' ? 'var(--aqua)' : 'var(--midnight)', margin: 0, fontSize: '26px' }}>
                             {pregnancy?.babyNickname || 'Il tuo Bimbo'} <span style={{ fontSize: '22px' }}>{pregnancy?.sex === 'M' ? '♂' : '♀'}</span>
                         </div>
                     </div>
@@ -155,8 +155,8 @@ export default function EarlyYears() {
                     </div>
                     <div className="bd-slider-wrap" style={{ marginBottom: '16px' }}>
                         <div className="bd-slider-bg"></div>
-                        <div className="bd-slider-fill" style={{ width: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? '#4A90E2' : '#D65D3C' }}></div>
-                        <div className="bd-slider-thumb" style={{ left: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? '#4A90E2' : '#D65D3C', borderColor: 'var(--white)', width: '22px', height: '22px', fontSize: '9px' }}>{months}</div>
+                        <div className="bd-slider-fill" style={{ width: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? 'var(--aqua)' : 'var(--blush)' }}></div>
+                        <div className="bd-slider-thumb" style={{ left: `${Math.min(100, (months / 12) * 100)}%`, background: pregnancy?.sex === 'M' ? 'var(--aqua)' : 'var(--blush)', borderColor: 'var(--white)', width: '22px', height: '22px', fontSize: '9px' }}>{months}</div>
                     </div>
                     <div className="bd-prog-footer" style={{ fontSize: '12px', margin: 0 }}>
                         Il tuo bimbo ha <strong>{months} mesi</strong>!

@@ -71,8 +71,6 @@
   /* callout / button text */
   --font-size-xl: 18px;
   /* headline */
-  --font-size-xxl: 22px;
-  /* title 2 */
   --font-size-2xl: 22px;
   /* title 2 */
   --font-size-3xl: 28px;
@@ -134,7 +132,6 @@
   --max-width: 100%;
   --top-bar-height: 60px;
   --tab-bar-height: 88px;
-  --bottom-safe: env(safe-area-inset-bottom, 20px);
   --top-safe: env(safe-area-inset-top, 0px);
   --status-bar-height: env(safe-area-inset-top, 0px);
   --bottom-safe: env(safe-area-inset-bottom, 0px);

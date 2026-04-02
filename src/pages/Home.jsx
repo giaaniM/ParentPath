@@ -71,16 +71,16 @@ const DotIndicator = ({ current, total, color }) => {
 
 export default function Home() {
     const navigate = useNavigate();
-    const { 
-        userName, babyName, babyStatus, conceptionDate, onboardingDone, 
+    const {
+        userName, babyName, babyStatus, conceptionDate, onboardingDone,
         getWeeksPregnant, getBabyAgeMonths, getBabyPreciseAgeString,
         hydration, kicks, trackers, addHydration, removeHydration, addKick, removeKick,
         addFeeding, removeFeeding, addDiaper, removeDiaper, appointments,
-        userMood, setUserMood, userActivity, setUserActivity, 
+        userMood, setUserMood, userActivity, setUserActivity,
         partnerStatus, setPartnerStatus, isMamma, partnerName,
-        mockWeek, setMockWeek,
+        mockWeek, setMockWeek, isDevUser,
         toggleTaskCompleted, isTaskCompleted, isTaskDismissed, getCustomTasksForWeek,
-        babySex
+        babySex, notifications
     } = useUser();
 
     const weeks = getWeeksPregnant();
@@ -184,7 +184,8 @@ export default function Home() {
         avatar: isMamma ? '👨' : '👩'
     };
 
-    const timeframeLabel = isBorn ? `nel 1° Mese (Giorno ${pregnancy.daysBorn})` : `nella Settimana ${weeks}`;
+    const babyAgeMonths = getBabyAgeMonths();
+    const timeframeLabel = isBorn ? `nel Mese ${babyAgeMonths}` : `nella Settimana ${weeks}`;
 
     // Used to make sure we only trigger the welcome push once per session
     const scheduleWelcomePush = async () => {
@@ -314,24 +315,28 @@ export default function Home() {
                     <h2 className="greeting" style={{ margin: 0 }}>
                         Ciao {userName || 'Genitore'}!
                     </h2>
-                    <div className="home-mock-selector">
-                        <Baby size={14} className="home-mock-icon" />
-                        <select 
-                            className="home-mock-select"
-                            value={mockWeek || ''} 
-                            onChange={e => setMockWeek(e.target.value ? Number(e.target.value) : null)}
-                        >
-                            <option value="">Sett. Reale</option>
-                            {[...Array(42)].map((_, i) => (
-                                <option key={i+1} value={i+1}>Sett {i+1}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {isDevUser && (
+                        <div className="home-mock-selector">
+                            <Baby size={14} className="home-mock-icon" />
+                            <select
+                                className="home-mock-select"
+                                value={mockWeek || ''}
+                                onChange={e => setMockWeek(e.target.value ? Number(e.target.value) : null)}
+                            >
+                                <option value="">Sett. Reale</option>
+                                {[...Array(42)].map((_, i) => (
+                                    <option key={i + 1} value={i + 1}>Sett {i + 1}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <button className="home-notif-btn" onClick={() => navigate('/notifications')}>
                     <Bell size={24} strokeWidth={1.8} color="var(--midnight)" />
-                    <div className="home-notif-badge">3</div>
+                    {(notifications?.unread || 0) > 0 && (
+                        <div className="home-notif-badge">{notifications.unread}</div>
+                    )}
                 </button>
             </div>
 
@@ -428,7 +433,7 @@ export default function Home() {
             >
                 <div className="htp-content">
                     <div className="htp-info">
-                        <div className="htp-eyebrow">Agenda: {isBorn ? 'Mese 1' : `Settimana ${weeks}`}</div>
+                        <div className="htp-eyebrow">Agenda: {isBorn ? `Mese ${babyAgeMonths}` : `Settimana ${weeks}`}</div>
                         <div className="htp-title">
                             {totalTasks === 0 
                                 ? "Nessun task da fare" 
@@ -486,10 +491,10 @@ export default function Home() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     {/* LEFT: PRIMARY TRACKER */}
-                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, #E6FFFA, #EBF8FF)', borderRadius: '24px', boxShadow: '0 8px 24px rgba(44,122,123,0.1)', position: 'relative' }}>
+                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, var(--aqua3), var(--aqua2))', borderRadius: '24px', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                                {isBorn ? <Coffee size={20} color="#3182CE" /> : <Droplets size={20} color="#3182CE" />}
+                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                                {isBorn ? <Coffee size={20} color="var(--aqua)" /> : <Droplets size={20} color="var(--aqua)" />}
                             </div>
                             <div style={{ display: 'flex', gap: '6px' }}>
                                 <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveFeeding : handleRemoveHydration}>
@@ -500,26 +505,26 @@ export default function Home() {
                                 </button>
                             </div>
                         </div>
-                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#2C7A7B', textTransform: 'uppercase' }}>{isBorn ? 'Poppate' : 'Idratazione'}</div>
-                        <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 800, color: 'var(--slate)', textTransform: 'uppercase' }}>{isBorn ? 'Poppate' : 'Idratazione'}</div>
+                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
                             {isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)}
-                            <span style={{ fontSize: '14px', color: '#63B3ED' }}>/{isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)}</span>
+                            <span style={{ fontSize: 'var(--font-size-base)', color: 'var(--aqua)' }}>/{isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)}</span>
                         </div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#2B6CB0', marginBottom: '8px' }}>
-                            {isBorn ? `Prox: ${trackers?.feeding?.next || '--'}` : (hydration?.count >= (hydration?.target || 8)) ? 'Obiettivo raggiunto! ✨' : 'Più acqua, più energia'}
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--slate)', marginBottom: '8px' }}>
+                            {isBorn ? `Prox: ${trackers?.feeding?.next || '--'}` : (hydration?.count >= (hydration?.target || 8)) ? 'Obiettivo raggiunto!' : 'Più acqua, più energia'}
                         </div>
-                        <DotIndicator 
-                            current={isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)} 
-                            total={isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)} 
-                            color="#3182CE" 
+                        <DotIndicator
+                            current={isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)}
+                            total={isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)}
+                            color="var(--aqua)"
                         />
                     </div>
 
                     {/* RIGHT: SECONDARY TRACKER */}
-                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, #FFF5F5, #FFF5F7)', borderRadius: '24px', boxShadow: '0 8px 24px rgba(155,44,44,0.05)', position: 'relative' }}>
+                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, var(--blush3), var(--blush2))', borderRadius: '24px', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                                {isBorn ? <Sparkles size={20} color="#E53E3E" /> : <Heart size={20} color="#E53E3E" />}
+                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                                {isBorn ? <Sparkles size={20} color="var(--color-error)" /> : <Heart size={20} color="var(--color-error)" />}
                             </div>
                             <div style={{ display: 'flex', gap: '6px' }}>
                                 <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveDiaper : handleRemoveKick}>
@@ -530,18 +535,18 @@ export default function Home() {
                                 </button>
                             </div>
                         </div>
-                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#9B2C2C', textTransform: 'uppercase' }}>{isBorn ? 'Pannolini' : 'Calcetti'}</div>
-                        <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 800, color: 'var(--color-error)', textTransform: 'uppercase' }}>{isBorn ? 'Pannolini' : 'Calcetti'}</div>
+                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
                             {isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
-                            <span style={{ fontSize: '14px', color: '#FEB2B2' }}>/{isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}</span>
+                            <span style={{ fontSize: 'var(--font-size-base)', color: 'var(--blush)' }}>/{isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}</span>
                         </div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#C53030', marginBottom: '8px' }}>
-                            {isBorn ? `Stato: ${trackers?.diapers?.status || 'Regolare'}` : (kicks?.count < 5 ? 'Stato: Tranquillo' : 'Stato: Attivo! 🕺')}
+                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-error)', marginBottom: '8px' }}>
+                            {isBorn ? `Stato: ${trackers?.diapers?.status || 'Regolare'}` : (kicks?.count < 5 ? 'Stato: Tranquillo' : 'Stato: Attivo!')}
                         </div>
-                        <DotIndicator 
-                            current={isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)} 
-                            total={isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)} 
-                            color="#E53E3E" 
+                        <DotIndicator
+                            current={isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
+                            total={isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}
+                            color="var(--color-error)"
                         />
                     </div>
                 </div>

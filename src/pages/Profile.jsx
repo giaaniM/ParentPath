@@ -6,12 +6,13 @@ import EditProfileModal from '../components/EditProfileModal';
 import './Profile.css';
 
 export default function Profile() {
-    const { isMamma, userName, userRole, babyName, logout } = useUser();
+    const { isMamma, userName, userRole, babyName, babyStatus, logout } = useUser();
+
     const navigate = useNavigate();
     const [isEditOpen, setIsEditOpen] = useState(false);
 
-    const handleLogout = () => {
-        // Mock logout logic
+    const handleLogout = async () => {
+        await logout();
         navigate('/');
     };
 
@@ -46,11 +47,17 @@ export default function Profile() {
 
                 <div className="profile-user-card" onClick={() => setIsEditOpen(true)}>
                     <div className="puc-avatar">
-                        {isMamma ? (userName === 'Sara' ? '🤰' : '👩') : (userName === 'Valerio' ? '👨' : '👤')}
+                        {isMamma
+                            ? (babyStatus === 'nato' ? '👩' : '🤰')
+                            : '👨'}
                     </div>
                     <div className="puc-info">
                         <div className="puc-name">{userName || 'Genitore'}</div>
-                        <div className="puc-role">{userRole === 'mamma' ? 'Mamma' : 'Papà'} in attesa • {babyName || 'Giacomo'}</div>
+                        <div className="puc-role">
+                            {userRole === 'mamma' ? 'Mamma' : 'Papà'}
+                            {babyStatus === 'nato' ? '' : ' in attesa'}
+                            {babyName ? ` • ${babyName}` : ''}
+                        </div>
                     </div>
                     <div className="puc-edit">
                         <Edit2 size={20} color="var(--stone)" />
