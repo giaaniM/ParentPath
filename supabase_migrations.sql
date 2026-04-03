@@ -1,4 +1,4 @@
--- Esegui questo script nel SQL Editor di Supabase
+-- Esegui questo script nel SQL Editor di Supabase per configurare o resettare il DB
 
 -- 1. Tabella PROFILES
 CREATE TABLE IF NOT EXISTS public.profiles (
@@ -26,16 +26,20 @@ CREATE TABLE IF NOT EXISTS public.pregnancies (
 -- Creazione dell'indice per velocizzare le ricerche del codice invito
 CREATE INDEX IF NOT EXISTS idx_pregnancies_invite_code ON public.pregnancies(invite_code);
 
--- Policy per PREGNANCIES
+-- Policy per PREGNANCIES (Resettate)
 ALTER TABLE public.pregnancies ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Utenti possono vedere la propria gravidanza condivisa" ON public.pregnancies;
 CREATE POLICY "Utenti possono vedere la propria gravidanza condivisa"
 ON public.pregnancies FOR SELECT
 USING (auth.uid() = creator_id OR auth.uid() = partner_id);
 
+DROP POLICY IF EXISTS "Utenti possono aggiornare la propria gravidanza condivisa" ON public.pregnancies;
 CREATE POLICY "Utenti possono aggiornare la propria gravidanza condivisa"
 ON public.pregnancies FOR UPDATE
 USING (auth.uid() = creator_id OR auth.uid() = partner_id);
 
+DROP POLICY IF EXISTS "Utenti possono creare gravidanze" ON public.pregnancies;
 CREATE POLICY "Utenti possono creare gravidanze"
 ON public.pregnancies FOR INSERT
 WITH CHECK (auth.uid() = creator_id);
@@ -52,16 +56,20 @@ CREATE TABLE IF NOT EXISTS public.notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- Policy per NOTIFICATIONS
+-- Policy per NOTIFICATIONS (Resettate)
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Utenti vedono le proprie notifiche" ON public.notifications;
 CREATE POLICY "Utenti vedono le proprie notifiche"
 ON public.notifications FOR SELECT
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Utenti possono aggiornare le proprie notifiche" ON public.notifications;
 CREATE POLICY "Utenti possono aggiornare le proprie notifiche"
 ON public.notifications FOR UPDATE
 USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Utenti possono inviare notifiche" ON public.notifications;
 CREATE POLICY "Utenti possono inviare notifiche"
 ON public.notifications FOR INSERT
 WITH CHECK (true);

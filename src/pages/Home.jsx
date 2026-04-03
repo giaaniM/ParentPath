@@ -5,7 +5,7 @@ import { pregnancy, getWeekData, smartTrackerData, pregnancyWeather, newbornWeat
 import { useWeekData } from '../hooks/useWeekData';
 import {
     Sparkles, Stethoscope, ShoppingBag, ClipboardCheck, X,
-    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw, Baby, Bell
+    Heart, SmilePlus, Smile, Meh, Frown, Coffee, ArrowRight, Edit2, Check, Droplets, Clock, Plus, Minus, RefreshCw, Baby, Bell, Users
 } from 'lucide-react';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -77,7 +77,7 @@ export default function Home() {
         hydration, kicks, trackers, addHydration, removeHydration, addKick, removeKick,
         addFeeding, removeFeeding, addDiaper, removeDiaper, appointments,
         userMood, setUserMood, userActivity, setUserActivity,
-        partnerStatus, setPartnerStatus, isMamma, partnerName,
+        partnerStatus, setPartnerStatus, isMamma, partnerName, partnerId,
         mockWeek, setMockWeek, isDevUser,
         toggleTaskCompleted, isTaskCompleted, isTaskDismissed, getCustomTasksForWeek,
         babySex, notifications
@@ -353,6 +353,20 @@ export default function Home() {
                     <button className="home-rt-close" onClick={() => setShowRoleTip(false)}>
                         <X size={18} />
                     </button>
+                </div>
+            )}
+
+            {/* PARTNER BANNER — visibile finché il partner non è collegato */}
+            {!partnerId && (
+                <div className="home-partner-banner ru d1" onClick={() => navigate('/profile', { state: { openPartner: true } })}>
+                    <div className="hpb-icon-wrap">
+                        <Users size={22} color="var(--aqua)" strokeWidth={2} />
+                    </div>
+                    <div className="hpb-text">
+                        <div className="hpb-title">Invita il tuo partner</div>
+                        <div className="hpb-sub">Condividete il percorso insieme — genera il tuo codice invito</div>
+                    </div>
+                    <ArrowRight size={18} color="var(--aqua)" strokeWidth={2.5} />
                 </div>
             )}
 

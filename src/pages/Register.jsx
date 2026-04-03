@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 import './Register.css';
 
 export default function Register() {
@@ -10,35 +10,20 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const keyboardHeight = useKeyboardHeight();
 
     const isValid = email.includes('@') && password.length >= 8;
 
-    const handleRegister = async (e) => {
+    const handleContinue = (e) => {
         e.preventDefault();
         if (!isValid) return;
-        setError('');
-        setLoading(true);
-
-        const { error: authError } = await supabase.auth.signUp({ email, password });
-
-        setLoading(false);
-
-        if (authError) {
-            if (authError.message.includes('already registered')) {
-                setError('Email già registrata. Vai su Accedi.');
-            } else {
-                setError(authError.message);
-            }
-            return;
-        }
-
-        // Account creato → vai all'onboarding per la personalizzazione
-        navigate('/onboarding');
+        // Non creiamo l'account ancora — passiamo le credenziali all'onboarding via router state.
+        // signUp avviene solo al termine dell'onboarding insieme a profilo e gravidanza.
+        navigate('/onboarding', { state: { email, password } });
     };
 
     return (
-        <div className="reg">
+        <div className="reg" style={keyboardHeight > 0 ? { paddingBottom: keyboardHeight } : {}}>
             <div className="bd-mesh-gradient" />
 
             <div className="reg__header">
@@ -55,7 +40,7 @@ export default function Register() {
                 <h1 className="reg__title">Crea il tuo account</h1>
                 <p className="reg__subtitle">Inserisci email e password per iniziare.</p>
 
-                <form className="reg__form" onSubmit={handleRegister} noValidate>
+                <form className="reg__form" onSubmit={handleContinue} noValidate>
                     <div className="reg__field">
                         <label className="reg__label">Email</label>
                         <div className="reg__input-wrap">
@@ -68,7 +53,9 @@ export default function Register() {
                                 onChange={e => { setEmail(e.target.value); setError(''); }}
                                 autoComplete="email"
                                 inputMode="email"
-                                autoFocus
+                                onFocus={e => {
+                                    setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                }}
                             />
                         </div>
                     </div>
@@ -87,6 +74,9 @@ export default function Register() {
                                 value={password}
                                 onChange={e => { setPassword(e.target.value); setError(''); }}
                                 autoComplete="new-password"
+                                onFocus={e => {
+                                    setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                }}
                             />
                             <button type="button" className="reg__eye" onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -100,8 +90,8 @@ export default function Register() {
                         Registrandoti accetti i Termini di Servizio e la Privacy Policy di ParentPath.
                     </p>
 
-                    <button type="submit" className="reg__btn-primary" disabled={!isValid || loading}>
-                        {loading ? 'Creazione account...' : 'Continua'}
+                    <button type="submit" className="reg__btn-primary" disabled={!isValid}>
+                        Continua
                     </button>
                 </form>
             </div>

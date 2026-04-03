@@ -1,27 +1,48 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Gift, Heart, Mail, User } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { supabase } from '../lib/supabase';
 import HomeSkeletonScreen from '../components/HomeSkeletonScreen';
+import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 import './AnimatedOnboarding.css';
 
 /**
  * Onboarding personalizzazione — eseguito dopo la registrazione.
  * Step 1: Ruolo + nome
- * Step 2: Bebè (nome + sesso)
- * Step 3: Fase (gravidanza/nato) + data
- * Step 4: Partner invite
- * Step 5: Skeleton → salva su DB → home
+ * Step 2: Scelta (Nuovo vs Unisciti)
+ * Step 3 (Branch New): Bebè (nome + sesso)
+ * Step 3 (Branch Join): Inserimento Codice
+ * Step 4+: Fase, Partner, Save...
  */
 export default function Onboarding() {
     const navigate = useNavigate();
-    const { completeOnboarding } = useUser();
+    const location = useLocation();
+    const { completeOnboarding, joinPregnancy } = useUser();
+    const keyboardHeight = useKeyboardHeight();
     const [step, setStep] = useState(1);
+    const [joinLoading, setJoinLoading] = useState(false);
+
+    // Credenziali passate da Register — se mancano, l'utente è arrivato direttamente (es. login senza profilo)
+    const credentials = location.state; // { email, password } oppure null
+
+    // Guardia: se non ci sono né credenziali né sessione, rimanda a /register
+    useEffect(() => {
+        if (credentials?.email) return; // viene da Register, ok
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) navigate('/register', { replace: true });
+        });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Step 2 choice
+    const [onboardingType, setOnboardingType] = useState(null); // 'new' | 'join'
+    const [joinCode, setJoinCode] = useState('');
+    const [joinError, setJoinError] = useState('');
 
     const [role, setRole] = useState(null);
     const [name, setName] = useState('');
+    const [birthDate, setBirthDate] = useState('');
     const [babyNameInput, setBabyNameInput] = useState('');
     const [babySex, setBabySex] = useState(null);
     const [status, setStatus] = useState('gravidanza');
@@ -32,7 +53,49 @@ export default function Onboarding() {
         try { await Haptics.impact({ style }); } catch (e) { }
     };
 
-    const handleNext = async () => { await haptic(); setStep(s => s + 1); };
+    const handleJoin = async () => {
+        if (joinCode.trim().length < 6) return;
+        setJoinError('');
+        setJoinLoading(true);
+
+        // Il branch join richiede sessione attiva.
+        // Se l'utente viene da Register, signUp non è ancora avvenuto → lo facciamo ora.
+        if (credentials?.email && credentials?.password) {
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                email: credentials.email,
+                password: credentials.password,
+            });
+            if (signUpError) {
+                setJoinLoading(false);
+                setJoinError(signUpError.message.includes('already registered')
+                    ? 'Email già registrata. Torna indietro e usa Accedi.'
+                    : 'Errore creazione account. Riprova.');
+                return;
+            }
+            if (signUpData.user?.id) {
+                await supabase.from('profiles').upsert({ id: signUpData.user.id, name, role, birth_date: birthDate || null });
+            }
+        }
+
+        const res = await joinPregnancy(joinCode, name, role);
+        setJoinLoading(false);
+        if (res.success) {
+            await haptic(ImpactStyle.Heavy);
+            navigate('/home');
+        } else {
+            setJoinError(res.error || 'Codice non valido o scaduto.');
+        }
+    };
+
+    const handleNext = async () => {
+        await haptic();
+        if (step === 3 && onboardingType === 'join') {
+            await handleJoin();
+            return;
+        }
+        setStep(s => s + 1);
+    };
+
     const handleBack = async () => {
         await haptic();
         if (step === 1) navigate('/register');
@@ -41,60 +104,73 @@ export default function Onboarding() {
 
     const canProceed = () => {
         if (step === 1) return !!role && name.trim().length > 0;
-        if (step === 3) return !!dateInput;
-        if (step === 4) return !!invitePartner;
+        if (step === 2) return !!onboardingType;
+        if (step === 3 && onboardingType === 'join') return joinCode.trim().length >= 6;
+        if (step === 4) return !!dateInput;
+        if (step === 5) return !!invitePartner;
         return true;
     };
 
-    // Step 5: salva su DB → home
+    // Step 6: signUp (se viene da Register) + salva profilo/gravidanza su DB → home
     useEffect(() => {
-        if (step !== 5) return;
+        if (step !== 6 || onboardingType === 'join') return;
         let cancelled = false;
 
         const save = async () => {
             let conceptionTime = dateInput ? new Date(dateInput) : new Date('2025-08-10');
-            if (dateInput) conceptionTime.setDate(conceptionTime.getDate() - 280);
+            if (dateInput && status === 'gravidanza') conceptionTime.setDate(conceptionTime.getDate() - 280);
 
-            const { data: { user } } = await supabase.auth.getUser();
-            const userId = user?.id;
+            let userId = null;
+
+            if (credentials?.email && credentials?.password) {
+                // Nuovo utente: creiamo l'account auth solo ora, alla fine dell'onboarding
+                const { data, error: signUpError } = await supabase.auth.signUp({
+                    email: credentials.email,
+                    password: credentials.password,
+                });
+                if (signUpError) {
+                    if (cancelled) return;
+                    // Email già registrata → manda al login
+                    navigate('/login');
+                    return;
+                }
+                userId = data.user?.id;
+            } else {
+                // Utente già autenticato (es. login senza profilo → onboarding)
+                const { data: { user } } = await supabase.auth.getUser();
+                userId = user?.id;
+            }
 
             if (userId) {
                 await supabase.from('profiles').upsert({
-                    id: userId,
-                    name: name || (role === 'mamma' ? 'Sara' : 'Marco'),
-                    role: role === 'entrambi' ? 'papa' : (role || 'papa'),
+                    id: userId, name, role,
+                    birth_date: birthDate || null,
                 });
-                // Genera un codice invito casuale (es: A8B2CH)
-                const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
+                const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                 await supabase.from('pregnancies').insert({
                     creator_id: userId,
                     baby_name: babyNameInput || null,
                     baby_sex: babySex,
                     conception_date: conceptionTime.toISOString().split('T')[0],
                     status,
-                    invite_code: generatedCode
+                    invite_code: generatedCode,
                 });
             }
 
             if (cancelled) return;
 
-            completeOnboarding({
-                role: role === 'entrambi' ? 'papa' : (role || 'papa'),
-                name: name || (role === 'mamma' ? 'Sara' : 'Marco'),
-                baby: babyNameInput,
-                sex: babySex,
-                status,
-                conception: conceptionTime,
-            });
+            completeOnboarding({ role, name, birthDate, baby: babyNameInput, sex: babySex, status, conception: conceptionTime });
             navigate('/home');
         };
 
         save();
         return () => { cancelled = true; };
-    }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [step, onboardingType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (step === 5) return <HomeSkeletonScreen />;
+    if ((step === 6 && onboardingType === 'new') || joinLoading) return <HomeSkeletonScreen />;
+
+    const totalDots = onboardingType === 'join' ? 3 : 5;
 
     return (
         <div className="aonb">
@@ -102,15 +178,15 @@ export default function Onboarding() {
                 <div className="aonb__progress-header">
                     <div className="aonb__back-icon" onClick={handleBack}><ArrowLeft size={20} /></div>
                     <div className="aonb__progress-dots">
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className={`aonb__pdot ${step >= i ? 'active' : ''}`} />
+                        {Array.from({ length: totalDots }).map((_, i) => (
+                            <div key={i} className={`aonb__pdot ${step >= i + 1 ? 'active' : ''}`} />
                         ))}
                     </div>
                 </div>
 
                 <div className="aonb__content-inner" key={`step-${step}`}>
 
-                    {/* STEP 1: RUOLO + NOME */}
+                    {/* STEP 1: PROFILO */}
                     {step === 1 && (
                         <div className="ru d1">
                             <div className="aonb__step-eyebrow">IL TUO PROFILO</div>
@@ -120,7 +196,6 @@ export default function Onboarding() {
                                 {[
                                     { id: 'mamma', icon: <UserRound strokeWidth={1.5} size={28} />, label: 'Mamma', desc: 'Percorso personalizzato mamma' },
                                     { id: 'papa', icon: <User strokeWidth={1.5} size={28} />, label: 'Papà', desc: 'Consigli mirati per papà' },
-                                    { id: 'entrambi', icon: <Users strokeWidth={1.5} size={28} />, label: 'Lo usiamo insieme', desc: 'Account condiviso di coppia' },
                                 ].map(r => (
                                     <div key={r.id}
                                         className={`aonb__role-card ${role === r.id ? 'aonb__role-card--selected' : ''}`}
@@ -139,14 +214,56 @@ export default function Onboarding() {
                                     <label className="aonb__label">Il tuo nome</label>
                                     <input className="aonb__input" type="text"
                                         placeholder={role === 'papa' ? 'Es. Marco' : 'Es. Sara'}
-                                        value={name} onChange={e => setName(e.target.value)} autoFocus />
+                                        value={name} onChange={e => setName(e.target.value)}
+                                        onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
+                                        autoFocus />
+                                    <label className="aonb__label" style={{ marginTop: 20 }}>Data di nascita <span style={{ fontWeight: 400, color: 'var(--stone)' }}>(facoltativa)</span></label>
+                                    <input className="aonb__input" type="date"
+                                        value={birthDate}
+                                        max={new Date().toISOString().split('T')[0]}
+                                        onChange={e => setBirthDate(e.target.value)} />
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* STEP 2: BEBÈ */}
+                    {/* STEP 2: SCELTA (NUOVO VS UNISCITI) */}
                     {step === 2 && (
+                        <div className="ru d1">
+                            <div className="aonb__step-eyebrow">IL TUO VIAGGIO</div>
+                            <h1 className="aonb__title">Cosa facciamo oggi?</h1>
+                            <p className="aonb__subtitle">Puoi iniziare un nuovo percorso o unirti a quello del tuo partner.</p>
+                            
+                            <div className="aonb__role-cards">
+                                <div 
+                                    className={`aonb__role-card ${onboardingType === 'new' ? 'aonb__role-card--selected' : ''}`}
+                                    onClick={() => { haptic(); setOnboardingType('new'); }}
+                                >
+                                    <div className="aonb__role-icon"><Heart size={28} color="var(--aqua)" /></div>
+                                    <div className="aonb__role-text">
+                                        <div className="aonb__role-label">Inizia un nuovo percorso</div>
+                                        <div className="aonb__role-desc">Configura la tua gravidanza</div>
+                                    </div>
+                                    {onboardingType === 'new' && <CheckCircle2 size={24} color="var(--midnight)" />}
+                                </div>
+
+                                <div 
+                                    className={`aonb__role-card ${onboardingType === 'join' ? 'aonb__role-card--selected' : ''}`}
+                                    onClick={() => { haptic(); setOnboardingType('join'); }}
+                                >
+                                    <div className="aonb__role-icon"><Users size={28} color="var(--aqua)" /></div>
+                                    <div className="aonb__role-text">
+                                        <div className="aonb__role-label">Ho già un codice partner</div>
+                                        <div className="aonb__role-desc">Unisciti a una gravidanza esistente</div>
+                                    </div>
+                                    {onboardingType === 'join' && <CheckCircle2 size={24} color="var(--midnight)" />}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 3: BEBE (NEW) O CODICE (JOIN) */}
+                    {step === 3 && onboardingType === 'new' && (
                         <div className="ru d1">
                             <div className="aonb__step-eyebrow">IL BEBÈ</div>
                             <h1 className="aonb__title">C'è un nuovo arrivo</h1>
@@ -154,7 +271,9 @@ export default function Onboarding() {
                             <div className="aonb__input-group">
                                 <label className="aonb__label">Nome o soprannome (facoltativo)</label>
                                 <input className="aonb__input" type="text" placeholder="Es. Lenticchia"
-                                    value={babyNameInput} onChange={e => setBabyNameInput(e.target.value)} autoFocus />
+                                    value={babyNameInput} onChange={e => setBabyNameInput(e.target.value)}
+                                    onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
+                                    autoFocus />
                             </div>
                             <div className="aonb__input-group" style={{ marginTop: 24 }}>
                                 <label className="aonb__label">Sesso</label>
@@ -175,8 +294,38 @@ export default function Onboarding() {
                         </div>
                     )}
 
-                    {/* STEP 3: FASE + DATA */}
-                    {step === 3 && (
+                    {step === 3 && onboardingType === 'join' && (
+                        <div className="ru d1">
+                            <div className="aonb__step-eyebrow">COLLEGAMENTO</div>
+                            <h1 className="aonb__title">Inserisci il codice</h1>
+                            <p className="aonb__subtitle">Chiedi al tuo partner il codice che trova nella sezione Profilo della sua app.</p>
+                            
+                            <div className="aonb__input-group ru d1" style={{ marginTop: 24 }}>
+                                <label className="aonb__label">Codice Invito</label>
+                                <input
+                                    className="aonb__input aonb__input--code"
+                                    type="text"
+                                    placeholder="ES: A8B2CH"
+                                    maxLength={10}
+                                    value={joinCode}
+                                    onChange={e => {
+                                        setJoinCode(e.target.value.toUpperCase());
+                                        setJoinError('');
+                                    }}
+                                    onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300)}
+                                    autoComplete="off"
+                                    autoFocus
+                                />
+                                {joinError && <p className="aonb__error-message">{joinError}</p>}
+                                <p className="aonb__info-text">
+                                    Collegandoti condividerai i dati della gravidanza, l'agenda e le notifiche con il tuo partner.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 4: FASE + DATA */}
+                    {step === 4 && onboardingType === 'new' && (
                         <div className="ru d1">
                             <div className="aonb__step-eyebrow">LA FASE</div>
                             <h1 className="aonb__title">A che punto siete?</h1>
@@ -210,8 +359,8 @@ export default function Onboarding() {
                         </div>
                     )}
 
-                    {/* STEP 4: PARTNER */}
-                    {step === 4 && (
+                    {/* STEP 5: PARTNER */}
+                    {step === 5 && onboardingType === 'new' && (
                         <div className="ru d1">
                             <div className="aonb__step-eyebrow">CONDIVIDI</div>
                             <h1 className="aonb__title">Cresciamo insieme</h1>
@@ -239,9 +388,19 @@ export default function Onboarding() {
                     )}
                 </div>
 
-                <div className="aonb__actions-bottom">
+                <div
+                    className="aonb__actions-bottom"
+                    style={keyboardHeight > 0 ? {
+                        position: 'sticky',
+                        bottom: 0,
+                        background: 'var(--page-bg)',
+                        paddingBottom: keyboardHeight + 8,
+                        marginTop: 8,
+                        zIndex: 10,
+                    } : {}}
+                >
                     <button className="aonb__btn-next" onClick={handleNext} disabled={!canProceed()}>
-                        {step === 4 ? 'Completa configurazione' : 'Avanti'}
+                        {step === 3 && onboardingType === 'join' ? 'Unisciti al partner' : (step === 5 ? 'Completa configurazione' : 'Avanti')}
                     </button>
                 </div>
             </div>

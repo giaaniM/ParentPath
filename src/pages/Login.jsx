@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import HomeSkeletonScreen from '../components/HomeSkeletonScreen';
+import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 import './Login.css';
 
 export default function Login() {
@@ -15,6 +16,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const keyboardHeight = useKeyboardHeight();
     const isValid = email.includes('@') && password.length >= 6;
 
     const handleLogin = async (e) => {
@@ -56,6 +58,10 @@ export default function Login() {
             sex: pregnancy?.baby_sex || null,
             status: pregnancy?.status || 'gravidanza',
             conception: pregnancy?.conception_date ? new Date(pregnancy.conception_date) : null,
+            inviteCode: pregnancy?.invite_code || null,
+            partnerId: pregnancy
+                ? (pregnancy.creator_id === userId ? pregnancy.partner_id : pregnancy.creator_id)
+                : null,
         });
 
         // Piccolo delay per rendere la transizione fluida, poi naviga
@@ -66,7 +72,7 @@ export default function Login() {
     if (loading) return <HomeSkeletonScreen />;
 
     return (
-        <div className="login">
+        <div className="login" style={keyboardHeight > 0 ? { paddingBottom: keyboardHeight } : {}}>
             <div className="bd-mesh-gradient" />
 
             <div className="login__header">
@@ -95,6 +101,9 @@ export default function Login() {
                                 onChange={e => { setEmail(e.target.value); setError(''); }}
                                 autoComplete="email"
                                 inputMode="email"
+                                onFocus={e => {
+                                    setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                }}
                             />
                         </div>
                     </div>
@@ -109,6 +118,9 @@ export default function Login() {
                                 value={password}
                                 onChange={e => { setPassword(e.target.value); setError(''); }}
                                 autoComplete="current-password"
+                                onFocus={e => {
+                                    setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                }}
                             />
                             <button type="button" className="login__eye" onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

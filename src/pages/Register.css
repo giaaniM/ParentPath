@@ -1,11 +1,12 @@
 /* ── REGISTER PAGE ── */
 .reg {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
     background: var(--page-bg);
+    transition: padding-bottom 0.2s ease;
 }
 
 .reg__header {
@@ -35,6 +36,7 @@
     padding: 32px 24px 24px;
     position: relative;
     z-index: 2;
+    overflow-y: auto;
 }
 
 .reg__logo-wrap {

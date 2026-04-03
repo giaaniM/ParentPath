@@ -36,6 +36,7 @@ export function UserProvider({ children }) {
     const partnerName = _partnerName;
 
     const [babySex, setBabySex] = useState(() => loadJSON('pp_babySex', null)); // 'M' | 'F' | null
+    const [birthDate, setBirthDate] = useState(() => loadJSON('pp_birthDate', null)); // YYYY-MM-DD
     const [conceptionDate, setConceptionDate] = useState(() => {
         const raw = loadJSON('pp_conceptionDate', null);
         return raw ? new Date(raw) : null;
@@ -92,6 +93,7 @@ export function UserProvider({ children }) {
     useEffect(() => { saveJSON('pp_userName', userName); }, [userName]);
     useEffect(() => { saveJSON('pp_babyName', babyName); }, [babyName]);
     useEffect(() => { saveJSON('pp_babySex', babySex); }, [babySex]);
+    useEffect(() => { saveJSON('pp_birthDate', birthDate); }, [birthDate]);
     useEffect(() => { saveJSON('pp_partnerName', partnerName); }, [partnerName]);
     useEffect(() => { saveJSON('pp_conceptionDate', conceptionDate ? conceptionDate.toISOString() : null); }, [conceptionDate]);
     useEffect(() => { saveJSON('pp_onboardingDone', onboardingDone); }, [onboardingDone]);
@@ -99,34 +101,41 @@ export function UserProvider({ children }) {
     useEffect(() => { saveJSON('pp_inviteCode', inviteCode); }, [inviteCode]);
     useEffect(() => { saveJSON('pp_partnerId', partnerId); }, [partnerId]);
 
-    // Ripristina sessione Supabase all'avvio: se c'è una sessione attiva ma nessun profilo in stato, ricarica da DB
+    // Ripristina sessione Supabase all'avvio e aggiorna sempre partnerId dal DB
     useEffect(() => {
         const restoreSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) return;
-            // Se l'onboarding risulta già fatto (da localStorage), non serve ricaricare
-            if (loadJSON('pp_onboardingDone', false)) return;
 
-            // L'onboarding potrebbe essere loggato localmente, ma ricarichiamo i dati di rete silenziosamente
             const userId = session.user.id;
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+            const alreadyDone = loadJSON('pp_onboardingDone', false);
+
             const { data: pregnancy } = await supabase.from('pregnancies')
                 .select('*')
                 .or(`creator_id.eq.${userId},partner_id.eq.${userId}`)
                 .order('created_at', { ascending: false })
                 .limit(1).maybeSingle();
 
+            // Aggiorna sempre partnerId (potrebbe essere cambiato da un'altra sessione)
+            if (pregnancy) {
+                const pid = pregnancy.creator_id === userId ? pregnancy.partner_id : pregnancy.creator_id;
+                setPartnerId(pid || null);
+                setInviteCode(pregnancy.invite_code || null);
+            }
+
+            if (alreadyDone) return; // profilo già caricato da localStorage
+
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
             if (profile) {
                 let conceptionTime = null;
                 if (pregnancy?.conception_date) conceptionTime = new Date(pregnancy.conception_date);
                 setUserRole(profile.role || 'papa');
                 setUserName(profile.name || '');
+                if (profile.birth_date) setBirthDate(profile.birth_date);
                 setBabyName(pregnancy?.baby_name || '');
                 setBabySex(pregnancy?.baby_sex || null);
                 setBabyStatus(pregnancy?.status || 'gravidanza');
                 setConceptionDate(conceptionTime);
-                setInviteCode(pregnancy?.invite_code || null);
-                setPartnerId(pregnancy?.creator_id === userId ? pregnancy?.partner_id : pregnancy?.creator_id);
                 setOnboardingDone(true);
             }
         };
@@ -306,7 +315,7 @@ export function UserProvider({ children }) {
     const [lastBreastSide, setLastBreastSide] = useState('left');
     const [activeSleepTimer, setActiveSleepTimer] = useState(null);
 
-    const completeOnboarding = ({ role, name, baby, status, conception, sex, partner }) => {
+    const completeOnboarding = ({ role, name, baby, status, conception, sex, partner, inviteCode: code, partnerId: pid, birthDate: bd }) => {
         setUserRole(role);
         setUserName(name);
         setBabyName(baby || '');
@@ -314,6 +323,9 @@ export function UserProvider({ children }) {
         if (status) setBabyStatus(status);
         if (sex) setBabySex(sex);
         if (partner) setPartnerName(partner);
+        if (code) setInviteCode(code);
+        if (pid) setPartnerId(pid);
+        if (bd) setBirthDate(bd);
         setOnboardingDone(true);
         setIsDevUser(false);
     };
@@ -338,8 +350,10 @@ export function UserProvider({ children }) {
         setOnboardingDone(false);
         setIsDevUser(false);
         // Pulizia localStorage profilo
+        setBirthDate(null);
         ['pp_userRole','pp_userName','pp_babyName','pp_babySex','pp_partnerName',
-         'pp_conceptionDate','pp_onboardingDone','pp_babyStatus'].forEach(k => localStorage.removeItem(k));
+         'pp_conceptionDate','pp_onboardingDone','pp_babyStatus','pp_birthDate',
+         'pp_inviteCode','pp_partnerId'].forEach(k => localStorage.removeItem(k));
     }, []);
 
     // Ripristina sessione Supabase al riavvio dell'app
@@ -358,28 +372,141 @@ export function UserProvider({ children }) {
     }, [onboardingDone]);
 
     // JOIN PREGNANCY (Partner link flow)
-    const joinPregnancy = async (code) => {
+    const joinPregnancy = async (code, userName, userRole) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return { success: false, error: 'Non connesso' };
         
         const userId = session.user.id;
+        
+        // Prima verifichiamo se il codice esiste
+        const { data: pregnancy, error: fetchError } = await supabase
+            .from('pregnancies')
+            .select('*')
+            .eq('invite_code', code.toUpperCase())
+            .maybeSingle();
+
+        if (!pregnancy || fetchError) {
+            return { success: false, error: 'Codice non valido o scaduto.' };
+        }
+
+        if (pregnancy.creator_id === userId) {
+            return { success: false, error: 'Non puoi collegarti alla tua stessa gravidanza.' };
+        }
+
+        if (pregnancy.partner_id && pregnancy.partner_id !== userId) {
+            return { success: false, error: 'Questa gravidanza ha già un partner collegato.' };
+        }
+
+        // Aggiorniamo la gravidanza con il partner_id
         const { data, error } = await supabase
             .from('pregnancies')
             .update({ partner_id: userId })
-            .eq('invite_code', code.toUpperCase())
+            .eq('id', pregnancy.id)
             .select()
             .single();
             
         if (data && !error) {
+            const resolvedRole = userRole === 'entrambi' ? 'papa' : (userRole || 'papa');
+
+            await supabase.from('profiles').upsert({ id: userId, name: userName, role: resolvedRole });
+
+            // Imposta tutti i dati in stato
+            setUserName(userName || '');
+            setUserRole(resolvedRole);
             setBabyName(data.baby_name || '');
             setBabySex(data.baby_sex || null);
             setConceptionDate(data.conception_date ? new Date(data.conception_date) : null);
             setBabyStatus(data.status || 'gravidanza');
             setInviteCode(data.invite_code);
             setPartnerId(data.creator_id);
+            setOnboardingDone(true);
+
             return { success: true };
         }
-        return { success: false, error: 'Codice non valido o scaduto.' };
+        return { success: false, error: 'Errore durante il collegamento.' };
+    };
+
+    // UNLINK PARTNER
+    const unlinkPartner = useCallback(async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return { success: false };
+        const userId = session.user.id;
+
+        // Prova prima come creatore, poi come partner
+        const { error: e1 } = await supabase.from('pregnancies')
+            .update({ partner_id: null })
+            .eq('creator_id', userId);
+
+        if (!e1) {
+            setPartnerId(null);
+            return { success: true };
+        }
+
+        const { error: e2 } = await supabase.from('pregnancies')
+            .update({ partner_id: null })
+            .eq('partner_id', userId);
+
+        if (!e2) {
+            setPartnerId(null);
+            return { success: true };
+        }
+
+        return { success: false, error: 'Errore durante lo scollegamento.' };
+    }, []);
+
+    // GENERATE INVITE CODE
+    const generateInviteCode = async () => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                console.error("GenerateInviteCode: No session found");
+                return null;
+            }
+            const userId = session.user.id;
+
+            // Cerca la gravidanza dove l'utente è creatore
+            const { data: pregnancy, error: fetchError } = await supabase.from('pregnancies')
+                .select('id, invite_code')
+                .eq('creator_id', userId)
+                .maybeSingle();
+
+            if (fetchError) {
+                console.error("GenerateInviteCode: Fetch error", fetchError);
+                return null;
+            }
+
+            if (!pregnancy) {
+                console.error("GenerateInviteCode: No pregnancy found for creator_id", userId);
+                // Prova a cercarla come partner se non la trova come creatore? 
+                // In teoria solo il creatore genera il codice per invitare il partner.
+                return null;
+            }
+
+            if (pregnancy.invite_code) {
+                setInviteCode(pregnancy.invite_code);
+                return pregnancy.invite_code;
+            }
+
+            const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const { data: updated, error: updateError } = await supabase.from('pregnancies')
+                .update({ invite_code: newCode })
+                .eq('id', pregnancy.id)
+                .select()
+                .single();
+
+            if (updateError) {
+                console.error("GenerateInviteCode: Update error", updateError);
+                return null;
+            }
+
+            if (updated) {
+                setInviteCode(updated.invite_code);
+                return updated.invite_code;
+            }
+        } catch (err) {
+            console.error("GenerateInviteCode: Unexpected error", err);
+        }
+        return null;
     };
 
     // INVIA NOTIFICA AL PARTNER
@@ -562,9 +689,9 @@ export function UserProvider({ children }) {
             userMood, setUserMood, userActivity, setUserActivity, partnerStatus, setPartnerStatus,
             // Newborn Tracker
             setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
-            isMamma, isPapa, isDevUser,
+            isMamma, isPapa, isDevUser, birthDate, setBirthDate,
             inviteCode, partnerId, realtimeNotifications,
-            joinPregnancy, sendNotificationToPartner,
+            joinPregnancy, generateInviteCode, unlinkPartner, sendNotificationToPartner,
             completeOnboarding, devLogin, login, logout,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
