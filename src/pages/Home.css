@@ -1,5 +1,28 @@
 /* ── HOME LAYOUT V3 ── */
 
+/* Pull-to-refresh */
+.ptr-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44px;
+    pointer-events: none;
+    transition: opacity 150ms;
+}
+
+.ptr-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid rgba(61, 191, 184, 0.25);
+    border-top-color: var(--aqua, #3dbfb8);
+    border-radius: 50%;
+    transition: transform 150ms;
+}
+
+.ptr-spinning {
+    animation: spin 700ms linear infinite;
+}
+
 /* Partner banner */
 .home-partner-banner {
     margin: 0 16px 16px;

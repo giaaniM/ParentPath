@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { usePregnancyDataQuery } from '../hooks/usePregnancyDataQuery';
 import { useUser } from '../context/UserContext';
 import { useWeekData } from '../hooks/useWeekData';
 import { pregnancyTasks, newbornTasks } from '../data/mockData';
@@ -19,7 +20,7 @@ export default function Agenda() {
         getNotesForWeek, addNote, removeNote, updateNote, notes,
         getAppointmentsForWeek, addAppointment, removeAppointment, updateAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
-        dismissTask, isTaskDismissed, getWeeksPregnant, getBabyAgeMonths, setMockWeek, mockWeek
+        dismissTask, isTaskDismissed, getWeeksPregnant, getBabyAgeMonths, setMockWeek, mockWeek,
     } = useUser();
     const { showToast } = useToast();
 
@@ -98,6 +99,9 @@ export default function Agenda() {
                 return (PRIORITY_ORDER[a.priority] || 3) - (PRIORITY_ORDER[b.priority] || 3);
             });
     }, [weekData, customTasks, selectedKey, isTaskCompleted, isTaskDismissed, isBorn]);
+
+    // React Query gestisce il loading/refetch automaticamente
+    const { isLoading: agendaLoading, isFetching: agendaFetching } = usePregnancyDataQuery();
 
     // Reset swiping and editing when key changes
     useEffect(() => {
@@ -222,6 +226,11 @@ export default function Agenda() {
 
     return (
         <div className="page agenda-page">
+            {(agendaLoading || agendaFetching) && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0', opacity: 0.55 }}>
+                    <div className="ptr-spinner ptr-spinning" />
+                </div>
+            )}
             {/* ── SMART NAVIGATION ── */}
             <div className="agenda-smart-nav">
                 <div className="agenda-smart-header">

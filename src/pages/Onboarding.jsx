@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Gift, Heart, User, CalendarDays, Sparkles } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Heart, User, CalendarDays, Sparkles } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { supabase } from '../lib/supabase';
 import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
@@ -100,7 +100,6 @@ export default function Onboarding() {
     const [babySex, setBabySex] = useState(null);
     const [status, setStatus] = useState('gravidanza');
     const [dateInput, setDateInput] = useState('');
-    const [invitePartner, setInvitePartner] = useState(null);
 
     const haptic = async (style = ImpactStyle.Light) => {
         try { await Haptics.impact({ style }); } catch (e) { }
@@ -151,6 +150,12 @@ export default function Onboarding() {
         await haptic();
         if (step === 3 && onboardingType === 'join') {
             await handlePreviewJoin();
+            return;
+        }
+        // Nel flusso 'new', dopo lo step 4 salta direttamente al salvataggio (step 6)
+        // Lo step 5 (codice partner opzionale) è rimosso — si può collegare da Profilo dopo
+        if (step === 4 && onboardingType === 'new') {
+            setStep(6);
             return;
         }
         setStep(s => s + 1);
@@ -211,10 +216,6 @@ export default function Onboarding() {
                     invite_code: generatedCode,
                 });
 
-                // Se l'utente ha inserito un codice invito al passo 5, prova a collegarsi
-                if (invitePartner && invitePartner.trim().length >= 5) {
-                    await joinPregnancy(invitePartner.trim(), name, role);
-                }
             }
             if (cancelled) return;
             completeOnboarding({ role, name, birthDate, baby: babyNameInput, sex: babySex, status, conception: conceptionTime });
@@ -227,6 +228,10 @@ export default function Onboarding() {
         save();
         return () => { cancelled = true; };
     }, [step, onboardingType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    if (step === 6) {
+        return <OnboardingLoader onDone={() => navigate('/home')} userName={name} role={role} />;
+    }
 
     if (step === 'loading') {
         return <OnboardingLoader onDone={() => navigate('/home')} userName={name} role={role} />;
@@ -277,7 +282,7 @@ export default function Onboarding() {
         );
     }
 
-    const totalDots = onboardingType === 'join' ? 4 : 5;
+    const totalDots = onboardingType === 'join' ? 4 : 4;
     const currentDot = step === 3.5 ? 4 : step;
 
     return (
@@ -403,7 +408,7 @@ export default function Onboarding() {
                                     {[
                                         { id: 'M', icon: <Baby strokeWidth={1.5} size={20} />, label: 'Maschietto' },
                                         { id: 'F', icon: <Baby strokeWidth={1.5} size={20} />, label: 'Femminuccia' },
-                                        { id: 'surprise', icon: <Gift strokeWidth={1.5} size={20} />, label: 'Sorpresa' },
+                                        { id: 'surprise', icon: <Baby strokeWidth={1.5} size={20} />, label: 'Non ancora definito' },
                                     ].map(s => (
                                         <div key={s.id}
                                             className={`aonb__sex-pill ${babySex === s.id ? 'aonb__sex-pill--selected' : ''}`}
@@ -479,7 +484,7 @@ export default function Onboarding() {
                                             <Heart size={22} strokeWidth={1.8} color="#E8A0A0" fill="rgba(232,160,160,0.3)" />
                                         </div>
                                         <div className="aonb__family-av-name">
-                                            {joinPreview.babyName || (joinPreview.babySex === 'M' ? 'Maschietto' : joinPreview.babySex === 'F' ? 'Femminuccia' : 'Sorpresa')}
+                                            {joinPreview.babyName || (joinPreview.babySex === 'M' ? 'Maschietto' : joinPreview.babySex === 'F' ? 'Femminuccia' : 'Non ancora definito')}
                                         </div>
                                         <div className="aonb__family-av-role">{joinPreview.weekInfo}</div>
                                     </div>
@@ -533,43 +538,6 @@ export default function Onboarding() {
                         </div>
                     )}
 
-                    {/* STEP 5: PARTNER */}
-                    {step === 5 && onboardingType === 'new' && (
-                        <div className="ru d1">
-                            <div className="aonb__step-eyebrow">IL TUO PARTNER</div>
-                            <h1 className="aonb__title">Collegati al tuo partner</h1>
-                            <p className="aonb__subtitle">Hai un codice invito? Inseriscilo adesso. Altrimenti puoi collegare il partner in qualsiasi momento dal tuo profilo.</p>
-
-                            <div className="aonb__partner-info-card">
-                                <div className="aonb__partner-info-row">
-                                    <div className="aonb__partner-info-ic">
-                                        <Users size={18} strokeWidth={1.8} />
-                                    </div>
-                                    <div className="aonb__partner-info-text">
-                                        <strong>Hai già un codice?</strong>
-                                        <span>Il tuo partner lo trova in <em>Profilo → Partner</em> della sua app.</span>
-                                    </div>
-                                </div>
-
-                                <div className="aonb__partner-code-wrap">
-                                    <input
-                                        className="aonb__input aonb__input--code"
-                                        type="text"
-                                        placeholder="ES: A8B2CH"
-                                        maxLength={10}
-                                        value={invitePartner || ''}
-                                        onChange={e => setInvitePartner(e.target.value.toUpperCase() || null)}
-                                        onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300)}
-                                        autoComplete="off"
-                                    />
-                                </div>
-
-                                <p className="aonb__partner-skip-hint">
-                                    Puoi saltare questo passaggio — il collegamento è disponibile anche dopo la registrazione.
-                                </p>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 <div
@@ -590,7 +558,7 @@ export default function Onboarding() {
                     >
                         {step === 3 && onboardingType === 'join' ? 'Cerca partner' :
                          step === 3.5 ? 'Conferma e collegati' :
-                         step === 5 ? (invitePartner ? 'Collegati e completa' : 'Salta e completa') : 'Avanti'}
+                         step === 4 && onboardingType === 'new' ? 'Completa la configurazione' : 'Avanti'}
                     </button>
                 </div>
             </div>

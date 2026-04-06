@@ -86,9 +86,6 @@ export default function ProfileCompletion() {
     const { showToast } = useToast();
     const steps = useCompletionSteps();
     const [editOpen, setEditOpen] = useState(false);
-    const [permanentlyDone, setPermanentlyDone] = useState(
-        () => localStorage.getItem(DISMISSED_KEY) === 'true'
-    );
 
     const { sharedDataLoaded } = useUser();
 
@@ -122,11 +119,10 @@ export default function ProfileCompletion() {
             if (meta) showToast({ ...meta, duration: 4000 });
         }
 
-        // Toast di completamento totale + flag permanente
+        // Toast di completamento totale
         if (isComplete && !completionToastFired.current && !alreadyDismissed) {
             completionToastFired.current = true;
             localStorage.setItem(DISMISSED_KEY, 'true');
-            setPermanentlyDone(true);
             setTimeout(() => {
                 showToast({
                     title: 'Profilo completato!',
@@ -141,8 +137,8 @@ export default function ProfileCompletion() {
     // Aspetta che i dati Supabase siano caricati prima di calcolare il progresso
     if (!sharedDataLoaded) return null;
 
-    // Sparisce per sempre una volta completato
-    if (permanentlyDone) return null;
+    // Sparisce solo quando tutti gli step sono realmente completati
+    if (isComplete) return null;
 
     const circumference = 2 * Math.PI * 22;
     const strokeOffset = circumference - (percent / 100) * circumference;

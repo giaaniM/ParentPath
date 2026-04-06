@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useInvalidatePregnancyData } from '../hooks/usePregnancyDataQuery';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { pregnancy, getWeekData, smartTrackerData, pregnancyWeather, newbornWeather, partnerSync, weeklyDevelopment, newbornDevelopment, pregnancyTasks, newbornTasks, getHomeTips } from '../data/mockData';
@@ -82,8 +83,9 @@ export default function Home() {
         mockWeek, setMockWeek, isDevUser,
         toggleTaskCompleted, isTaskCompleted, isTaskDismissed, getCustomTasksForWeek,
         babySex, realtimeNotifications,
-        activeSleepTimer, setActiveSleepTimer, addTrackerEntry
+        activeSleepTimer, setActiveSleepTimer, addTrackerEntry,
     } = useUser();
+    const invalidatePregnancyData = useInvalidatePregnancyData();
 
     const weeks = getWeeksPregnant();
     const weekJsonData = useWeekData(weeks);
@@ -342,6 +344,41 @@ export default function Home() {
         }
     };
 
+    // ── Pull-to-Refresh ──
+    const scrollRef = useRef(null);
+    const pullStartY = useRef(0);
+    const [pullDistance, setPullDistance] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const PULL_THRESHOLD = 70;
+
+    const handlePullTouchStart = useCallback((e) => {
+        if (scrollRef.current?.scrollTop === 0) {
+            pullStartY.current = e.touches[0].clientY;
+        } else {
+            pullStartY.current = 0;
+        }
+    }, []);
+
+    const handlePullTouchMove = useCallback((e) => {
+        if (!pullStartY.current || isRefreshing) return;
+        const delta = e.touches[0].clientY - pullStartY.current;
+        if (delta > 0) setPullDistance(Math.min(delta, PULL_THRESHOLD + 20));
+    }, [isRefreshing]);
+
+    const handlePullTouchEnd = useCallback(async () => {
+        if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
+            setIsRefreshing(true);
+            setPullDistance(0);
+            invalidatePregnancyData();   // invalida → React Query ricarica in background
+            // Aspetta abbastanza da far sentire il refresh (la query è async)
+            await new Promise(r => setTimeout(r, 800));
+            setIsRefreshing(false);
+        } else {
+            setPullDistance(0);
+        }
+        pullStartY.current = 0;
+    }, [pullDistance, isRefreshing, invalidatePregnancyData]);
+
     // Ultima sessione di sonno completata
     const lastSleepEntry = Array.isArray(trackers?.sleep) ? trackers.sleep.find(s => s.endTime) : null;
     const lastSleepSubtitle = (() => {
@@ -355,8 +392,23 @@ export default function Home() {
         return `Ultima nanna: ${durStr} • Finita ${agoStr}`;
     })();
 
+    const pullProgress = Math.min(pullDistance / PULL_THRESHOLD, 1);
+
     return (
-        <div className="page home-wrap">
+        <div
+            className="page home-wrap"
+            ref={scrollRef}
+            onTouchStart={handlePullTouchStart}
+            onTouchMove={handlePullTouchMove}
+            onTouchEnd={handlePullTouchEnd}
+        >
+            {/* Pull-to-refresh indicator */}
+            {(pullDistance > 8 || isRefreshing) && (
+                <div className="ptr-indicator" style={{ opacity: isRefreshing ? 1 : pullProgress }}>
+                    <div className={`ptr-spinner ${isRefreshing ? 'ptr-spinning' : ''}`}
+                         style={{ transform: `rotate(${pullProgress * 270}deg)` }} />
+                </div>
+            )}
 
             <div className="greeting-wrapper fi" style={{ margin: '2px 20px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>

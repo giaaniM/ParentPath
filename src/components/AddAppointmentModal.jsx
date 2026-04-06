@@ -19,6 +19,7 @@ export default function AddAppointmentModal({
     const [time, setTime] = useState('09:00');
     const [location, setLocation] = useState('');
     const [notes, setNotes] = useState(initialNotes);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [isSwiping, setIsSwiping] = useState(false);
     const modalRef = useRef(null);
@@ -58,8 +59,9 @@ export default function AddAppointmentModal({
         modalDragY.current = 0;
     };
 
-    const handleConfirm = () => {
-        if (!name.trim()) return;
+    const handleConfirm = async () => {
+        if (!name.trim() || isSaving) return;
+        setIsSaving(true);
         const isFirst = !appointments || appointments.length === 0;
         addAppointment({
             name: name.trim(),
@@ -69,11 +71,13 @@ export default function AddAppointmentModal({
             notes: notes.trim(),
             weekNumber: weekNumber
         });
+        await new Promise(r => setTimeout(r, 350));
         showToast({
             title: isFirst ? 'Prima visita aggiunta!' : 'Visita salvata',
             subtitle: isFirst ? 'Tieni traccia di ogni appuntamento.' : `"${name.trim()}" nell'agenda`,
             type: 'visit',
         });
+        setIsSaving(false);
         onClose();
         if (onSuccess) onSuccess();
     };
@@ -153,12 +157,12 @@ export default function AddAppointmentModal({
                         />
                     </div>
                 </div>
-                <button 
-                    className="appt-modal-cta" 
-                    onClick={handleConfirm} 
-                    disabled={!name.trim()}
+                <button
+                    className="appt-modal-cta"
+                    onClick={handleConfirm}
+                    disabled={!name.trim() || isSaving}
                 >
-                    Conferma
+                    {isSaving ? <span className="appt-cta-spinner" /> : 'Conferma'}
                 </button>
             </div>
         </div>

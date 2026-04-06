@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/queryClient';
 import { useEffect, useRef } from 'react';
 import { UserProvider, useUser } from './context/UserContext';
 import { ToastProvider, useToast } from './context/ToastContext';
@@ -98,13 +100,15 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <UserProvider>
-        <ToastProvider>
-          <AppContent />
-        </ToastProvider>
-      </UserProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <UserProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </UserProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

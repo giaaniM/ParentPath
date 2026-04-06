@@ -133,6 +133,16 @@
     cursor: not-allowed;
 }
 
+.appt-cta-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 650ms linear infinite;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }

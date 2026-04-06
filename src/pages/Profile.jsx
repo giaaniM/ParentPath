@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import EditProfileModal from '../components/EditProfileModal';
 import ProfileCompletion from '../components/ProfileCompletion';
 import { useToast } from '../context/ToastContext';
+import { usePartnerStatusQuery, useInvalidatePartnerStatus } from '../hooks/usePartnerStatusQuery';
 import './Profile.css';
 
 const getAge = (birthDateStr) => {
@@ -22,31 +23,31 @@ export default function Profile() {
     const {
         isMamma, userName, userRole, babyName, babyStatus, logout,
         inviteCode, partnerId, generateInviteCode, unlinkPartner, birthDate, joinPregnancy, previewJoin,
+        refreshPartnerStatus,
     } = useUser();
 
     const navigate = useNavigate();
     const location = useLocation();
     const { showToast } = useToast();
+    const invalidatePartner = useInvalidatePartnerStatus();
+
+    // React Query: partner status sempre fresco, refetch automatico su focus/reconnect
+    const { data: partnerData, isLoading: partnerLoading, refetch: refetchPartner } = usePartnerStatusQuery();
+    const livePartnerId = partnerData?.partnerId ?? null;
+    const liveInviteCode = partnerData?.inviteCode ?? inviteCode;
+    const isCreator = partnerData?.isCreator ?? true;
+    const partnerInfo = partnerData?.partnerProfile ?? null;
+
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
-    const [livePartnerId, setLivePartnerId] = useState(partnerId);
-    const [isCreator, setIsCreator] = useState(true);
     const [unlinkConfirm, setUnlinkConfirm] = useState(false);
     const [unlinkLoading, setUnlinkLoading] = useState(false);
-    const [liveInviteCode, setLiveInviteCode] = useState(inviteCode);
-    const [partnerInfo, setPartnerInfo] = useState(null); // { name, role, birth_date }
     const [joinCode, setJoinCode] = useState('');
     const [joinError, setJoinError] = useState('');
-    const [userEmail, setUserEmail] = useState('');
     const [joinLoading, setJoinLoading] = useState(false);
-    const [joinPreview, setJoinPreview] = useState(null); // dati trovati prima di confermare
-
-    // Sincronizza livePartnerId col context (che carica da DB async all'avvio)
-    // Non sovrascrive se il modal è aperto (ha già dati freschi dal DB)
-    useEffect(() => {
-        if (!isPartnerModalOpen) setLivePartnerId(partnerId);
-    }, [partnerId]); // eslint-disable-line react-hooks/exhaustive-deps
+    const [joinPreview, setJoinPreview] = useState(null);
+    const [userEmail, setUserEmail] = useState('');
 
     // Carica email utente dalla sessione Supabase
     useEffect(() => {
@@ -66,37 +67,10 @@ export default function Profile() {
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const openPartnerModal = async () => {
+    const openPartnerModal = () => {
         setUnlinkConfirm(false);
         setIsPartnerModalOpen(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        const userId = session.user.id;
-        const { data: preg } = await supabase
-            .from('pregnancies')
-            .select('creator_id, partner_id, invite_code')
-            .or(`creator_id.eq.${userId},partner_id.eq.${userId}`)
-            .maybeSingle();
-        if (preg) {
-            const isCreatorUser = preg.creator_id === userId;
-            // Bug fix: se sono il partner (non creatore), il mio "partner" è il creatore
-            const pid = isCreatorUser ? preg.partner_id : preg.creator_id;
-            setLivePartnerId(pid || null);
-            setIsCreator(isCreatorUser);
-            setLiveInviteCode(preg.invite_code || null);
-
-            // Carica info partner dal DB
-            if (pid) {
-                const { data: pProfile } = await supabase
-                    .from('profiles')
-                    .select('name, role, birth_date')
-                    .eq('id', pid)
-                    .maybeSingle();
-                setPartnerInfo(pProfile || null);
-            } else {
-                setPartnerInfo(null);
-            }
-        }
+        // I dati sono già freschi dal fetch al mount + realtime — nessuna query aggiuntiva
     };
 
     const handleUnlink = async () => {
@@ -104,14 +78,14 @@ export default function Profile() {
         const res = await unlinkPartner();
         setUnlinkLoading(false);
         if (res.success) {
-            setLivePartnerId(null);
             setUnlinkConfirm(false);
+            invalidatePartner();
         }
     };
 
     const handleGenerateCode = async () => {
-        const code = await generateInviteCode();
-        if (code) setLiveInviteCode(code);
+        await generateInviteCode();
+        invalidatePartner();
     };
 
     const handleLogout = async () => {
@@ -142,6 +116,7 @@ export default function Profile() {
             setJoinPreview(null);
             setJoinCode('');
             showToast({ title: 'Partner collegato!', subtitle: 'Siete sincronizzati in tempo reale.', type: 'partner', duration: 4000 });
+            invalidatePartner();
             openPartnerModal();
         } else {
             setJoinError(res.error || 'Errore durante il collegamento.');

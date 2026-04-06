@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { PREGNANCY_DATA_KEY } from '../hooks/usePregnancyDataQuery';
+import { PARTNER_STATUS_KEY } from '../hooks/usePartnerStatusQuery';
 
 const UserContext = createContext(null);
 
@@ -15,6 +18,8 @@ function saveJSON(key, value) {
 }
 
 export function UserProvider({ children }) {
+    const queryClient = useQueryClient();
+
     const [userRole, setUserRole] = useState(() => loadJSON('pp_userRole', null));
     
     // Capitalize helper
@@ -185,44 +190,85 @@ export function UserProvider({ children }) {
 
     const [sharedDataLoaded, setSharedDataLoaded] = useState(false);
 
-    // Carica dati condivisi da Supabase all'avvio (sovrascrive localStorage)
+    // refreshFromSupabase: invalida la query → React Query ricarica dal DB → useEffect sotto sincronizza lo stato
+    const refreshFromSupabase = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
+        queryClient.invalidateQueries({ queryKey: [PARTNER_STATUS_KEY] });
+    }, [queryClient]);
+
+    // Bridge: query cache → UserContext state
+    // React Query fetcha i dati; questo effect li copia nello stato locale (usato da getters, Home, ecc.)
     useEffect(() => {
         if (!onboardingDone) return;
-        const loadShared = async () => {
-            const pregId = await getPregnancyId();
-            if (!pregId) { setSharedDataLoaded(true); return; }
-            const { data: preg } = await supabase.from('pregnancies')
-                .select('shared_notes, shared_appointments, shared_custom_tasks, shared_completed_tasks')
-                .eq('id', pregId).maybeSingle();
-            if (preg) {
+        const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+            if (
+                event.type === 'updated' &&
+                event.query.queryKey[0] === PREGNANCY_DATA_KEY &&
+                event.query.state.status === 'success'
+            ) {
+                const preg = event.query.state.data;
+                if (!preg) return;
                 if (preg.shared_notes?.length > 0) setNotes(preg.shared_notes);
                 if (preg.shared_appointments?.length > 0) setAppointments(preg.shared_appointments);
                 if (preg.shared_custom_tasks?.length > 0) setCustomTasks(preg.shared_custom_tasks);
-                if (preg.shared_completed_tasks && Object.keys(preg.shared_completed_tasks).length > 0) setCompletedTasks(preg.shared_completed_tasks);
+                if (preg.shared_completed_tasks && Object.keys(preg.shared_completed_tasks).length > 0)
+                    setCompletedTasks(preg.shared_completed_tasks);
+                if (preg.partner_id !== undefined || preg.creator_id !== undefined) {
+                    // Aggiorna anche partnerId e inviteCode
+                    supabase.auth.getSession().then(({ data: { session } }) => {
+                        if (!session) return;
+                        const uid = session.user.id;
+                        const pid = preg.creator_id === uid ? preg.partner_id : preg.creator_id;
+                        setPartnerId(pid || null);
+                        setInviteCode(preg.invite_code || null);
+                    });
+                }
+                setSharedDataLoaded(true);
             }
-            setSharedDataLoaded(true);
-        };
-        loadShared();
-    }, [onboardingDone]); // eslint-disable-line react-hooks/exhaustive-deps
+        });
+        // Triggera il primo fetch subito
+        queryClient.prefetchQuery({ queryKey: [PREGNANCY_DATA_KEY], queryFn: async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return null;
+            const { data } = await supabase
+                .from('pregnancies')
+                .select('id, creator_id, partner_id, invite_code, shared_notes, shared_appointments, shared_custom_tasks, shared_completed_tasks')
+                .or(`creator_id.eq.${session.user.id},partner_id.eq.${session.user.id}`)
+                .order('created_at', { ascending: false })
+                .limit(1).maybeSingle();
+            return data ?? null;
+        }});
+        return unsubscribe;
+    }, [onboardingDone, queryClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Sync verso Supabase quando cambiano i dati condivisi
     const syncToSupabase = useCallback(async (field, value) => {
         const pregId = await getPregnancyId();
         if (!pregId) return;
         await supabase.from('pregnancies').update({ [field]: value }).eq('id', pregId);
-    }, []);
+        // Invalida la query per confermare i dati scritti con il DB
+        queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
+    }, [queryClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Realtime: ascolta cambiamenti su pregnancies dal partner e aggiorna stato locale
     const [realtimeNotifications, setRealtimeNotifications] = useState([]);
 
+    // refreshPartnerStatus: invalida entrambe le query → refetch automatico
+    const refreshPartnerStatus = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: [PARTNER_STATUS_KEY] });
+        queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
+    }, [queryClient]);
+
     useEffect(() => {
         if (!onboardingDone) return;
-        let pregChannel;
+
+        // Usa una ref per gestire correttamente la cleanup anche se l'effect è async
+        let cancelled = false;
+        let pregChannel = null;
+
         const attachPregListener = async () => {
             const pregId = await getPregnancyId();
-            if (!pregId) return;
-            const { data: { session } } = await supabase.auth.getSession();
-            const myUserId = session?.user?.id;
+            if (!pregId || cancelled) return;
 
             pregChannel = supabase.channel(`preg_sync_${pregId}`)
                 .on('postgres_changes', {
@@ -230,24 +276,21 @@ export function UserProvider({ children }) {
                     schema: 'public',
                     table: 'pregnancies',
                     filter: `id=eq.${pregId}`
-                }, (payload) => {
-                    const p = payload.new;
-                    if (p.shared_notes) setNotes(p.shared_notes);
-                    if (p.shared_appointments) setAppointments(p.shared_appointments);
-                    if (p.shared_custom_tasks) setCustomTasks(p.shared_custom_tasks);
-                    if (p.shared_completed_tasks) setCompletedTasks(p.shared_completed_tasks);
-                    // Aggiorna partnerId quando qualcuno si collega o scollega
-                    const resolvedPid = p.creator_id === myUserId
-                        ? (p.partner_id || null)
-                        : (p.creator_id || null);
-                    setPartnerId(resolvedPid);
+                }, () => {
+                    // Invalida le query → React Query ricarica dal DB → bridge sync aggiorna lo stato
+                    queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
+                    queryClient.invalidateQueries({ queryKey: [PARTNER_STATUS_KEY] });
                 });
 
             pregChannel.subscribe();
         };
+
         attachPregListener();
-        return () => { if (pregChannel) supabase.removeChannel(pregChannel); };
-    }, [onboardingDone]); // eslint-disable-line react-hooks/exhaustive-deps
+        return () => {
+            cancelled = true;
+            if (pregChannel) supabase.removeChannel(pregChannel);
+        };
+    }, [onboardingDone, queryClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Assegna il listener in realtime a Supabase per le notifiche
     useEffect(() => {
@@ -940,13 +983,13 @@ export function UserProvider({ children }) {
             setTrackers, addFeeding, removeFeeding, addDiaper, removeDiaper,
             isMamma, isPapa, isDevUser, birthDate, setBirthDate,
             inviteCode, partnerId, realtimeNotifications,
-            joinPregnancy, generateInviteCode, unlinkPartner, sendNotificationToPartner,
+            joinPregnancy, generateInviteCode, unlinkPartner, sendNotificationToPartner, refreshPartnerStatus,
             previewJoin,
             completeOnboarding, devLogin, login, logout,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
             mockWeek, setMockWeek,
-            sharedDataLoaded,
+            sharedDataLoaded, refreshFromSupabase,
             // Weight tracking
             weightLogs, addWeightLog, removeWeightLog,
             // Symptoms tracking
