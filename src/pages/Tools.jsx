@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toolsData } from '../data/mockData';
-import { Calendar, Clock, Baby } from 'lucide-react';
+import { Calendar, Clock, Baby, FileHeart, Calculator, BriefcaseMedical, AlertCircle } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { useUser } from '../context/UserContext';
 import './Tools.css';
 
 // ── Kick Counter ──────────────────────────────
@@ -95,9 +97,11 @@ function KickCounter() {
 
 // ── Contraction Timer ─────────────────────────
 function ContractionTimer() {
+    const { partnerName, sendNotificationToPartner, partnerId } = useUser();
     const [running, setRunning] = useState(false);
     const [elapsed, setElapsed] = useState(0);
     const [history, setHistory] = useState([]);
+    const [notified, setNotified] = useState(false);
     const intervalRef = useRef(null);
     const startRef = useRef(null);
 
@@ -111,7 +115,7 @@ function ContractionTimer() {
             clearInterval(intervalRef.current);
         }
         return () => clearInterval(intervalRef.current);
-    }, [running]);
+    }, [running]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const format = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
@@ -125,22 +129,70 @@ function ContractionTimer() {
         try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (_) { }
         setRunning(false);
         if (elapsed > 0) {
-            const now = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            setHistory(h => [{ duration: elapsed, time: now, id: Date.now() }, ...h].slice(0, 5));
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            setHistory(h => [{ duration: elapsed, time: timeStr, timestamp: now.getTime(), id: Date.now() }, ...h].slice(0, 10));
         }
         setElapsed(0);
     };
 
-    const lastInterval = history.length >= 2
-        ? Math.round((new Date(`2000-01-01T${history[0].time}`) - new Date(`2000-01-01T${history[1].time}`)) / 60000)
-        : null;
+    const handleNotifyPartner = async () => {
+        const avgInterval = getAvgIntervalMin();
+        await sendNotificationToPartner(
+            'contraction',
+            '🔴 Contrazioni in corso',
+            avgInterval
+                ? `Le contrazioni stanno arrivando ogni ~${avgInterval} minuti`
+                : 'Le contrazioni sono iniziate'
+        );
+        setNotified(true);
+        setTimeout(() => setNotified(false), 5000);
+    };
+
+    // Calcola intervallo medio in minuti tra le ultime contrazioni
+    const getAvgIntervalMin = () => {
+        if (history.length < 2) return null;
+        const intervals = [];
+        for (let i = 0; i < Math.min(history.length - 1, 4); i++) {
+            const diff = (history[i].timestamp - history[i + 1].timestamp) / 60000;
+            if (diff > 0 && diff < 60) intervals.push(diff);
+        }
+        if (intervals.length === 0) return null;
+        return Math.round(intervals.reduce((a, b) => a + b, 0) / intervals.length);
+    };
+
+    // Regola 5-1-1: contrazioni ogni ≤5 min, durata ≥60s, per ≥3 contrazioni consecutive
+    const get511Status = () => {
+        if (history.length < 3) return 'grey';
+        const avgInterval = getAvgIntervalMin();
+        const avgDuration = history.slice(0, 3).reduce((acc, h) => acc + h.duration, 0) / 3;
+        if (avgInterval !== null && avgInterval <= 5 && avgDuration >= 60) return 'red';
+        if (avgInterval !== null && avgInterval <= 8 && avgDuration >= 40) return 'yellow';
+        return 'green';
+    };
+
+    const status511 = get511Status();
+    const avgIntervalMin = getAvgIntervalMin();
+
+    const status511Config = {
+        grey: { label: 'Inizia a registrare le contrazioni', color: 'var(--stone)', bg: 'rgba(0,0,0,0.05)' },
+        green: { label: 'Contrazioni ancora irregolari — stai a casa', color: '#4CAF80', bg: 'rgba(76,175,80,0.1)' },
+        yellow: { label: 'Si avvicinano — contatta l\'ostetrica', color: '#F5A623', bg: 'rgba(245,166,35,0.1)' },
+        red: { label: '🔴 Regola 5-1-1: vai in ospedale!', color: '#E05252', bg: 'rgba(224,82,82,0.1)' },
+    };
 
     return (
         <div className="ct-wrap">
             <div className="ct-header">
                 <Clock size={20} />
                 <span>Contrazioni</span>
-                {lastInterval && <span className="ct-interval">ogni ~{Math.abs(lastInterval)} min</span>}
+                {avgIntervalMin && <span className="ct-interval">ogni ~{avgIntervalMin} min</span>}
+            </div>
+
+            {/* Indicatore 5-1-1 */}
+            <div className="ct-511" style={{ background: status511Config[status511].bg }}>
+                <AlertCircle size={14} color={status511Config[status511].color} />
+                <span style={{ color: status511Config[status511].color }}>{status511Config[status511].label}</span>
             </div>
 
             <div className={`ct-display ${running ? 'running' : ''}`}>
@@ -160,9 +212,20 @@ function ContractionTimer() {
                 )}
             </div>
 
+            {/* Notifica partner */}
+            {partnerId && history.length >= 1 && (
+                <button
+                    className={`ct-notify-btn ${notified ? 'ct-notify-btn--done' : ''}`}
+                    onClick={handleNotifyPartner}
+                    disabled={notified}
+                >
+                    {notified ? `✓ ${partnerName || 'Partner'} avvisato` : `Avvisa ${partnerName || 'il partner'}`}
+                </button>
+            )}
+
             {history.length > 0 && (
                 <div className="ct-log">
-                    {history.map(h => (
+                    {history.slice(0, 5).map(h => (
                         <div key={h.id} className="ct-log-row">
                             <span className="ct-log-dur">{format(h.duration)}</span>
                             <span className="ct-log-t">{h.time}</span>
@@ -170,12 +233,18 @@ function ContractionTimer() {
                     ))}
                 </div>
             )}
+
+            {history.length > 0 && (
+                <button className="ct-reset-btn" onClick={() => setHistory([])}>Azzera sessione</button>
+            )}
         </div>
     );
 }
 
 // ── Main Page ─────────────────────────────────
 export default function Tools() {
+    const navigate = useNavigate();
+
     return (
         <div className="page page-enter tools-page">
             <h1 className="page-title">Strumenti</h1>
@@ -183,6 +252,42 @@ export default function Tools() {
 
             <KickCounter />
             <ContractionTimer />
+
+            {/* Link tools */}
+            <section className="tools-section">
+                <div className="tools-section__header">
+                    <h2 className="tools-section__title">Altri strumenti</h2>
+                </div>
+                <div className="tools-links-grid">
+                    <div className="tools-link-card" onClick={() => navigate('/tools/birth-plan')}>
+                        <div className="tools-link-icon" style={{ background: 'rgba(61,191,184,0.12)', color: 'var(--aqua)' }}>
+                            <FileHeart size={22} />
+                        </div>
+                        <div className="tools-link-info">
+                            <div className="tools-link-title">Piano del Parto</div>
+                            <div className="tools-link-sub">Preferenze per il parto</div>
+                        </div>
+                    </div>
+                    <div className="tools-link-card" onClick={() => navigate('/tools/due-date')}>
+                        <div className="tools-link-icon" style={{ background: 'rgba(255,183,77,0.12)', color: '#F5A623' }}>
+                            <Calculator size={22} />
+                        </div>
+                        <div className="tools-link-info">
+                            <div className="tools-link-title">Data Presunta</div>
+                            <div className="tools-link-sub">Calcola la data del parto</div>
+                        </div>
+                    </div>
+                    <div className="tools-link-card" onClick={() => navigate('/tools/hospital-bag')}>
+                        <div className="tools-link-icon" style={{ background: 'rgba(156,106,222,0.12)', color: '#9C6ADE' }}>
+                            <BriefcaseMedical size={22} />
+                        </div>
+                        <div className="tools-link-info">
+                            <div className="tools-link-title">Valigia Parto</div>
+                            <div className="tools-link-sub">Checklist completa</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* Appointments */}
             <section className="tools-section">

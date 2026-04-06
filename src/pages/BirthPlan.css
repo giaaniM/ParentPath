@@ -1,0 +1,260 @@
+/* ── BIRTH PLAN PAGE ── */
+.bp-page {
+    background: var(--bg);
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.bp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 20px 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+}
+
+.bp-spacer {
+    width: 40px;
+}
+
+.bp-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--midnight);
+    text-align: center;
+}
+
+.bp-share-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(61, 191, 184, 0.1);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--aqua);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.bp-share-btn:active {
+    transform: scale(0.92);
+    background: rgba(61, 191, 184, 0.2);
+}
+
+/* Progress */
+.bp-progress-wrap {
+    margin: 0 20px 8px;
+}
+
+.bp-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--stone);
+    margin-bottom: 8px;
+}
+
+.bp-progress-info strong {
+    color: var(--midnight);
+    font-weight: 700;
+}
+
+.bp-progress-bar {
+    height: 5px;
+    background: rgba(61, 191, 184, 0.12);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.bp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--aqua), #2AB5B0);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+
+/* Subtitle */
+.bp-subtitle {
+    font-size: 13px;
+    color: var(--stone);
+    line-height: 1.55;
+    margin: 0 20px 24px;
+    padding: 12px 14px;
+    background: rgba(61, 191, 184, 0.06);
+    border-radius: 12px;
+    border-left: 3px solid var(--aqua);
+}
+
+/* Sections */
+.bp-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px;
+}
+
+.bp-section {
+    background: var(--white);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1.5px solid rgba(61, 191, 184, 0.12);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.bp-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.bp-section-head:active {
+    background: rgba(61, 191, 184, 0.05);
+}
+
+.bp-section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(61, 191, 184, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--aqua);
+    flex-shrink: 0;
+}
+
+.bp-section-title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--midnight);
+}
+
+.bp-section-body {
+    padding: 4px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px solid rgba(61, 191, 184, 0.08);
+}
+
+/* Fields */
+.bp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bp-field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--stone);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.bp-field-input {
+    padding: 12px 14px;
+    border: 1.5px solid rgba(61, 191, 184, 0.2);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--midnight);
+    background: var(--bg);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.bp-field-input:focus {
+    border-color: var(--aqua);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(61, 191, 184, 0.1);
+}
+
+.bp-field-textarea {
+    resize: none;
+    line-height: 1.5;
+}
+
+/* Select options */
+.bp-select-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bp-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(61, 191, 184, 0.18);
+    background: var(--bg);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--midnight);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, border-color 0.12s, transform 0.1s;
+}
+
+.bp-option-btn:active {
+    transform: scale(0.98);
+}
+
+.bp-option-btn--selected {
+    background: rgba(61, 191, 184, 0.1);
+    border-color: var(--aqua);
+    color: var(--aqua);
+    font-weight: 700;
+}
+
+/* Checkboxes */
+.bp-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: opacity 0.12s;
+}
+
+.bp-checkbox-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    border: 2px solid rgba(61, 191, 184, 0.35);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.bp-checkbox-box--checked {
+    background: var(--aqua);
+    border-color: var(--aqua);
+}
+
+.bp-checkbox-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--midnight);
+    line-height: 1.45;
+}
+
+.bp-checkbox-item--checked .bp-checkbox-label {
+    color: var(--aqua);
+}

@@ -13,6 +13,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import EditProfileModal from '../components/EditProfileModal';
 import TipBottomSheet from '../components/TipBottomSheet';
+import HomeProfileProgress from '../components/HomeProfileProgress';
 import SosNotteModal from '../components/SosNotteModal';
 import { getCategoryConfig } from '../utils/CategoryColors';
 import { Brain, Moon } from 'lucide-react';
@@ -42,7 +43,7 @@ let hasTriggeredWelcomePush = false;
 const APP_TIPS = [
     "Per vedere l'avanzamento della crescita del tuo bambino, scorri verso il basso o vai nella tab Bimbo.",
     "Per segnare i suoi calcetti usa il rapido counter qui nella schermata Home.",
-    "Vai nell'Agenda per gestire le cose da fare e visualizzare gli appuntamenti.",
+    "Vai nell'Agenda per gestire le cose da fare e visualizzare le visite.",
     "Tieni traccia di quanto bevi ogni giorno usando il contatore Acqua in Home.",
     "Aggiorna l'umore ogni giorno per tenere traccia di come ti senti col passare del tempo.",
     "Puoi segnare gli eventi e le visite mediche direttamente dalla tab Bimbo, finiranno nell'Agenda.",
@@ -80,16 +81,18 @@ export default function Home() {
         partnerStatus, setPartnerStatus, isMamma, partnerName, partnerId,
         mockWeek, setMockWeek, isDevUser,
         toggleTaskCompleted, isTaskCompleted, isTaskDismissed, getCustomTasksForWeek,
-        babySex, notifications
+        babySex, realtimeNotifications,
+        activeSleepTimer, setActiveSleepTimer, addTrackerEntry
     } = useUser();
 
     const weeks = getWeeksPregnant();
     const weekJsonData = useWeekData(weeks);
     const isBorn = babyStatus === 'nato';
 
-    // Filter appointments for the current week
+    // Solo appuntamenti reali dell'utente — le visite consigliate dal JSON
+    // sono già mostrate in BabyDev, non devono gonfiare il contatore in Home
     const weeklyAppts = (appointments || []).filter(a => a.weekNumber === weeks);
-    const totalWeeklyVisits = (weekJsonData.recommendedVisits?.length || 0) + weeklyAppts.length;
+    const totalWeeklyVisits = weeklyAppts.length;
 
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isSosOpen, setIsSosOpen] = useState(false);
@@ -186,6 +189,13 @@ export default function Home() {
 
     const babyAgeMonths = getBabyAgeMonths();
     const timeframeLabel = isBorn ? `nel Mese ${babyAgeMonths}` : `nella Settimana ${weeks}`;
+
+    // Weekly insight: il "wow fact" che fa aprire l'app ogni giorno
+    const weekInsightFact = !isBorn
+        ? (weekJsonData?.developmentDetails?.fact || weekJsonData?.curiosities?.[0] || null)
+        : (newbornDevelopment?.month1?.developmentDetails?.fact || newbornDevelopment?.month1?.subtitle || null);
+    const weekInsightEmoji = !isBorn ? (weekJsonData?.sizeEmoji || '✨') : '👶';
+    const weekInsightLabel = !isBorn ? `Sett. ${weeks} — Lo sapevi?` : `Mese ${babyAgeMonths} — Lo sapevi?`;
 
     // Used to make sure we only trigger the welcome push once per session
     const scheduleWelcomePush = async () => {
@@ -307,6 +317,44 @@ export default function Home() {
         removeDiaper();
     };
 
+    // Sleep tracker — aggiorna l'elapsed ogni 30s
+    const [sleepElapsedStr, setSleepElapsedStr] = useState('');
+    useEffect(() => {
+        if (!activeSleepTimer?.startTime) { setSleepElapsedStr(''); return; }
+        const update = () => {
+            const mins = Math.floor((Date.now() - new Date(activeSleepTimer.startTime).getTime()) / 60000);
+            setSleepElapsedStr(mins < 60 ? `${mins} min` : `${Math.floor(mins / 60)}h ${mins % 60}min`);
+        };
+        update();
+        const id = setInterval(update, 30000);
+        return () => clearInterval(id);
+    }, [activeSleepTimer]);
+
+    const handleToggleSleep = async () => {
+        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { }
+        if (activeSleepTimer?.startTime) {
+            const endTime = new Date();
+            const dur = Math.round((endTime - new Date(activeSleepTimer.startTime).getTime()) / 60000);
+            addTrackerEntry('sleep', { startTime: activeSleepTimer.startTime, endTime, duration: dur });
+            setActiveSleepTimer(null);
+        } else {
+            setActiveSleepTimer({ startTime: new Date() });
+        }
+    };
+
+    // Ultima sessione di sonno completata
+    const lastSleepEntry = Array.isArray(trackers?.sleep) ? trackers.sleep.find(s => s.endTime) : null;
+    const lastSleepSubtitle = (() => {
+        if (activeSleepTimer?.startTime) return `Dorme da ${sleepElapsedStr || '0 min'}`;
+        if (!lastSleepEntry) return 'Tocca per registrare la nanna';
+        const agoMins = Math.floor((Date.now() - new Date(lastSleepEntry.endTime).getTime()) / 60000);
+        const agoStr = agoMins < 60 ? `${agoMins} min fa` : `${Math.floor(agoMins / 60)}h fa`;
+        const durStr = lastSleepEntry.duration < 60
+            ? `${lastSleepEntry.duration} min`
+            : `${Math.floor(lastSleepEntry.duration / 60)}h ${lastSleepEntry.duration % 60}min`;
+        return `Ultima nanna: ${durStr} • Finita ${agoStr}`;
+    })();
+
     return (
         <div className="page home-wrap">
 
@@ -334,21 +382,22 @@ export default function Home() {
 
                 <button className="home-notif-btn" onClick={() => navigate('/notifications')}>
                     <Bell size={24} strokeWidth={1.8} color="var(--midnight)" />
-                    {(notifications?.unread || 0) > 0 && (
-                        <div className="home-notif-badge">{notifications.unread}</div>
+                    {(realtimeNotifications?.length || 0) > 0 && (
+                        <div className="home-notif-badge">{realtimeNotifications.length}</div>
                     )}
                 </button>
             </div>
 
-            {/* DYNAMIC ROLE TIP */}
+            {/* COMPLETAMENTO PROFILO — in cima, sparisce al 100% */}
+            <HomeProfileProgress />
+
+            {/* TIP APP — subito sotto il completamento profilo */}
             {showRoleTip && (
-                <div className="home-role-tip ru d1">
+                <div className="home-role-tip ru d2" style={{ margin: '-4px 20px 18px' }}>
                     <div className="home-rt-icon">💡</div>
                     <div className="home-rt-text">
-                        <div className="home-rt-title">Consiglio per te</div>
-                        <div className="home-rt-sub">
-                            {randomTip}
-                        </div>
+                        <div className="home-rt-title">Suggerimento</div>
+                        <div className="home-rt-sub">{randomTip}</div>
                     </div>
                     <button className="home-rt-close" onClick={() => setShowRoleTip(false)}>
                         <X size={18} />
@@ -419,6 +468,8 @@ export default function Home() {
             </div>
 
 
+
+
             {/* CONSOLIDATED WEEKLY VISITS NOTIFICATION */}
             {totalWeeklyVisits > 0 && (
                 <div 
@@ -432,7 +483,7 @@ export default function Home() {
                     <div className="hvn-content">
                         <div className="hvn-label">Agenda • Settimana {weeks}</div>
                         <div className="hvn-text">
-                            Hai {totalWeeklyVisits} {totalWeeklyVisits === 1 ? 'impegno previsto' : 'impegni previsti'} tra visite e appuntamenti questa settimana.
+                            Hai {totalWeeklyVisits} {totalWeeklyVisits === 1 ? 'visita in programma' : 'visite in programma'} questa settimana.
                         </div>
                         <div className="hvn-cta">Vedi in Agenda <ArrowRight size={14} /></div>
                     </div>
@@ -500,11 +551,12 @@ export default function Home() {
 
 
             {/* SYNC & SMART WIDGETS */}
-            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
+                {/* Griglia tracker: 2 colonne se mostriamo entrambi, 1 se calci nascosti */}
+                <div style={{ display: 'grid', gridTemplateColumns: (isBorn || weeks >= 18) ? '1fr 1fr' : '1fr', gap: '12px' }}>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    {/* LEFT: PRIMARY TRACKER */}
+                    {/* LEFT: Idratazione (gravidanza) / Poppate (nato) */}
                     <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, var(--aqua3), var(--aqua2))', borderRadius: '24px', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
@@ -525,7 +577,11 @@ export default function Home() {
                             <span style={{ fontSize: 'var(--font-size-base)', color: 'var(--aqua)' }}>/{isBorn ? (trackers?.feeding?.target || 8) : (hydration?.target || 8)}</span>
                         </div>
                         <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--slate)', marginBottom: '8px' }}>
-                            {isBorn ? `Prox: ${trackers?.feeding?.next || '--'}` : (hydration?.count >= (hydration?.target || 8)) ? 'Obiettivo raggiunto!' : 'Più acqua, più energia'}
+                            {isBorn
+                                ? `Ultima: ${trackers?.feeding?.last || '--'}`
+                                : hydration?.count >= (hydration?.target || 8)
+                                    ? '🎉 Obiettivo raggiunto!'
+                                    : `Ancora ${(hydration?.target || 8) - (hydration?.count || 0)} bicchieri`}
                         </div>
                         <DotIndicator
                             current={isBorn ? (trackers?.feeding?.count || 0) : (hydration?.count || 0)}
@@ -534,38 +590,67 @@ export default function Home() {
                         />
                     </div>
 
-                    {/* RIGHT: SECONDARY TRACKER */}
-                    <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, var(--blush3), var(--blush2))', borderRadius: '24px', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                                {isBorn ? <Sparkles size={20} color="var(--color-error)" /> : <Heart size={20} color="var(--color-error)" />}
+                    {/* RIGHT: Calcetti (sett. 18+) / Pannolini (nato) — nascosto nelle prime settimane */}
+                    {(isBorn || weeks >= 18) && (
+                        <div className="smart-tracker-widget ru d6" style={{ padding: '20px', background: 'linear-gradient(135deg, var(--blush3), var(--blush2))', borderRadius: '24px', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                                    {isBorn ? <Sparkles size={20} color="var(--color-error)" /> : <Heart size={20} color="var(--color-error)" />}
+                                </div>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                    <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveDiaper : handleRemoveKick}>
+                                        <Minus size={16} />
+                                    </button>
+                                    <button className="trkr-btn trkr-btn--plus" onClick={isBorn ? handleAddDiaper : handleAddKick}>
+                                        <Plus size={16} />
+                                    </button>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                                <button className="trkr-btn trkr-btn--minus" onClick={isBorn ? handleRemoveDiaper : handleRemoveKick}>
-                                    <Minus size={16} />
-                                </button>
-                                <button className="trkr-btn trkr-btn--plus" onClick={isBorn ? handleAddDiaper : handleAddKick}>
-                                    <Plus size={16} />
-                                </button>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 800, color: 'var(--color-error)', textTransform: 'uppercase' }}>{isBorn ? 'Pannolini' : 'Calcetti'}</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
+                                {isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
+                                <span style={{ fontSize: 'var(--font-size-base)', color: 'var(--blush)' }}>/{isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}</span>
                             </div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-error)', marginBottom: '8px' }}>
+                                {isBorn
+                                    ? `Ultimo: ${trackers?.diapers?.last || '--'}`
+                                    : kicks?.count === 0
+                                        ? 'Nessun calcio ancora oggi'
+                                        : kicks?.count < 5
+                                            ? 'Tranquillo — continua a monitorare'
+                                            : kicks?.count >= (kicks?.target || 10)
+                                                ? '🎉 Obiettivo raggiunto!'
+                                                : `${kicks?.count} calci registrati`}
+                            </div>
+                            <DotIndicator
+                                current={isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
+                                total={isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}
+                                color="var(--color-error)"
+                            />
                         </div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 800, color: 'var(--color-error)', textTransform: 'uppercase' }}>{isBorn ? 'Pannolini' : 'Calcetti'}</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 800, color: 'var(--midnight)', margin: '4px 0' }}>
-                            {isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
-                            <span style={{ fontSize: 'var(--font-size-base)', color: 'var(--blush)' }}>/{isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}</span>
-                        </div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-error)', marginBottom: '8px' }}>
-                            {isBorn ? `Stato: ${trackers?.diapers?.status || 'Regolare'}` : (kicks?.count < 5 ? 'Stato: Tranquillo' : 'Stato: Attivo!')}
-                        </div>
-                        <DotIndicator
-                            current={isBorn ? (trackers?.diapers?.count || 0) : (kicks?.count || 0)}
-                            total={isBorn ? (trackers?.diapers?.target || 7) : (kicks?.target || 10)}
-                            color="var(--color-error)"
-                        />
-                    </div>
+                    )}
                 </div>
 
+                {/* SLEEP TRACKER — solo per neonato */}
+                {isBorn && (
+                    <div className={`home-sleep-card ru d7 ${activeSleepTimer ? 'sleep-active' : ''}`}>
+                        <div className="hsl-left">
+                            <div className="hsl-icon-wrap">
+                                <Moon size={20} strokeWidth={2} color={activeSleepTimer ? '#6B7FFF' : 'var(--midnight)'} />
+                            </div>
+                            <div className="hsl-info">
+                                <div className="hsl-title">Nanna</div>
+                                <div className="hsl-sub">{lastSleepSubtitle}</div>
+                            </div>
+                        </div>
+                        <button className={`hsl-toggle-btn ${activeSleepTimer ? 'hsl-toggle--awake' : 'hsl-toggle--sleep'}`} onClick={handleToggleSleep}>
+                            {activeSleepTimer ? '☀️ Svegliato' : '💤 Si addormenta'}
+                        </button>
+                    </div>
+                )}
+
             </div>
+
 
             {/* CONSIGLI UTILI */}
             <div className="sec-head ru d6" style={{ marginTop: '24px' }}>

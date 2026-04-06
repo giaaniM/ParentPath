@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, MapPin } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { useToast } from '../context/ToastContext';
 import './AddAppointmentModal.css';
 
 export default function AddAppointmentModal({ 
@@ -11,7 +12,8 @@ export default function AddAppointmentModal({
     weekNumber,
     onSuccess
 }) {
-    const { addAppointment } = useUser();
+    const { addAppointment, appointments } = useUser();
+    const { showToast } = useToast();
     const [name, setName] = useState(initialName);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('09:00');
@@ -58,6 +60,7 @@ export default function AddAppointmentModal({
 
     const handleConfirm = () => {
         if (!name.trim()) return;
+        const isFirst = !appointments || appointments.length === 0;
         addAppointment({
             name: name.trim(),
             date: date,
@@ -65,6 +68,11 @@ export default function AddAppointmentModal({
             location: location.trim(),
             notes: notes.trim(),
             weekNumber: weekNumber
+        });
+        showToast({
+            title: isFirst ? 'Prima visita aggiunta!' : 'Visita salvata',
+            subtitle: isFirst ? 'Tieni traccia di ogni appuntamento.' : `"${name.trim()}" nell'agenda`,
+            type: 'visit',
         });
         onClose();
         if (onSuccess) onSuccess();
@@ -84,17 +92,17 @@ export default function AddAppointmentModal({
             >
                 <div className="appt-modal-handle" />
                 <div className="appt-modal-header">
-                    <h3>Pianifica Appuntamento</h3>
+                    <h3>Aggiungi Visita</h3>
                     <button className="appt-modal-close" onClick={onClose}>
                         <X size={20} />
                     </button>
                 </div>
                 <div className="appt-modal-body">
                     <div className="appt-input-group">
-                        <label>TITOLO APPUNTAMENTO</label>
+                        <label>NOME VISITA</label>
                         <textarea
                             className="appt-textarea"
-                            placeholder="Nome appuntamento"
+                            placeholder="Es. Ecografia morfologica"
                             value={name}
                             onChange={e => setName(e.target.value)}
                             rows={2}

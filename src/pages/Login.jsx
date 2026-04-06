@@ -17,7 +17,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const keyboardHeight = useKeyboardHeight();
-    const isValid = email.includes('@') && password.length >= 6;
+    const isValid = email.includes('@') && password.length >= 8;
 
     const handleLogin = async (e) => {
         e.preventDefault();

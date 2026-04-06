@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2, Calendar } from 'lucide-react';
+import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2, Calendar, Scale, TrendingUp, TrendingDown, Minus as MinusIcon } from 'lucide-react';
 import { pregnancy, milestones, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import { useWeekData } from '../hooks/useWeekData';
@@ -11,7 +11,7 @@ import './BabyDev.css';
 
 export default function BabyDev() {
     const navigate = useNavigate();
-    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment, getBabyAgeMonths } = useUser();
+    const { getWeeksPregnant, getDueDate, babyStatus, setBabyStatus, userRole, babySex, addAppointment, getBabyAgeMonths, babyName, weightLogs, addWeightLog, isMamma } = useUser();
     const isBorn = babyStatus === 'nato';
     const currentWeek = isBorn ? 0 : getWeeksPregnant();
     const percent = isBorn ? 100 : Math.min(100, Math.round((currentWeek / pregnancy.totalWeeks) * 100));
@@ -36,6 +36,8 @@ export default function BabyDev() {
         desc,
     }));
 
+    const [showWeightModal, setShowWeightModal] = useState(false);
+    const [weightInput, setWeightInput] = useState('');
     const [showBornModal, setShowBornModal] = useState(false);
     const [isFullJourneyOpen, setIsFullJourneyOpen] = useState(false);
     const [selectedMilestone, setSelectedMilestone] = useState(null);
@@ -162,7 +164,7 @@ export default function BabyDev() {
                                 {isBorn ? 'Il tuo neonato' : `Settimana ${currentWeek}`}
                             </div>
                             <h1 className="bd-hc-title">
-                                {pregnancy.babyNickname} 
+                                {babyName || pregnancy.babyNickname} 
                                 <span className="bd-hc-sex">
                                     {(babySex || pregnancy.sex) === 'M' ? '♂' : ((babySex || pregnancy.sex) === 'F' ? '♀' : '')}
                                 </span>
@@ -220,6 +222,55 @@ export default function BabyDev() {
                             </div>
                         </div>
                     </div> {/* End Hero */}
+
+                    {/* CARD PESO — solo mamma, gravidanza */}
+                    {isMamma && !isBorn && (() => {
+                        const lastLog = weightLogs.length > 0 ? weightLogs[weightLogs.length - 1] : null;
+                        const prevLog = weightLogs.length > 1 ? weightLogs[weightLogs.length - 2] : null;
+                        const diff = lastLog && prevLog ? (lastLog.value - prevLog.value).toFixed(1) : null;
+                        const TrendIcon = diff === null ? null : parseFloat(diff) > 0 ? TrendingUp : parseFloat(diff) < 0 ? TrendingDown : MinusIcon;
+                        return (
+                            <div className="bd-weight-card glass ru d2" style={{ margin: '16px 20px 0' }}>
+                                <div className="bd-weight-left">
+                                    <div className="bd-weight-eyebrow">
+                                        <Scale size={14} style={{ marginRight: 4 }} />
+                                        IL TUO PESO
+                                    </div>
+                                    {lastLog ? (
+                                        <>
+                                            <div className="bd-weight-value">{lastLog.value} <span className="bd-weight-unit">kg</span></div>
+                                            {diff !== null && (
+                                                <div className={`bd-weight-diff ${parseFloat(diff) > 0 ? 'up' : parseFloat(diff) < 0 ? 'down' : 'neutral'}`}>
+                                                    {TrendIcon && <TrendIcon size={12} />}
+                                                    {parseFloat(diff) > 0 ? `+${diff}` : diff} kg dall'ultima volta
+                                                </div>
+                                            )}
+                                            {weightLogs.length > 1 && (
+                                                <div className="bd-weight-sparkline">
+                                                    <svg width="100%" height="28" viewBox={`0 0 ${Math.max(weightLogs.length - 1, 1) * 20} 28`} preserveAspectRatio="none">
+                                                        {weightLogs.length > 1 && (() => {
+                                                            const vals = weightLogs.map(w => w.value);
+                                                            const min = Math.min(...vals);
+                                                            const max = Math.max(...vals);
+                                                            const range = max - min || 1;
+                                                            const pts = vals.map((v, i) => `${i * 20},${24 - ((v - min) / range) * 20}`).join(' ');
+                                                            return <polyline points={pts} fill="none" stroke="var(--aqua)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />;
+                                                        })()}
+                                                    </svg>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="bd-weight-empty">Nessuna misura ancora</div>
+                                    )}
+                                </div>
+                                <button className="bd-weight-add-btn" onClick={() => { setWeightInput(''); setShowWeightModal(true); }}>
+                                    <Plus size={16} />
+                                    Aggiungi
+                                </button>
+                            </div>
+                        );
+                    })()}
 
                     {/* SECTION 2: INSIGHTS CARD (GLASSMORPHISM) */}
                     <div className="bd-section-v4 ru d2">
@@ -552,10 +603,44 @@ export default function BabyDev() {
             )}
 
             {/* EDIT PROFILE MODAL */}
-            <EditProfileModal 
-                isOpen={isEditOpen} 
-                onClose={() => setIsEditOpen(false)} 
+            <EditProfileModal
+                isOpen={isEditOpen}
+                onClose={() => setIsEditOpen(false)}
             />
+
+            {/* MODAL INSERIMENTO PESO */}
+            {showWeightModal && (
+                <div className="bd-modal-overlay" onClick={() => setShowWeightModal(false)}>
+                    <div className="bd-weight-modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="bd-weight-modal-title">Aggiungi peso</div>
+                        <div className="bd-weight-modal-sub">Inserisci il tuo peso attuale in kg</div>
+                        <div className="bd-weight-modal-input-row">
+                            <input
+                                className="bd-weight-modal-input"
+                                type="number"
+                                inputMode="decimal"
+                                placeholder="Es. 62.5"
+                                min="30" max="200" step="0.1"
+                                value={weightInput}
+                                onChange={e => setWeightInput(e.target.value)}
+                                autoFocus
+                            />
+                            <span className="bd-weight-modal-unit">kg</span>
+                        </div>
+                        <button
+                            className="bd-popup-btn"
+                            disabled={!weightInput || isNaN(parseFloat(weightInput))}
+                            onClick={() => {
+                                addWeightLog(parseFloat(weightInput));
+                                setShowWeightModal(false);
+                            }}
+                        >
+                            Salva
+                        </button>
+                        <button className="bd-popup-btn secondary" onClick={() => setShowWeightModal(false)}>Annulla</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,12 +1,64 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Gift, Heart, Mail, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, UserRound, Users, Baby, Gift, Heart, User, CalendarDays, Sparkles } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { supabase } from '../lib/supabase';
-import HomeSkeletonScreen from '../components/HomeSkeletonScreen';
 import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 import './AnimatedOnboarding.css';
+
+function OnboardingLoader({ onDone, userName, role }) {
+    const [phase, setPhase] = useState('loading'); // 'loading' | 'done'
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        const t1 = setTimeout(() => setProgress(25), 200);
+        const t2 = setTimeout(() => setProgress(55), 900);
+        const t3 = setTimeout(() => setProgress(85), 1800);
+        const t4 = setTimeout(() => setProgress(100), 2600);
+        const t5 = setTimeout(() => setPhase('done'), 2900);
+        const t6 = setTimeout(() => { if (onDone) onDone(); }, 4400);
+        return () => [t1,t2,t3,t4,t5,t6].forEach(clearTimeout);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    return (
+        <div className={`aonb-loader ${phase === 'done' ? 'aonb-loader--done' : ''}`}>
+            {phase === 'loading' ? (
+                <div className="aonb-loader__inner">
+                    <div className="aonb-loader__rings">
+                        <div className="aonb-loader__ring aonb-loader__ring--1" />
+                        <div className="aonb-loader__ring aonb-loader__ring--2" />
+                        <div className="aonb-loader__icon">
+                            <svg viewBox="0 0 44 44" fill="none" width="32" height="32">
+                                <ellipse cx="22" cy="16" rx="9" ry="10" stroke="var(--aqua)" strokeWidth="2.5"/>
+                                <path d="M6 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="var(--aqua)" strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="aonb-loader__name">ParentPath</div>
+                    <div className="aonb-loader__label">Stiamo preparando il tuo percorso…</div>
+                    <div className="aonb-loader__track">
+                        <div className="aonb-loader__fill" style={{ width: `${progress}%` }} />
+                    </div>
+                </div>
+            ) : (
+                <div className="aonb-loader__done">
+                    <div className="aonb-loader__check">
+                        <svg viewBox="0 0 52 52" fill="none" width="52" height="52">
+                            <circle cx="26" cy="26" r="26" fill="rgba(61,191,184,0.12)"/>
+                            <path d="M14 26l9 9 15-16" stroke="var(--aqua)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </div>
+                    <div className="aonb-loader__welcome">
+                        {role === 'mamma' ? 'Benvenuta' : 'Benvenuto'}
+                    </div>
+                    <div className="aonb-loader__welcome-name">{userName || 'su ParentPath'}</div>
+                    <div className="aonb-loader__welcome-sub">Il tuo percorso inizia adesso</div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 /**
  * Onboarding personalizzazione — eseguito dopo la registrazione.
@@ -19,10 +71,10 @@ import './AnimatedOnboarding.css';
 export default function Onboarding() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { completeOnboarding, joinPregnancy } = useUser();
+    const { completeOnboarding, joinPregnancy, previewJoin, addWeightLog } = useUser();
     const keyboardHeight = useKeyboardHeight();
     const [step, setStep] = useState(1);
-    const [joinLoading, setJoinLoading] = useState(false);
+    const [joinPreview, setJoinPreview] = useState(null); // dati trovati prima di confermare
 
     // Credenziali passate da Register — se mancano, l'utente è arrivato direttamente (es. login senza profilo)
     const credentials = location.state; // { email, password } oppure null
@@ -43,6 +95,7 @@ export default function Onboarding() {
     const [role, setRole] = useState(null);
     const [name, setName] = useState('');
     const [birthDate, setBirthDate] = useState('');
+    const [initialWeight, setInitialWeight] = useState('');
     const [babyNameInput, setBabyNameInput] = useState('');
     const [babySex, setBabySex] = useState(null);
     const [status, setStatus] = useState('gravidanza');
@@ -53,23 +106,30 @@ export default function Onboarding() {
         try { await Haptics.impact({ style }); } catch (e) { }
     };
 
-    const handleJoin = async () => {
-        if (joinCode.trim().length < 6) return;
+    // Step 3 join: cerca preview senza committare
+    const handlePreviewJoin = async () => {
         setJoinError('');
-        setJoinLoading(true);
+        const res = await previewJoin(joinCode.trim());
+        if (res.success) {
+            setJoinPreview(res.preview);
+            setStep(3.5);
+        } else {
+            setJoinError(res.error || 'Codice non valido o scaduto.');
+        }
+    };
 
-        // Il branch join richiede sessione attiva.
-        // Se l'utente viene da Register, signUp non è ancora avvenuto → lo facciamo ora.
+    // Step 3.5 join: conferma e completa l'account + collegamento
+    const handleConfirmJoin = async () => {
         if (credentials?.email && credentials?.password) {
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
                 email: credentials.email,
                 password: credentials.password,
             });
             if (signUpError) {
-                setJoinLoading(false);
                 setJoinError(signUpError.message.includes('already registered')
                     ? 'Email già registrata. Torna indietro e usa Accedi.'
                     : 'Errore creazione account. Riprova.');
+                setStep(3);
                 return;
             }
             if (signUpData.user?.id) {
@@ -78,19 +138,19 @@ export default function Onboarding() {
         }
 
         const res = await joinPregnancy(joinCode, name, role);
-        setJoinLoading(false);
         if (res.success) {
             await haptic(ImpactStyle.Heavy);
-            navigate('/home');
+            setStep('welcome');
         } else {
             setJoinError(res.error || 'Codice non valido o scaduto.');
+            setStep(3);
         }
     };
 
     const handleNext = async () => {
         await haptic();
         if (step === 3 && onboardingType === 'join') {
-            await handleJoin();
+            await handlePreviewJoin();
             return;
         }
         setStep(s => s + 1);
@@ -98,6 +158,8 @@ export default function Onboarding() {
 
     const handleBack = async () => {
         await haptic();
+        if (step === 'welcome') return;
+        if (step === 3.5) { setStep(3); setJoinPreview(null); return; }
         if (step === 1) navigate('/register');
         else setStep(s => s - 1);
     };
@@ -107,46 +169,38 @@ export default function Onboarding() {
         if (step === 2) return !!onboardingType;
         if (step === 3 && onboardingType === 'join') return joinCode.trim().length >= 6;
         if (step === 4) return !!dateInput;
-        if (step === 5) return !!invitePartner;
+        if (step === 5) return true;
         return true;
     };
 
-    // Step 6: signUp (se viene da Register) + salva profilo/gravidanza su DB → home
+    // Step 6 new: salva tutto e vai alla welcome screen
     useEffect(() => {
         if (step !== 6 || onboardingType === 'join') return;
         let cancelled = false;
 
         const save = async () => {
-            let conceptionTime = dateInput ? new Date(dateInput) : new Date('2025-08-10');
+            // fallback: gravidanza demo a ~20 settimane
+            const fallbackDue = new Date();
+            fallbackDue.setDate(fallbackDue.getDate() + 140);
+            let conceptionTime = dateInput ? new Date(dateInput) : fallbackDue;
             if (dateInput && status === 'gravidanza') conceptionTime.setDate(conceptionTime.getDate() - 280);
+            if (!dateInput) conceptionTime.setDate(conceptionTime.getDate() - 280);
 
             let userId = null;
-
             if (credentials?.email && credentials?.password) {
-                // Nuovo utente: creiamo l'account auth solo ora, alla fine dell'onboarding
                 const { data, error: signUpError } = await supabase.auth.signUp({
                     email: credentials.email,
                     password: credentials.password,
                 });
-                if (signUpError) {
-                    if (cancelled) return;
-                    // Email già registrata → manda al login
-                    navigate('/login');
-                    return;
-                }
+                if (signUpError) { if (!cancelled) navigate('/login'); return; }
                 userId = data.user?.id;
             } else {
-                // Utente già autenticato (es. login senza profilo → onboarding)
                 const { data: { user } } = await supabase.auth.getUser();
                 userId = user?.id;
             }
 
             if (userId) {
-                await supabase.from('profiles').upsert({
-                    id: userId, name, role,
-                    birth_date: birthDate || null,
-                });
-
+                await supabase.from('profiles').upsert({ id: userId, name, role, birth_date: birthDate || null });
                 const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                 await supabase.from('pregnancies').insert({
                     creator_id: userId,
@@ -156,21 +210,75 @@ export default function Onboarding() {
                     status,
                     invite_code: generatedCode,
                 });
+
+                // Se l'utente ha inserito un codice invito al passo 5, prova a collegarsi
+                if (invitePartner && invitePartner.trim().length >= 5) {
+                    await joinPregnancy(invitePartner.trim(), name, role);
+                }
             }
-
             if (cancelled) return;
-
             completeOnboarding({ role, name, birthDate, baby: babyNameInput, sex: babySex, status, conception: conceptionTime });
-            navigate('/home');
+            if (role === 'mamma' && initialWeight && !isNaN(parseFloat(initialWeight))) {
+                addWeightLog(parseFloat(initialWeight));
+            }
+            setStep('welcome');
         };
 
         save();
         return () => { cancelled = true; };
     }, [step, onboardingType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if ((step === 6 && onboardingType === 'new') || joinLoading) return <HomeSkeletonScreen />;
+    if (step === 'loading') {
+        return <OnboardingLoader onDone={() => navigate('/home')} userName={name} role={role} />;
+    }
 
-    const totalDots = onboardingType === 'join' ? 3 : 5;
+    if (step === 'welcome') {
+        const babyLabel = (onboardingType === 'join' ? joinPreview?.babyName : babyNameInput) || null;
+        const babySexVal = onboardingType === 'join' ? joinPreview?.babySex : babySex;
+
+        return (
+            <div className="aonb aonb--welcome">
+                <div className="aonb__welcome-inner ru d1">
+                    <div className="aonb__welcome-avatar">
+                        <svg viewBox="0 0 80 80" fill="none" width="64" height="64">
+                            <circle cx="40" cy="40" r="40" fill="rgba(61,191,184,0.1)"/>
+                            <ellipse cx="40" cy="32" rx="14" ry="15" stroke="var(--aqua)" strokeWidth="2.5"/>
+                            <path d="M14 72c0-14.359 11.641-26 26-26s26 11.641 26 26" stroke="var(--aqua)" strokeWidth="2.5" strokeLinecap="round"/>
+                            {babySexVal === 'M' && <path d="M40 17 C40 17 46 12 52 15" stroke="var(--aqua)" strokeWidth="2" strokeLinecap="round"/>}
+                        </svg>
+                    </div>
+                    <div className="aonb__welcome-eyebrow">BENVENUTO SU PARENTPATH</div>
+                    <h1 className="aonb__welcome-title">
+                        Ciao {name}!{'\n'}Sei {role === 'mamma' ? 'pronta' : 'pronto'} per questo viaggio?
+                    </h1>
+                    {babyLabel && (
+                        <div className="aonb__welcome-baby">
+                            Il vostro piccolo <strong>{babyLabel}</strong> vi aspetta.
+                        </div>
+                    )}
+                    <div className="aonb__welcome-features">
+                        {[
+                            { icon: <CalendarDays size={18} strokeWidth={1.8} />, text: 'Agenda e visite sempre sott\'occhio' },
+                            { icon: <Baby size={18} strokeWidth={1.8} />, text: 'Crescita e sviluppo settimana per settimana' },
+                            { icon: <Users size={18} strokeWidth={1.8} />, text: 'Sincronizzato col tuo partner' },
+                            { icon: <Sparkles size={18} strokeWidth={1.8} />, text: 'Consigli personalizzati per te' },
+                        ].map((f, i) => (
+                            <div key={i} className="aonb__welcome-feat-row">
+                                <span className="aonb__welcome-feat-ic">{f.icon}</span>
+                                <span className="aonb__welcome-feat-text">{f.text}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <button className="aonb__btn-next aonb__btn-welcome" onClick={() => setStep('loading')}>
+                        Inizia il percorso
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const totalDots = onboardingType === 'join' ? 4 : 5;
+    const currentDot = step === 3.5 ? 4 : step;
 
     return (
         <div className="aonb">
@@ -179,7 +287,7 @@ export default function Onboarding() {
                     <div className="aonb__back-icon" onClick={handleBack}><ArrowLeft size={20} /></div>
                     <div className="aonb__progress-dots">
                         {Array.from({ length: totalDots }).map((_, i) => (
-                            <div key={i} className={`aonb__pdot ${step >= i + 1 ? 'active' : ''}`} />
+                            <div key={i} className={`aonb__pdot ${currentDot >= i + 1 ? 'active' : ''}`} />
                         ))}
                     </div>
                 </div>
@@ -222,6 +330,20 @@ export default function Onboarding() {
                                         value={birthDate}
                                         max={new Date().toISOString().split('T')[0]}
                                         onChange={e => setBirthDate(e.target.value)} />
+                                    {role === 'mamma' && (
+                                        <>
+                                            <label className="aonb__label" style={{ marginTop: 20 }}>Il tuo peso attuale <span style={{ fontWeight: 400, color: 'var(--stone)' }}>(facoltativo)</span></label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                <input className="aonb__input" type="number" inputMode="decimal"
+                                                    placeholder="Es. 62.5"
+                                                    min="30" max="200" step="0.1"
+                                                    value={initialWeight}
+                                                    onChange={e => setInitialWeight(e.target.value)}
+                                                    style={{ flex: 1 }} />
+                                                <span style={{ color: 'var(--stone)', fontSize: 14, whiteSpace: 'nowrap' }}>kg</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -299,7 +421,6 @@ export default function Onboarding() {
                             <div className="aonb__step-eyebrow">COLLEGAMENTO</div>
                             <h1 className="aonb__title">Inserisci il codice</h1>
                             <p className="aonb__subtitle">Chiedi al tuo partner il codice che trova nella sezione Profilo della sua app.</p>
-                            
                             <div className="aonb__input-group ru d1" style={{ marginTop: 24 }}>
                                 <label className="aonb__label">Codice Invito</label>
                                 <input
@@ -308,10 +429,7 @@ export default function Onboarding() {
                                     placeholder="ES: A8B2CH"
                                     maxLength={10}
                                     value={joinCode}
-                                    onChange={e => {
-                                        setJoinCode(e.target.value.toUpperCase());
-                                        setJoinError('');
-                                    }}
+                                    onChange={e => { setJoinCode(e.target.value.toUpperCase()); setJoinError(''); }}
                                     onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300)}
                                     autoComplete="off"
                                     autoFocus
@@ -324,6 +442,61 @@ export default function Onboarding() {
                         </div>
                     )}
 
+                    {/* STEP 3.5: RIEPILOGO + CONFERMA collegamento */}
+                    {step === 3.5 && onboardingType === 'join' && joinPreview && (
+                        <div className="ru d1">
+                            <div className="aonb__step-eyebrow">LA TUA FAMIGLIA</div>
+                            <h1 className="aonb__title">Eccoli!</h1>
+                            <p className="aonb__subtitle">Conferma per iniziare il percorso insieme.</p>
+
+                            <div className="aonb__family-card ru d2">
+                                {/* Avatars row */}
+                                <div className="aonb__family-avatars">
+                                    <div className="aonb__family-av-wrap">
+                                        <div className="aonb__family-av aonb__family-av--partner">
+                                            <svg viewBox="0 0 44 44" fill="none" width="32" height="32">
+                                                <circle cx="22" cy="15" r="8" stroke="var(--aqua)" strokeWidth="2.2"/>
+                                                <path d="M6 40c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="var(--aqua)" strokeWidth="2.2" strokeLinecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div className="aonb__family-av-name">{joinPreview.creator?.name || 'Partner'}</div>
+                                        <div className="aonb__family-av-role">{joinPreview.creator?.role === 'mamma' ? 'Mamma' : 'Papà'}</div>
+                                    </div>
+
+                                    <div className="aonb__family-av-wrap">
+                                        <div className="aonb__family-av aonb__family-av--me">
+                                            <svg viewBox="0 0 44 44" fill="none" width="32" height="32">
+                                                <circle cx="22" cy="15" r="8" stroke="var(--midnight)" strokeWidth="2.2"/>
+                                                <path d="M6 40c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="var(--midnight)" strokeWidth="2.2" strokeLinecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div className="aonb__family-av-name">{name || 'Tu'}</div>
+                                        <div className="aonb__family-av-role">{role === 'mamma' ? 'Mamma' : 'Papà'}</div>
+                                    </div>
+
+                                    <div className="aonb__family-av-wrap">
+                                        <div className="aonb__family-av aonb__family-av--baby">
+                                            <Heart size={22} strokeWidth={1.8} color="#E8A0A0" fill="rgba(232,160,160,0.3)" />
+                                        </div>
+                                        <div className="aonb__family-av-name">
+                                            {joinPreview.babyName || (joinPreview.babySex === 'M' ? 'Maschietto' : joinPreview.babySex === 'F' ? 'Femminuccia' : 'Sorpresa')}
+                                        </div>
+                                        <div className="aonb__family-av-role">{joinPreview.weekInfo}</div>
+                                    </div>
+                                </div>
+
+                                <div className="aonb__family-divider" />
+
+                                <div className="aonb__family-sync-row">
+                                    <Users size={14} strokeWidth={2} color="var(--aqua)" />
+                                    <span>Agenda, note e visite condivise</span>
+                                </div>
+                            </div>
+
+                            {joinError && <p className="aonb__error-message">{joinError}</p>}
+                        </div>
+                    )}
+
                     {/* STEP 4: FASE + DATA */}
                     {step === 4 && onboardingType === 'new' && (
                         <div className="ru d1">
@@ -332,16 +505,17 @@ export default function Onboarding() {
                             <p className="aonb__subtitle">Ci adatteremo perfettamente al momento in cui vi trovate.</p>
                             <div className="aonb__role-cards" style={{ marginBottom: 24 }}>
                                 {[
-                                    { id: 'gravidanza', icon: <Heart strokeWidth={1.5} size={28} />, label: 'Siamo in gravidanza', desc: null },
-                                    { id: 'nato', icon: <Baby strokeWidth={1.5} size={28} />, label: 'Il bimbo è già nato', desc: 'Primi mesi di vita' },
+                                    { id: 'gravidanza', icon: <Heart strokeWidth={1.5} size={28} />, label: 'Siamo in gravidanza', desc: null, wip: false },
+                                    { id: 'nato', icon: <Baby strokeWidth={1.5} size={28} />, label: 'Il bimbo è già nato', desc: 'Primi mesi di vita', wip: true },
                                 ].map(s => (
                                     <div key={s.id}
-                                        className={`aonb__role-card ${status === s.id ? 'aonb__role-card--selected' : ''}`}
-                                        onClick={async () => { await haptic(ImpactStyle.Medium); setStatus(s.id); }}>
+                                        className={`aonb__role-card ${status === s.id ? 'aonb__role-card--selected' : ''} ${s.wip ? 'aonb__role-card--wip' : ''}`}
+                                        onClick={async () => { if (s.wip) return; await haptic(ImpactStyle.Medium); setStatus(s.id); }}>
                                         <div className="aonb__role-icon">{s.icon}</div>
                                         <div className="aonb__role-text">
                                             <div className="aonb__role-label">{s.label}</div>
                                             {s.desc && <div className="aonb__role-desc">{s.desc}</div>}
+                                            {s.wip && <div className="aonb__role-wip">Prossimamente</div>}
                                         </div>
                                         {status === s.id && <CheckCircle2 size={24} color="var(--midnight)" />}
                                     </div>
@@ -362,27 +536,37 @@ export default function Onboarding() {
                     {/* STEP 5: PARTNER */}
                     {step === 5 && onboardingType === 'new' && (
                         <div className="ru d1">
-                            <div className="aonb__step-eyebrow">CONDIVIDI</div>
-                            <h1 className="aonb__title">Cresciamo insieme</h1>
-                            <p className="aonb__subtitle">ParentPath è progettato per condividere info e progressi in coppia.</p>
-                            <div className="aonb__role-cards">
-                                {[
-                                    { id: 'si', bg: 'var(--aqua2)', icon: <Mail color="var(--aqua)" strokeWidth={2} size={22} />, label: 'Voglio invitarlo ora', desc: 'Invia link di affiliazione' },
-                                    { id: 'no', bg: 'var(--border)', icon: <User color="var(--stone)" strokeWidth={2} size={22} />, label: 'Lo farò più tardi', desc: 'Continua in solitaria' },
-                                ].map(p => (
-                                    <div key={p.id}
-                                        className={`aonb__role-card ${invitePartner === p.id ? 'aonb__role-card--selected' : ''}`}
-                                        onClick={async () => { await haptic(ImpactStyle.Medium); setInvitePartner(p.id); }}>
-                                        <div className="aonb__role-icon" style={{ background: p.bg, borderRadius: 12, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {p.icon}
-                                        </div>
-                                        <div className="aonb__role-text">
-                                            <div className="aonb__role-label">{p.label}</div>
-                                            <div className="aonb__role-desc">{p.desc}</div>
-                                        </div>
-                                        {invitePartner === p.id && <CheckCircle2 size={24} color="var(--midnight)" />}
+                            <div className="aonb__step-eyebrow">IL TUO PARTNER</div>
+                            <h1 className="aonb__title">Collegati al tuo partner</h1>
+                            <p className="aonb__subtitle">Hai un codice invito? Inseriscilo adesso. Altrimenti puoi collegare il partner in qualsiasi momento dal tuo profilo.</p>
+
+                            <div className="aonb__partner-info-card">
+                                <div className="aonb__partner-info-row">
+                                    <div className="aonb__partner-info-ic">
+                                        <Users size={18} strokeWidth={1.8} />
                                     </div>
-                                ))}
+                                    <div className="aonb__partner-info-text">
+                                        <strong>Hai già un codice?</strong>
+                                        <span>Il tuo partner lo trova in <em>Profilo → Partner</em> della sua app.</span>
+                                    </div>
+                                </div>
+
+                                <div className="aonb__partner-code-wrap">
+                                    <input
+                                        className="aonb__input aonb__input--code"
+                                        type="text"
+                                        placeholder="ES: A8B2CH"
+                                        maxLength={10}
+                                        value={invitePartner || ''}
+                                        onChange={e => setInvitePartner(e.target.value.toUpperCase() || null)}
+                                        onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300)}
+                                        autoComplete="off"
+                                    />
+                                </div>
+
+                                <p className="aonb__partner-skip-hint">
+                                    Puoi saltare questo passaggio — il collegamento è disponibile anche dopo la registrazione.
+                                </p>
                             </div>
                         </div>
                     )}
@@ -399,8 +583,14 @@ export default function Onboarding() {
                         zIndex: 10,
                     } : {}}
                 >
-                    <button className="aonb__btn-next" onClick={handleNext} disabled={!canProceed()}>
-                        {step === 3 && onboardingType === 'join' ? 'Unisciti al partner' : (step === 5 ? 'Completa configurazione' : 'Avanti')}
+                    <button
+                        className="aonb__btn-next"
+                        onClick={step === 3.5 ? handleConfirmJoin : handleNext}
+                        disabled={!canProceed()}
+                    >
+                        {step === 3 && onboardingType === 'join' ? 'Cerca partner' :
+                         step === 3.5 ? 'Conferma e collegati' :
+                         step === 5 ? (invitePartner ? 'Collegati e completa' : 'Salta e completa') : 'Avanti'}
                     </button>
                 </div>
             </div>

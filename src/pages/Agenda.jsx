@@ -7,6 +7,7 @@ import {
     MapPin, Sparkles, X, Check, Info, Stethoscope
 } from 'lucide-react';
 import AddAppointmentModal from '../components/AddAppointmentModal';
+import { useToast } from '../context/ToastContext';
 import './Agenda.css';
 
 const PRIORITY_ORDER = { critica: 0, alta: 1, media: 2, bassa: 3 };
@@ -14,12 +15,13 @@ const PRIORITY_ORDER = { critica: 0, alta: 1, media: 2, bassa: 3 };
 export default function Agenda() {
     const {
         babyStatus, partnerName,
-        toggleTaskCompleted, isTaskCompleted,
-        getNotesForWeek, addNote, removeNote, updateNote,
+        toggleTaskCompleted, isTaskCompleted, completedTasks,
+        getNotesForWeek, addNote, removeNote, updateNote, notes,
         getAppointmentsForWeek, addAppointment, removeAppointment, updateAppointment,
         getCustomTasksForWeek, addCustomTask, removeCustomTask, updateCustomTask,
         dismissTask, isTaskDismissed, getWeeksPregnant, getBabyAgeMonths, setMockWeek, mockWeek
     } = useUser();
+    const { showToast } = useToast();
 
     const isBorn = babyStatus === 'nato';
     // Post-birth months are stored with weekNumber offset 100 (month 1 = key 101, month 2 = 102, ...)
@@ -304,7 +306,13 @@ export default function Agenda() {
                                     <button className="agenda-btn-secondary" onClick={() => { setEditingNote(false); setNoteText(''); }}>Annulla</button>
                                     <button className="agenda-btn-primary" onClick={() => {
                                         if(noteText.trim()) {
+                                            const isFirst = !notes || notes.length === 0;
                                             addNote({ weekNumber: selectedKey, text: noteText.trim() });
+                                            showToast({
+                                                title: isFirst ? 'Prima nota scritta!' : 'Nota salvata',
+                                                subtitle: isFirst ? 'Un ricordo che rimarrà per sempre.' : undefined,
+                                                type: 'note',
+                                            });
                                         }
                                         setEditingNote(false);
                                         setNoteText('');
@@ -340,7 +348,7 @@ export default function Agenda() {
                 </div>
 
                 <div className="agenda-section-header-inline">
-                    <span className="agenda-section-title-small">APPUNTAMENTI</span>
+                    <span className="agenda-section-title-small">VISITE</span>
                     <button className="agenda-add-inline-link" onClick={() => setShowApptModal(true)}>
                         <Plus size={14} /> Aggiungi
                     </button>
@@ -348,7 +356,7 @@ export default function Agenda() {
 
                 <div className="agenda-appt-list-hero">
                     {appointments.length === 0 ? (
-                        <div className="agenda-appt-empty">Nessun appuntamento in programma</div>
+                        <div className="agenda-appt-empty">Nessuna visita in programma</div>
                     ) : (
                         appointments.map(appt => (
                             <div key={appt.id} className="agenda-appt-item-hero">
@@ -428,7 +436,16 @@ export default function Agenda() {
                                                     setSwipingTaskId(null);
                                                 } else {
                                                     if (selectedKey === currentKey) {
+                                                        const wasCompleted = isTaskCompleted(selectedKey, task.id);
+                                                        const isFirstEver = Object.keys(completedTasks || {}).length === 0;
                                                         toggleTaskCompleted(selectedKey, task.id);
+                                                        if (!wasCompleted) {
+                                                            showToast({
+                                                                title: isFirstEver ? 'Primo task completato!' : 'Task completato',
+                                                                subtitle: isFirstEver ? 'Continua così, stai andando benissimo.' : `"${task.text.slice(0, 36)}"`,
+                                                                type: 'task',
+                                                            });
+                                                        }
                                                     }
                                                 }
                                             }}

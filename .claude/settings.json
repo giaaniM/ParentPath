@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(adb devices:*)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(adb -s 2C171FDH2009EU install -r android/app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(adb -s 2C171FDH2009EU install -r /Users/valeriopadovano/applicazioni/appGenitori/parentpath/android/app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(adb -s 2C171FDH2009EU shell am start -n com.valeriopadovano.parentpath/.MainActivity)",
+      "Bash(adb -s 2C171FDH2009EU shell pm clear com.valeriopadovano.parentpath)",
+      "Bash(adb -s emulator-5554 install -r /Users/valeriopadovano/applicazioni/appGenitori/parentpath/android/app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(adb -s emulator-5554 shell am start -n com.valeriopadovano.parentpath/.MainActivity)",
+      "Bash(adb install:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb wait-for-device:*)",
+      "Bash(emulator -list-avds)",
+      "Read(//Users/valeriopadovano/Library/Android/sdk/emulator/**)",
+      "Bash(~/Library/Android/sdk/emulator/emulator -list-avds)",
+      "Bash(adb -s emulator-5556 wait-for-device)",
+      "Bash(~/Library/Android/sdk/emulator/emulator -avd Pixel_6a -no-snapshot-load)",
+      "Bash(echo \"Emulator starting with PID $!\")",
+      "Bash(adb kill-server:*)",
+      "Bash(adb start-server:*)",
+      "Bash(adb -s emulator-5556 emu kill)",
+      "Bash(grep -n \"calculateWeek\\\\|getWeek\\\\|weekNumber\\\\|setWeek\" /Users/valeriopadovano/applicazioni/appGenitori/parentpath/src/utils/*.js)",
+      "Bash(npx playwright:*)",
+      "Bash(./gradlew installDebug)"
+    ]
+  }
+}

@@ -1,0 +1,219 @@
+/* ── SYMPTOMS TRACKER ── */
+.st-wrap {
+    margin: 0 20px 14px;
+    background: var(--white);
+    border-radius: 18px;
+    padding: 16px 18px;
+    border: 1.5px solid rgba(61, 191, 184, 0.14);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+}
+
+.st-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.st-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--midnight);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.st-history-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--aqua);
+    background: rgba(61, 191, 184, 0.1);
+    border: none;
+    border-radius: 99px;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+/* Chip grid */
+.st-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.st-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 99px;
+    border: 1.5px solid rgba(61, 191, 184, 0.2);
+    background: var(--bg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--midnight);
+    cursor: pointer;
+    transition: transform 0.12s, background 0.15s;
+    position: relative;
+}
+
+.st-chip:active {
+    transform: scale(0.94);
+}
+
+.st-chip--logged {
+    background: rgba(61, 191, 184, 0.12);
+    border-color: var(--aqua);
+    color: var(--aqua);
+    font-weight: 600;
+}
+
+.st-chip-emoji {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.st-chip-label {
+    font-size: 12px;
+}
+
+.st-chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: rgba(61, 191, 184, 0.25);
+    border-radius: 50%;
+    margin-left: 2px;
+    cursor: pointer;
+}
+
+/* Intensity modal */
+.st-intensity-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.st-intensity-card {
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.st-intensity-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--midnight);
+    text-align: center;
+}
+
+.st-intensity-subtitle {
+    font-size: 14px;
+    color: var(--stone);
+    margin-bottom: 8px;
+}
+
+.st-intensity-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.st-intensity-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 2px solid var(--intensity-color);
+    background: color-mix(in srgb, var(--intensity-color) 8%, transparent);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--midnight);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.st-intensity-btn:active {
+    transform: scale(0.97);
+}
+
+.st-intensity-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.st-intensity-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.st-intensity-cancel {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--stone);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+/* History */
+.st-history {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.st-history-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--midnight);
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.st-history-intensity {
+    flex: 1;
+    text-align: right;
+    font-size: 12px;
+    color: var(--stone);
+}
+
+.st-history-del {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    color: var(--stone);
+    flex-shrink: 0;
+}

@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
+import { useToast } from '../context/ToastContext';
 import { X } from 'lucide-react';
 import './EditProfileModal.css';
 
 export default function EditProfileModal({ isOpen, onClose }) {
-    const { userRole, setUserRole, userName, setUserName, babyName, setBabyName, conceptionDate, setConceptionDate } = useUser();
+    const { userRole, setUserRole, userName, setUserName, babyName, setBabyName, conceptionDate, setConceptionDate, birthDate, setBirthDate } = useUser();
+    const { showToast } = useToast();
 
     // Local state for editing form
     const [editName, setEditName] = useState('');
     const [editRole, setEditRole] = useState('mamma');
     const [editLmp, setEditLmp] = useState('');
+    const [editBirthDate, setEditBirthDate] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             setEditName(userName || '');
             setEditRole(userRole || 'mamma');
+            setEditBirthDate(birthDate || '');
             // Safely format conceptionDate to YYYY-MM-DD
             if (conceptionDate) {
                 try {
@@ -26,7 +30,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 setEditLmp('');
             }
         }
-    }, [isOpen, userName, userRole, conceptionDate]);
+    }, [isOpen, userName, userRole, conceptionDate, birthDate]);
 
     if (!isOpen) return null;
 
@@ -37,6 +41,10 @@ export default function EditProfileModal({ isOpen, onClose }) {
         if (editLmp) {
             setConceptionDate(new Date(editLmp));
         }
+        if (editBirthDate && !birthDate) {
+            showToast({ title: 'Data di nascita salvata!', subtitle: 'Percorso ancora più personalizzato.', type: 'milestone', duration: 3500 });
+        }
+        setBirthDate(editBirthDate || null);
         onClose();
     };
 
@@ -95,6 +103,16 @@ export default function EditProfileModal({ isOpen, onClose }) {
                             required
                         />
                         <span className="ep-hint">Viene utilizzata per calcolare le settimane e il percorso.</span>
+                    </div>
+
+                    <div className="ep-field">
+                        <label>La tua data di nascita <span className="ep-optional">(opzionale)</span></label>
+                        <input
+                            type="date"
+                            className="ep-input"
+                            value={editBirthDate}
+                            onChange={e => setEditBirthDate(e.target.value)}
+                        />
                     </div>
 
                     <button type="submit" className="ep-save-btn">Salva Modifiche</button>

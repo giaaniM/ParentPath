@@ -45,7 +45,8 @@ export function UserProvider({ children }) {
     const [isDevUser, setIsDevUser] = useState(false);
 
     // New Feature States
-    const [babyStatus, setBabyStatus] = useState(() => loadJSON('pp_babyStatus', 'gravidanza')); // 'gravidanza' | 'nato'
+    // 'nato' è WIP — forziamo sempre 'gravidanza' finché non è pronto
+    const [babyStatus, setBabyStatus] = useState('gravidanza');
     const [inviteCode, setInviteCode] = useState(() => loadJSON('pp_inviteCode', null));
     const [partnerId, setPartnerId] = useState(() => loadJSON('pp_partnerId', null));
     const [diaryEntries, setDiaryEntries] = useState({}); // { weekNum: [ { id, text, type } ] }
@@ -78,6 +79,17 @@ export function UserProvider({ children }) {
     // --- Pregnancy Tracker State ---
     const [hydration, setHydration] = useState(() => loadJSON('pp_hydration', { count: 0, target: 8 }));
     const [kicks, setKicks] = useState(() => loadJSON('pp_kicks', { count: 0, target: 10 }));
+
+    // --- Peso madre (solo mamma) ---
+    const [weightLogs, setWeightLogs] = useState(() => loadJSON('pp_weightLogs', []));
+    // [{ id, date: 'YYYY-MM-DD', value: 62.5, unit: 'kg' }]
+
+    // --- Sintomi (solo mamma) ---
+    const [symptomsLog, setSymptomsLog] = useState(() => loadJSON('pp_symptomsLog', []));
+    // [{ id, date: 'YYYY-MM-DD', week: 28, symptom: 'Nausea', intensity: 2, note: '' }]
+
+    // --- Piano del Parto (localStorage only) ---
+    const [birthPlan, setBirthPlan] = useState(() => loadJSON('pp_birthPlan', {}));
 
     // --- User Status Mapping (to demonstrate sync/UI) ---
     const [userMood, setUserMood] = useState(() => localStorage.getItem('pp_userMood') || 'good');
@@ -123,9 +135,26 @@ export function UserProvider({ children }) {
                 setInviteCode(pregnancy.invite_code || null);
             }
 
-            if (alreadyDone) return; // profilo già caricato da localStorage
+            const { data: profile, error: profileError } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
 
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+            // Se il profilo è stato eliminato dal DB ma la sessione JWT è ancora attiva → logout forzato
+            if (!profile && !profileError) {
+                await supabase.auth.signOut();
+                setOnboardingDone(false);
+                ['pp_userRole','pp_userName','pp_babyName','pp_babySex','pp_partnerName',
+                 'pp_conceptionDate','pp_onboardingDone','pp_babyStatus','pp_birthDate',
+                 'pp_inviteCode','pp_partnerId'].forEach(k => localStorage.removeItem(k));
+                return;
+            }
+
+            if (alreadyDone) {
+                // Aggiorna solo i campi che potrebbero essere cambiati lato DB
+                if (profile?.birth_date) setBirthDate(profile.birth_date);
+                if (profile?.weight_logs?.length > 0) setWeightLogs(profile.weight_logs);
+                if (profile?.symptoms_log?.length > 0) setSymptomsLog(profile.symptoms_log);
+                return;
+            }
+
             if (profile) {
                 let conceptionTime = null;
                 if (pregnancy?.conception_date) conceptionTime = new Date(pregnancy.conception_date);
@@ -142,8 +171,84 @@ export function UserProvider({ children }) {
         restoreSession();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Helper: ottieni pregnancy_id corrente
+    const getPregnancyId = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return null;
+        const { data: preg } = await supabase.from('pregnancies')
+            .select('id')
+            .or(`creator_id.eq.${session.user.id},partner_id.eq.${session.user.id}`)
+            .order('created_at', { ascending: false })
+            .limit(1).maybeSingle();
+        return preg?.id || null;
+    };
+
+    const [sharedDataLoaded, setSharedDataLoaded] = useState(false);
+
+    // Carica dati condivisi da Supabase all'avvio (sovrascrive localStorage)
+    useEffect(() => {
+        if (!onboardingDone) return;
+        const loadShared = async () => {
+            const pregId = await getPregnancyId();
+            if (!pregId) { setSharedDataLoaded(true); return; }
+            const { data: preg } = await supabase.from('pregnancies')
+                .select('shared_notes, shared_appointments, shared_custom_tasks, shared_completed_tasks')
+                .eq('id', pregId).maybeSingle();
+            if (preg) {
+                if (preg.shared_notes?.length > 0) setNotes(preg.shared_notes);
+                if (preg.shared_appointments?.length > 0) setAppointments(preg.shared_appointments);
+                if (preg.shared_custom_tasks?.length > 0) setCustomTasks(preg.shared_custom_tasks);
+                if (preg.shared_completed_tasks && Object.keys(preg.shared_completed_tasks).length > 0) setCompletedTasks(preg.shared_completed_tasks);
+            }
+            setSharedDataLoaded(true);
+        };
+        loadShared();
+    }, [onboardingDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Sync verso Supabase quando cambiano i dati condivisi
+    const syncToSupabase = useCallback(async (field, value) => {
+        const pregId = await getPregnancyId();
+        if (!pregId) return;
+        await supabase.from('pregnancies').update({ [field]: value }).eq('id', pregId);
+    }, []);
+
+    // Realtime: ascolta cambiamenti su pregnancies dal partner e aggiorna stato locale
     const [realtimeNotifications, setRealtimeNotifications] = useState([]);
-    
+
+    useEffect(() => {
+        if (!onboardingDone) return;
+        let pregChannel;
+        const attachPregListener = async () => {
+            const pregId = await getPregnancyId();
+            if (!pregId) return;
+            const { data: { session } } = await supabase.auth.getSession();
+            const myUserId = session?.user?.id;
+
+            pregChannel = supabase.channel(`preg_sync_${pregId}`)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'pregnancies',
+                    filter: `id=eq.${pregId}`
+                }, (payload) => {
+                    const p = payload.new;
+                    if (p.shared_notes) setNotes(p.shared_notes);
+                    if (p.shared_appointments) setAppointments(p.shared_appointments);
+                    if (p.shared_custom_tasks) setCustomTasks(p.shared_custom_tasks);
+                    if (p.shared_completed_tasks) setCompletedTasks(p.shared_completed_tasks);
+                    // Aggiorna partnerId quando qualcuno si collega o scollega
+                    const resolvedPid = p.creator_id === myUserId
+                        ? (p.partner_id || null)
+                        : (p.creator_id || null);
+                    setPartnerId(resolvedPid);
+                });
+
+            pregChannel.subscribe();
+        };
+        attachPregListener();
+        return () => { if (pregChannel) supabase.removeChannel(pregChannel); };
+    }, [onboardingDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
     // Assegna il listener in realtime a Supabase per le notifiche
     useEffect(() => {
         let channel;
@@ -189,6 +294,9 @@ export function UserProvider({ children }) {
     useEffect(() => { localStorage.setItem('pp_userMood', userMood); }, [userMood]);
     useEffect(() => { localStorage.setItem('pp_userActivity', userActivity); }, [userActivity]);
     useEffect(() => { saveJSON('pp_partnerStatus', partnerStatus); }, [partnerStatus]);
+    useEffect(() => { saveJSON('pp_weightLogs', weightLogs); }, [weightLogs]);
+    useEffect(() => { saveJSON('pp_symptomsLog', symptomsLog); }, [symptomsLog]);
+    useEffect(() => { saveJSON('pp_birthPlan', birthPlan); }, [birthPlan]);
 
     // --- Tracker Helpers ---
     const addHydration = useCallback(() => {
@@ -235,28 +343,116 @@ export function UserProvider({ children }) {
         }));
     }, []);
 
+    // --- Weight helpers ---
+    const addWeightLog = useCallback((value, unit = 'kg', date = null) => {
+        const dateStr = date || new Date().toISOString().split('T')[0];
+        const entry = { id: Date.now().toString(), date: dateStr, value: parseFloat(value), unit };
+        setWeightLogs(prev => {
+            const updated = [...prev, entry].sort((a, b) => a.date.localeCompare(b.date));
+            // Sync to Supabase profiles
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) supabase.from('profiles').update({ weight_logs: updated }).eq('id', session.user.id);
+            });
+            return updated;
+        });
+    }, []);
+
+    const removeWeightLog = useCallback((id) => {
+        setWeightLogs(prev => {
+            const updated = prev.filter(w => w.id !== id);
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) supabase.from('profiles').update({ weight_logs: updated }).eq('id', session.user.id);
+            });
+            return updated;
+        });
+    }, []);
+
+    // --- Symptoms helpers ---
+    const addSymptomLog = useCallback((symptom, intensity = 1, note = '', date = null, week = null) => {
+        const dateStr = date || new Date().toISOString().split('T')[0];
+        const entry = { id: Date.now().toString(), date: dateStr, week, symptom, intensity, note };
+        setSymptomsLog(prev => {
+            const updated = [entry, ...prev];
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) supabase.from('profiles').update({ symptoms_log: updated }).eq('id', session.user.id);
+            });
+            return updated;
+        });
+    }, []);
+
+    const removeSymptomLog = useCallback((id) => {
+        setSymptomsLog(prev => {
+            const updated = prev.filter(s => s.id !== id);
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) supabase.from('profiles').update({ symptoms_log: updated }).eq('id', session.user.id);
+            });
+            return updated;
+        });
+    }, []);
+
+    const getTodaySymptoms = useCallback(() => {
+        const today = new Date().toISOString().split('T')[0];
+        return symptomsLog.filter(s => s.date === today);
+    }, [symptomsLog]);
+
+    // --- Birth Plan helpers ---
+    const updateBirthPlan = useCallback((section, value) => {
+        setBirthPlan(prev => ({ ...prev, [section]: value }));
+    }, []);
+
     // --- Task helpers ---
     const toggleTaskCompleted = useCallback((weekKey, taskId) => {
         const key = `${weekKey}_${taskId}`;
-        setCompletedTasks(prev => ({ ...prev, [key]: !prev[key] }));
-    }, []);
+        setCompletedTasks(prev => {
+            const updated = { ...prev, [key]: !prev[key] };
+            syncToSupabase('shared_completed_tasks', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const isTaskCompleted = useCallback((weekKey, taskId) => {
         return !!completedTasks[`${weekKey}_${taskId}`];
     }, [completedTasks]);
 
+    // Helper per notificare il partner di un'azione
+    const notifyPartner = useCallback(async (type, title, message) => {
+        if (!partnerId) return;
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        await supabase.from('notifications').insert({
+            user_id: partnerId,
+            sender_id: session.user.id,
+            type,
+            title,
+            message
+        });
+    }, [partnerId]);
+
     // --- Notes helpers ---
     const addNote = useCallback((note) => {
-        setNotes(prev => [...prev, { id: Date.now().toString(), ...note }]);
-    }, []);
+        setNotes(prev => {
+            const updated = [...prev, { id: Date.now().toString(), ...note }];
+            syncToSupabase('shared_notes', updated);
+            return updated;
+        });
+        notifyPartner('partner_note', userName || 'Partner', `ha aggiunto una nota`);
+    }, [syncToSupabase, notifyPartner, userName]);
 
     const removeNote = useCallback((id) => {
-        setNotes(prev => prev.filter(n => n.id !== id));
-    }, []);
+        setNotes(prev => {
+            const updated = prev.filter(n => n.id !== id);
+            syncToSupabase('shared_notes', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const updateNote = useCallback((id, updates) => {
-        setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n));
-    }, []);
+        setNotes(prev => {
+            const updated = prev.map(n => n.id === id ? { ...n, ...updates } : n);
+            syncToSupabase('shared_notes', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const getNotesForWeek = useCallback((week) => {
         return notes.filter(n => n.weekNumber === week);
@@ -264,29 +460,55 @@ export function UserProvider({ children }) {
 
     // --- Appointment helpers ---
     const addAppointment = useCallback((appt) => {
-        setAppointments(prev => [...prev, { id: Date.now().toString(), ...appt }]);
-    }, []);
+        setAppointments(prev => {
+            const updated = [...prev, { id: Date.now().toString(), ...appt }];
+            syncToSupabase('shared_appointments', updated);
+            return updated;
+        });
+        notifyPartner('partner_visit', userName || 'Partner', `ha aggiunto la visita "${appt.title || 'Nuova visita'}"`);
+    }, [syncToSupabase, notifyPartner, userName]);
 
     const removeAppointment = useCallback((id) => {
-        setAppointments(prev => prev.filter(a => a.id !== id));
-    }, []);
+        setAppointments(prev => {
+            const updated = prev.filter(a => a.id !== id);
+            syncToSupabase('shared_appointments', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const updateAppointment = useCallback((id, updates) => {
-        setAppointments(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
-    }, []);
+        setAppointments(prev => {
+            const updated = prev.map(a => a.id === id ? { ...a, ...updates } : a);
+            syncToSupabase('shared_appointments', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     // --- Custom task helpers ---
     const addCustomTask = useCallback((task) => {
-        setCustomTasks(prev => [...prev, { id: Date.now().toString(), suggested: false, ...task }]);
-    }, []);
+        setCustomTasks(prev => {
+            const updated = [...prev, { id: Date.now().toString(), suggested: false, ...task }];
+            syncToSupabase('shared_custom_tasks', updated);
+            return updated;
+        });
+        notifyPartner('partner_task', userName || 'Partner', `ha aggiunto il task "${task.text || 'Nuovo task'}"`);
+    }, [syncToSupabase, notifyPartner, userName]);
 
     const removeCustomTask = useCallback((id) => {
-        setCustomTasks(prev => prev.filter(t => t.id !== id));
-    }, []);
+        setCustomTasks(prev => {
+            const updated = prev.filter(t => t.id !== id);
+            syncToSupabase('shared_custom_tasks', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const updateCustomTask = useCallback((id, updates) => {
-        setCustomTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-    }, []);
+        setCustomTasks(prev => {
+            const updated = prev.map(t => t.id === id ? { ...t, ...updates } : t);
+            syncToSupabase('shared_custom_tasks', updated);
+            return updated;
+        });
+    }, [syncToSupabase]);
 
     const dismissTask = useCallback((id) => {
         setDismissedTasks(prev => [...prev, id]);
@@ -370,6 +592,33 @@ export function UserProvider({ children }) {
         });
         return () => subscription.unsubscribe();
     }, [onboardingDone]);
+
+    // PREVIEW JOIN — cerca il codice e restituisce i dati senza committare nulla
+    const previewJoin = async (code) => {
+        // Usa RPC con SECURITY DEFINER — funziona anche per utenti anonimi (pre-registrazione)
+        const { data, error } = await supabase.rpc('preview_invite_code', { code: code.trim().toUpperCase() });
+
+        if (error || !data) return { success: false, error: 'Codice non valido o scaduto.' };
+        if (!data.success) return { success: false, error: data.error || 'Codice non valido o scaduto.' };
+
+        // Controlla se l'utente sta cercando di collegarsi alla propria gravidanza
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (userId && data.creatorId === userId) return { success: false, error: 'Non puoi collegarti alla tua stessa gravidanza.' };
+        if (data.partnerId && data.partnerId !== userId) return { success: false, error: 'Questa gravidanza ha già un partner collegato.' };
+
+        return {
+            success: true,
+            preview: {
+                pregnancyId: data.pregnancyId,
+                babyName: data.babyName,
+                babySex: data.babySex,
+                status: data.status,
+                weekInfo: data.weekInfo,
+                creator: data.creator,
+            }
+        };
+    };
 
     // JOIN PREGNANCY (Partner link flow)
     const joinPregnancy = async (code, userName, userRole) => {
@@ -692,10 +941,18 @@ export function UserProvider({ children }) {
             isMamma, isPapa, isDevUser, birthDate, setBirthDate,
             inviteCode, partnerId, realtimeNotifications,
             joinPregnancy, generateInviteCode, unlinkPartner, sendNotificationToPartner,
+            previewJoin,
             completeOnboarding, devLogin, login, logout,
             getWeeksPregnant, getWeeksRemaining, getDueDate, getBabyAgeWeeks, getBabyAgeMonths, getBabyPreciseAgeString, getSweetSpot,
             getAppPhase,
             mockWeek, setMockWeek,
+            sharedDataLoaded,
+            // Weight tracking
+            weightLogs, addWeightLog, removeWeightLog,
+            // Symptoms tracking
+            symptomsLog, addSymptomLog, removeSymptomLog, getTodaySymptoms,
+            // Birth plan
+            birthPlan, updateBirthPlan,
         }}>
             {children}
         </UserContext.Provider>

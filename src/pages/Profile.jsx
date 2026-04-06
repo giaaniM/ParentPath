@@ -1,19 +1,32 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
-import { User, Settings, Shield, LogOut, ChevronRight, Bell, Calendar, Heart, Edit2, Users, Copy, Check, Share2, Unlink, AlertTriangle } from 'lucide-react';
+import { User, Settings, Shield, LogOut, ChevronRight, Bell, Calendar, Heart, Edit2, Users, Copy, Check, Share2, Unlink, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import EditProfileModal from '../components/EditProfileModal';
+import ProfileCompletion from '../components/ProfileCompletion';
+import { useToast } from '../context/ToastContext';
 import './Profile.css';
+
+const getAge = (birthDateStr) => {
+    if (!birthDateStr) return null;
+    const today = new Date();
+    const birth = new Date(birthDateStr);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age > 0 ? age : null;
+};
 
 export default function Profile() {
     const {
         isMamma, userName, userRole, babyName, babyStatus, logout,
-        inviteCode, partnerId, generateInviteCode, unlinkPartner, birthDate,
+        inviteCode, partnerId, generateInviteCode, unlinkPartner, birthDate, joinPregnancy, previewJoin,
     } = useUser();
 
     const navigate = useNavigate();
     const location = useLocation();
+    const { showToast } = useToast();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
@@ -23,12 +36,32 @@ export default function Profile() {
     const [unlinkLoading, setUnlinkLoading] = useState(false);
     const [liveInviteCode, setLiveInviteCode] = useState(inviteCode);
     const [partnerInfo, setPartnerInfo] = useState(null); // { name, role, birth_date }
+    const [joinCode, setJoinCode] = useState('');
+    const [joinError, setJoinError] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [joinLoading, setJoinLoading] = useState(false);
+    const [joinPreview, setJoinPreview] = useState(null); // dati trovati prima di confermare
 
-    // Auto-apri il modal se arrivi da Home con openPartner: true
+    // Sincronizza livePartnerId col context (che carica da DB async all'avvio)
+    // Non sovrascrive se il modal è aperto (ha già dati freschi dal DB)
+    useEffect(() => {
+        if (!isPartnerModalOpen) setLivePartnerId(partnerId);
+    }, [partnerId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Carica email utente dalla sessione Supabase
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user?.email) setUserEmail(session.user.email);
+        });
+    }, []);
+
+    // Auto-apri il modal se arrivi da Home con openPartner/openEdit: true
     useEffect(() => {
         if (location.state?.openPartner) {
             openPartnerModal();
-            // Pulisci lo state per evitare ri-apertura su back
+            navigate(location.pathname, { replace: true, state: {} });
+        } else if (location.state?.openEdit) {
+            setIsEditOpen(true);
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -45,18 +78,19 @@ export default function Profile() {
             .or(`creator_id.eq.${userId},partner_id.eq.${userId}`)
             .maybeSingle();
         if (preg) {
-            const pid = preg.creator_id === userId ? preg.partner_id : null;
+            const isCreatorUser = preg.creator_id === userId;
+            // Bug fix: se sono il partner (non creatore), il mio "partner" è il creatore
+            const pid = isCreatorUser ? preg.partner_id : preg.creator_id;
             setLivePartnerId(pid || null);
-            setIsCreator(preg.creator_id === userId);
+            setIsCreator(isCreatorUser);
             setLiveInviteCode(preg.invite_code || null);
 
             // Carica info partner dal DB
-            const partnerId2 = preg.creator_id === userId ? preg.partner_id : preg.creator_id;
-            if (partnerId2) {
+            if (pid) {
                 const { data: pProfile } = await supabase
                     .from('profiles')
                     .select('name, role, birth_date')
-                    .eq('id', partnerId2)
+                    .eq('id', pid)
                     .maybeSingle();
                 setPartnerInfo(pProfile || null);
             } else {
@@ -83,6 +117,36 @@ export default function Profile() {
     const handleLogout = async () => {
         await logout();
         navigate('/');
+    };
+
+    // Step 1: cerca il codice e mostra preview
+    const handlePreviewJoin = async () => {
+        if (joinCode.trim().length < 6) return;
+        setJoinError('');
+        setJoinLoading(true);
+        const res = await previewJoin(joinCode.trim());
+        setJoinLoading(false);
+        if (res.success) {
+            setJoinPreview(res.preview);
+        } else {
+            setJoinError(res.error || 'Codice non valido o scaduto.');
+        }
+    };
+
+    // Step 2: conferma e completa il collegamento
+    const handleConfirmJoin = async () => {
+        setJoinLoading(true);
+        const res = await joinPregnancy(joinCode.trim(), userName, userRole);
+        setJoinLoading(false);
+        if (res.success) {
+            setJoinPreview(null);
+            setJoinCode('');
+            showToast({ title: 'Partner collegato!', subtitle: 'Siete sincronizzati in tempo reale.', type: 'partner', duration: 4000 });
+            openPartnerModal();
+        } else {
+            setJoinError(res.error || 'Errore durante il collegamento.');
+            setJoinPreview(null);
+        }
     };
 
     const sections = [
@@ -121,7 +185,7 @@ export default function Profile() {
                 <h1 className="profile-main-title">Profilo</h1>
 
                 <div className="profile-user-card" onClick={() => setIsEditOpen(true)}>
-                    <div className="puc-avatar">
+                    <div className="puc-avatar" style={{ background: isMamma ? 'rgba(61,191,184,0.1)' : 'rgba(15,32,53,0.06)' }}>
                         {isMamma ? (
                             <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" width="44" height="44">
                                 <circle cx="22" cy="15" r="8" stroke="var(--aqua)" strokeWidth="2.2"/>
@@ -141,9 +205,19 @@ export default function Profile() {
                             {babyStatus === 'nato' ? '' : ' in attesa'}
                             {babyName ? ` • ${babyName}` : ''}
                         </div>
+                        {userEmail && (
+                            <div className="puc-email">{userEmail}</div>
+                        )}
                         {birthDate && (
                             <div className="puc-birthdate">
-                                {new Date(birthDate).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                {getAge(birthDate) ? `${getAge(birthDate)} anni` : new Date(birthDate).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </div>
+                        )}
+                        {/* Badge partner collegato */}
+                        {livePartnerId && (
+                            <div className="puc-partner-badge">
+                                <Users size={11} strokeWidth={2.5} />
+                                <span>Connesso con {partnerInfo?.name || 'Partner'}</span>
                             </div>
                         )}
                     </div>
@@ -151,6 +225,9 @@ export default function Profile() {
                         <Edit2 size={20} color="var(--stone)" />
                     </div>
                 </div>
+
+                {/* COMPLETION CARD — sparisce al 100% */}
+                <ProfileCompletion />
 
                 <div className="profile-content">
                 {sections.map((section, idx) => (
@@ -187,29 +264,60 @@ export default function Profile() {
         {isPartnerModalOpen && (
             <div className="profile-modal-overlay" onClick={() => setIsPartnerModalOpen(false)}>
                 <div className="profile-modal-content" onClick={e => e.stopPropagation()}>
-                    <div className="pmc-header">
-                        <Users size={24} className="pmc-icon" />
-                        <h3 className="pmc-title">{livePartnerId ? 'Partner Collegato' : 'Invita Partner'}</h3>
-                    </div>
+                    {livePartnerId ? (
+                        /* ── HEADER SPECIALE: PARTNER COLLEGATO ── */
+                        <div className="pmc-linked-header">
+                            <div className="pmc-linked-avatars">
+                                <div className="pmc-linked-av pmc-linked-av--me">
+                                    <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                                        <circle cx="20" cy="14" r="7" stroke="var(--aqua)" strokeWidth="2"/>
+                                        <path d="M5 36c0-8.284 6.716-15 15-15s15 6.716 15 15" stroke="var(--aqua)" strokeWidth="2" strokeLinecap="round"/>
+                                    </svg>
+                                </div>
+                                <div className="pmc-linked-heart">
+                                    <Heart size={14} fill="var(--aqua)" color="var(--aqua)" />
+                                </div>
+                                <div className="pmc-linked-av pmc-linked-av--partner">
+                                    <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                                        <circle cx="20" cy="14" r="7" stroke="var(--midnight)" strokeWidth="2"/>
+                                        <path d="M5 36c0-8.284 6.716-15 15-15s15 6.716 15 15" stroke="var(--midnight)" strokeWidth="2" strokeLinecap="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h3 className="pmc-linked-title">Siete connessi</h3>
+                            <div className="pmc-linked-names">{userName || 'Tu'} & {partnerInfo?.name || 'Partner'}</div>
+                        </div>
+                    ) : (
+                        <div className="pmc-header">
+                            <div className="pmc-icon-circle">
+                                <Users size={22} strokeWidth={2} />
+                            </div>
+                            <h3 className="pmc-title">Invita il Partner</h3>
+                        </div>
+                    )}
 
                     <div className="pmc-body">
                         {livePartnerId ? (
                             /* ── STATO: PARTNER COLLEGATO ── */
                             <div className="pmc-status-linked">
-                                <div className="pmc-partner-avatar">
-                                    {partnerInfo?.role === 'mamma'
-                                        ? <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><circle cx="20" cy="14" r="7" stroke="var(--aqua)" strokeWidth="2"/><path d="M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="var(--aqua)" strokeWidth="2" strokeLinecap="round"/></svg>
-                                        : <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><circle cx="20" cy="14" r="7" stroke="var(--midnight)" strokeWidth="2"/><path d="M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="var(--midnight)" strokeWidth="2" strokeLinecap="round"/></svg>
-                                    }
-                                </div>
-                                <div className="pmc-partner-name">{partnerInfo?.name || 'Partner'}</div>
-                                <div className="pmc-partner-role">{partnerInfo?.role === 'mamma' ? 'Mamma' : 'Papà'}</div>
-                                {partnerInfo?.birth_date && (
-                                    <div className="pmc-partner-bday">
-                                        {new Date(partnerInfo.birth_date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                <div className="pmc-partner-info-row">
+                                    <div className="pmc-pi-block">
+                                        <div className="pmc-pi-role">{partnerInfo?.role === 'mamma' ? 'Mamma' : 'Papà'}</div>
+                                        {getAge(partnerInfo?.birth_date) && (
+                                            <div className="pmc-pi-age">{getAge(partnerInfo.birth_date)} anni</div>
+                                        )}
                                     </div>
-                                )}
-                                <p style={{ marginTop: 12 }}>Condividete la stessa agenda e i progressi del bebè.</p>
+                                    <div className="pmc-pi-divider" />
+                                    <div className="pmc-pi-block">
+                                        <div className="pmc-pi-role">Agenda</div>
+                                        <div className="pmc-pi-age">Condivisa</div>
+                                    </div>
+                                    <div className="pmc-pi-divider" />
+                                    <div className="pmc-pi-block">
+                                        <div className="pmc-pi-role">Percorso</div>
+                                        <div className="pmc-pi-age">Sincronizzato</div>
+                                    </div>
+                                </div>
 
                                 {!unlinkConfirm ? (
                                     <button className="pmc-unlink-btn" onClick={() => setUnlinkConfirm(true)}>
@@ -230,12 +338,12 @@ export default function Profile() {
                                 )}
                             </div>
                         ) : isCreator ? (
-                            /* ── STATO: CREATORE SENZA PARTNER ── */
+                            /* ── STATO: CREATORE SENZA PARTNER — mostra codice da condividere ── */
                             <>
-                                <p>Condividi il codice con il tuo partner. Dovrà inserirlo durante la registrazione su ParentPath.</p>
+                                <p>Genera un codice e condividilo con il tuo partner. Lo inserirà durante la registrazione su ParentPath.</p>
                                 {liveInviteCode ? (
                                     <div className="pmc-code-wrap">
-                                        <div className="pmc-code">{liveInviteCode}</div>
+                                        <div className="pmc-code" data-testid="invite-code">{liveInviteCode}</div>
                                         <button className="pmc-copy-btn" onClick={() => {
                                             navigator.clipboard.writeText(liveInviteCode);
                                             setCopySuccess(true);
@@ -264,10 +372,77 @@ export default function Profile() {
                                     </button>
                                 )}
                             </>
+                        ) : joinPreview ? (
+                            /* ── STEP 2: PREVIEW — Conferma collegamento ── */
+                            <div className="pmc-preview-wrap">
+                                <div className="pmc-preview-found">
+                                    <div className="pmc-preview-check">✓</div>
+                                    <div className="pmc-preview-found-label">Trovato!</div>
+                                </div>
+
+                                {/* Partner trovato */}
+                                <div className="pmc-preview-card">
+                                    <div className="pmc-preview-row">
+                                        <div className="pmc-preview-role-icon">
+                                            {joinPreview.creator?.role === 'mamma' ? '👩' : '👨'}
+                                        </div>
+                                        <div className="pmc-preview-info">
+                                            <div className="pmc-preview-label-sm">Il tuo partner</div>
+                                            <div className="pmc-preview-name">{joinPreview.creator?.name || 'Partner'}</div>
+                                            <div className="pmc-preview-sub">{joinPreview.creator?.role === 'mamma' ? 'Mamma' : 'Papà'}{getAge(joinPreview.creator?.birth_date) ? ` · ${getAge(joinPreview.creator.birth_date)} anni` : ''}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bambino */}
+                                <div className="pmc-preview-card">
+                                    <div className="pmc-preview-row">
+                                        <div className="pmc-preview-role-icon">
+                                            {joinPreview.babySex === 'M' ? '👦' : joinPreview.babySex === 'F' ? '👧' : '👶'}
+                                        </div>
+                                        <div className="pmc-preview-info">
+                                            <div className="pmc-preview-label-sm">{joinPreview.status === 'nato' ? 'Il bambino' : 'In arrivo'}</div>
+                                            <div className="pmc-preview-name">{joinPreview.babyName || (joinPreview.babySex === 'M' ? 'Maschietto' : joinPreview.babySex === 'F' ? 'Femminuccia' : 'Sorpresa 🎁')}</div>
+                                            <div className="pmc-preview-sub">{joinPreview.weekInfo}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p className="pmc-preview-disclaimer">Condividerete agenda, progressi e notifiche.</p>
+
+                                {joinError && <p className="pmc-join-error">{joinError}</p>}
+
+                                <button className="pmc-confirm-join-btn" onClick={handleConfirmJoin} disabled={joinLoading}>
+                                    {joinLoading ? 'Collegamento...' : '🔗 Confermo, collegaci!'}
+                                </button>
+                                <button className="pmc-back-btn" onClick={() => { setJoinPreview(null); setJoinError(''); }}>
+                                    Torna indietro
+                                </button>
+                            </div>
                         ) : (
-                            /* ── STATO: PARTNER (non creatore) SENZA COLLEGAMENTO ── */
-                            <div className="pmc-status-linked">
-                                <p>Chiedi al tuo partner di generare un codice invito dalla sua app, poi registrati su ParentPath e inseriscilo durante la configurazione.</p>
+                            /* ── STEP 1: INSERISCI CODICE ── */
+                            <div className="pmc-join-wrap">
+                                <p>Il tuo partner ha già un account? Inserisci il suo codice invito per collegarvi.</p>
+                                <div className="pmc-join-input-row">
+                                    <input
+                                        className="pmc-join-input"
+                                        type="text"
+                                        placeholder="Es. A8B2CH"
+                                        maxLength={10}
+                                        value={joinCode}
+                                        onChange={e => { setJoinCode(e.target.value.toUpperCase()); setJoinError(''); }}
+                                        autoCapitalize="characters"
+                                    />
+                                    <button
+                                        className="pmc-join-btn"
+                                        onClick={handlePreviewJoin}
+                                        disabled={joinLoading || joinCode.trim().length < 6}
+                                    >
+                                        {joinLoading ? '...' : <ArrowRight size={20} />}
+                                    </button>
+                                </div>
+                                {joinError && <p className="pmc-join-error">{joinError}</p>}
+                                <p className="pmc-hint">Trovi il codice nella sezione Profilo → Partner dell'app del tuo partner.</p>
                             </div>
                         )}
                     </div>

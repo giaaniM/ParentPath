@@ -9,7 +9,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:native": "npm run build && npx cap sync",
-    "android:live": "npx cap run android --live-reload"
+    "android:live": "npx cap run android --live-reload",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:visual:update": "playwright test tests/e2e/visual.spec.js --update-snapshots",
+    "test:visual": "playwright test tests/e2e/visual.spec.js",
+    "test:partner": "playwright test tests/e2e/partner-linking.spec.js --headed",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest"
   },
   "dependencies": {
     "@capacitor/app": "^8.0.0",
@@ -30,14 +37,17 @@
     "@capacitor/cli": "^8.1.0",
     "@capacitor/ios": "^8.1.0",
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.59.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "vite": "^7.3.1",
-    "vite-plugin-pwa": "^1.2.0"
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.2"
   }
 }

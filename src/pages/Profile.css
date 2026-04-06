@@ -62,6 +62,14 @@
     font-weight: 600;
 }
 
+.puc-email {
+    font-size: 12px;
+    color: var(--stone);
+    font-weight: 400;
+    margin-top: 2px;
+    opacity: 0.75;
+}
+
 .puc-birthdate {
     font-size: 12px;
     color: var(--stone);
@@ -431,6 +439,355 @@
     color: var(--stone);
     font-weight: 600;
     cursor: pointer;
+}
+
+/* ── USER CARD PARTNER BADGE ── */
+.puc-partner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(61, 191, 184, 0.1);
+    color: var(--aqua);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: 0.2px;
+}
+
+/* ── MODAL ICON CIRCLE ── */
+/* ── LINKED HEADER — due avatar connessi ── */
+.pmc-linked-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 20px;
+    background: linear-gradient(160deg, rgba(61,191,184,0.08) 0%, rgba(61,191,184,0.02) 100%);
+    margin: -32px -28px 24px;
+    border-radius: 24px 24px 0 0;
+}
+
+.pmc-linked-avatars {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.pmc-linked-av {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pmc-linked-av--me {
+    background: rgba(61, 191, 184, 0.12);
+}
+
+.pmc-linked-av--partner {
+    background: rgba(15, 32, 53, 0.07);
+}
+
+.pmc-linked-heart {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(61, 191, 184, 0.2);
+}
+
+.pmc-linked-title {
+    font-family: var(--font-family-serif);
+    font-size: 22px;
+    color: var(--midnight);
+    margin: 0 0 4px;
+}
+
+.pmc-linked-names {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--aqua);
+    letter-spacing: 0.01em;
+}
+
+/* ── STATS ROW ── */
+.pmc-partner-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px 12px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.pmc-pi-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.pmc-pi-role {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--stone);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pmc-pi-age {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--midnight);
+}
+
+.pmc-pi-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+.pmc-icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: var(--surface);
+    color: var(--stone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, color 0.3s;
+}
+.pmc-icon-circle.linked {
+    background: rgba(61, 191, 184, 0.12);
+    color: var(--aqua);
+}
+
+.pmc-title-sub {
+    font-size: 13px;
+    color: var(--aqua);
+    font-weight: 600;
+    margin-top: -8px;
+}
+
+/* ── PARTNER CARD INSIDE MODAL ── */
+.pmc-partner-card {
+    width: 100%;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.pmc-partner-avatar-wrap {
+    margin-bottom: 4px;
+}
+.pmc-partner-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pmc-partner-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.pmc-partner-stat {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--stone);
+}
+.pmc-partner-stat-dot {
+    color: var(--stone);
+    opacity: 0.5;
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ── PARTNER SYNC BADGE ── */
+.pmc-sync-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(61, 191, 184, 0.1);
+    color: var(--aqua);
+    border: 1px solid rgba(61, 191, 184, 0.2);
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 12px 0 16px;
+}
+
+/* ── PREVIEW COLLEGAMENTO — step 2 del join da profilo ── */
+.pmc-preview-wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.pmc-preview-found {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.pmc-preview-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(61, 191, 184, 0.15);
+    color: var(--aqua);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+}
+.pmc-preview-found-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--aqua);
+}
+.pmc-preview-card {
+    width: 100%;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+.pmc-preview-label-sm {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--aqua);
+    margin-bottom: 8px;
+}
+.pmc-preview-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.pmc-preview-role-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+.pmc-preview-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--midnight);
+}
+.pmc-preview-sub {
+    font-size: 12px;
+    color: var(--stone);
+    font-weight: 500;
+    margin-top: 2px;
+}
+.pmc-preview-disclaimer {
+    font-size: 12px !important;
+    color: var(--stone) !important;
+    margin-bottom: 4px !important;
+}
+.pmc-confirm-join-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--midnight);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-family-sans);
+    transition: opacity 0.2s;
+    margin-top: 4px;
+}
+.pmc-confirm-join-btn:disabled { opacity: 0.5; }
+.pmc-back-btn {
+    background: transparent;
+    border: none;
+    color: var(--stone);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px;
+    font-family: var(--font-family-sans);
+}
+
+/* ── JOIN FROM PROFILE ── */
+.pmc-join-wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.pmc-join-input-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+.pmc-join-input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-align: center;
+    text-transform: uppercase;
+    background: var(--white);
+    color: var(--midnight);
+    font-family: var(--font-family-sans);
+    outline: none;
+    transition: border-color 0.2s;
+}
+.pmc-join-input:focus {
+    border-color: var(--aqua);
+}
+.pmc-join-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--midnight);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+.pmc-join-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.pmc-join-error {
+    color: var(--color-error);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
 }
 
 @keyframes fadeIn {
