@@ -23,7 +23,9 @@
       "Bash(adb -s emulator-5556 emu kill)",
       "Bash(grep -n \"calculateWeek\\\\|getWeek\\\\|weekNumber\\\\|setWeek\" /Users/valeriopadovano/applicazioni/appGenitori/parentpath/src/utils/*.js)",
       "Bash(npx playwright:*)",
-      "Bash(./gradlew installDebug)"
+      "Bash(./gradlew installDebug)",
+      "Bash(security dump-keychain:*)",
+      "Bash(python3 -c \"import sys,json; print\\(json.dumps\\(json.load\\(sys.stdin\\), indent=2\\)\\)\")"
     ]
   }
 }
