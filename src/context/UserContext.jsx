@@ -474,6 +474,16 @@ export function UserProvider({ children }) {
         setBirthPlan(prev => ({ ...prev, [section]: value }));
     }, []);
 
+    // Logga un'attività della coppia: inserisce notifica per sé E per il partner.
+    // Così entrambi vedono lo storico completo delle azioni nella pagina Notifiche.
+    const logActivity = useCallback(async (type, title, message) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const inserts = [{ user_id: session.user.id, sender_id: session.user.id, type, title, message }];
+        if (partnerId) inserts.push({ user_id: partnerId, sender_id: session.user.id, type, title, message });
+        await supabase.from('notifications').insert(inserts);
+    }, [partnerId]);
+
     // --- Task helpers ---
     const toggleTaskCompleted = useCallback((weekKey, taskId, taskLabel) => {
         const key = `${weekKey}_${taskId}`;
@@ -492,16 +502,6 @@ export function UserProvider({ children }) {
     const isTaskCompleted = useCallback((weekKey, taskId) => {
         return !!completedTasks[`${weekKey}_${taskId}`];
     }, [completedTasks]);
-
-    // Logga un'attività della coppia: inserisce notifica per sé E per il partner.
-    // Così entrambi vedono lo storico completo delle azioni nella pagina Notifiche.
-    const logActivity = useCallback(async (type, title, message) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        const inserts = [{ user_id: session.user.id, sender_id: session.user.id, type, title, message }];
-        if (partnerId) inserts.push({ user_id: partnerId, sender_id: session.user.id, type, title, message });
-        await supabase.from('notifications').insert(inserts);
-    }, [partnerId]);
 
     // --- Notes helpers ---
     const addNote = useCallback((note) => {
