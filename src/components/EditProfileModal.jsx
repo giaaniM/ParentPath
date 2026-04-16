@@ -1,23 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
-import { useToast } from '../context/ToastContext';
 import { X } from 'lucide-react';
 import './EditProfileModal.css';
 
 export default function EditProfileModal({ isOpen, onClose }) {
-    const { userRole, setUserRole, userName, setUserName, babyName, setBabyName, conceptionDate, setConceptionDate, birthDate, setBirthDate } = useUser();
-    const { showToast } = useToast();
+    const { userRole, userName, setUserName, conceptionDate, setConceptionDate, birthDate, setBirthDate } = useUser();
 
     // Local state for editing form
     const [editName, setEditName] = useState('');
-    const [editRole, setEditRole] = useState('mamma');
     const [editLmp, setEditLmp] = useState('');
     const [editBirthDate, setEditBirthDate] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             setEditName(userName || '');
-            setEditRole(userRole || 'mamma');
             setEditBirthDate(birthDate || '');
             // Safely format conceptionDate to YYYY-MM-DD
             if (conceptionDate) {
@@ -30,20 +26,17 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 setEditLmp('');
             }
         }
-    }, [isOpen, userName, userRole, conceptionDate, birthDate]);
+    }, [isOpen, userName, conceptionDate, birthDate]);
 
     if (!isOpen) return null;
 
     const handleSave = (e) => {
         e.preventDefault();
         setUserName(editName);
-        setUserRole(editRole);
         if (editLmp) {
             setConceptionDate(new Date(editLmp));
         }
-        if (editBirthDate && !birthDate) {
-            showToast({ title: 'Data di nascita salvata!', subtitle: 'Percorso ancora più personalizzato.', type: 'milestone', duration: 3500 });
-        }
+        // Toast birthdate: gestito da ProfileCompletion per evitare duplicati
         setBirthDate(editBirthDate || null);
         onClose();
     };
@@ -68,29 +61,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
 
                     <div className="ep-field">
                         <label>Ruolo</label>
-                        <div className="ep-role-grid">
-                            <button
-                                type="button"
-                                className={`ep-role-btn ${editRole === 'mamma' ? 'active' : ''}`}
-                                onClick={() => setEditRole('mamma')}
-                            >
-                                Mamma
-                            </button>
-                            <button
-                                type="button"
-                                className={`ep-role-btn ${editRole === 'papa' ? 'active' : ''}`}
-                                onClick={() => setEditRole('papa')}
-                            >
-                                Papà
-                            </button>
-                            <button
-                                type="button"
-                                className={`ep-role-btn ${editRole === 'partner' ? 'active' : ''}`}
-                                onClick={() => setEditRole('partner')}
-                            >
-                                Partner
-                            </button>
-                        </div>
+                        <div className="ep-role-readonly">{userRole === 'mamma' ? 'Mamma' : 'Papà'}</div>
                     </div>
 
                     <div className="ep-field">

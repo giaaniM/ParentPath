@@ -1,11 +1,10 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Edit2, Calendar, Scale, TrendingUp, TrendingDown, Minus as MinusIcon } from 'lucide-react';
+import { Baby, Footprints, ChevronRight, Sparkles, X, Brain, Ear, Eye, Check, Plus, Lock, Heart, User, Hand, Droplets, Search, Activity, ShieldCheck, Fingerprint, Music, Cloud, Wind, RefreshCw, Stethoscope, ShoppingBag, Lightbulb, Hammer, Timer, Calendar, Scale, TrendingUp, TrendingDown, Minus as MinusIcon } from 'lucide-react';
 import { pregnancy, milestones, newbornDevelopment, weeklyDevelopment } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import { useWeekData } from '../hooks/useWeekData';
 import EarlyYears from '../components/EarlyYears';
-import EditProfileModal from '../components/EditProfileModal';
 import AddAppointmentModal from '../components/AddAppointmentModal';
 import './BabyDev.css';
 
@@ -43,7 +42,6 @@ export default function BabyDev() {
     const [selectedMilestone, setSelectedMilestone] = useState(null);
     const [selectedVisit, setSelectedVisit] = useState(null);
     const [showAddApptModal, setShowAddApptModal] = useState(false);
-    const [isEditOpen, setIsEditOpen] = useState(false);
 
     // Appointment pre-fill state
     const [apptInitialName, setApptInitialName] = useState('');
@@ -151,14 +149,6 @@ export default function BabyDev() {
                     <div className="bd-mesh-gradient"></div>
 
                     <div className="bd-premium-hero">
-                        <button 
-                            className="bd-edit-profile-btn glass"
-                            onClick={() => setIsEditOpen(true)}
-                            aria-label="Modifica Profilo"
-                            style={{ position: 'absolute', top: '100px', right: '20px', zIndex: 20, width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-                        >
-                            <Edit2 size={18} color="var(--midnight)" />
-                        </button>
                         <div className="bd-hero-top">
                             <div className="bd-hc-eyebrow">
                                 {isBorn ? 'Il tuo neonato' : `Settimana ${currentWeek}`}
@@ -194,8 +184,16 @@ export default function BabyDev() {
                                     <span className="bd-stat-lbl">CM</span>
                                 </div>
                                 <div className="bd-stat-item glass">
-                                    <span className="bd-stat-val">{phaseDev?.weight || '--'}</span>
-                                    <span className="bd-stat-lbl">GRAMMI</span>
+                                    {(() => {
+                                        const w = phaseDev?.weight;
+                                        if (!w || w === '--') return <><span className="bd-stat-val">--</span><span className="bd-stat-lbl">PESO</span></>;
+                                        const num = parseInt(w);
+                                        if (isNaN(num)) return <><span className="bd-stat-val">{w}</span><span className="bd-stat-lbl">g</span></>;
+                                        if (num < 1000) return <><span className="bd-stat-val">{num}</span><span className="bd-stat-lbl">g</span></>;
+                                        const kg = Math.floor(num / 1000);
+                                        const gr = num % 1000;
+                                        return <><span className="bd-stat-val">{gr > 0 ? `${kg}kg ${gr}g` : `${kg}`}</span><span className="bd-stat-lbl">{gr > 0 ? '' : 'kg'}</span></>;
+                                    })()}
                                 </div>
                             </div>
                         </div>
@@ -601,12 +599,6 @@ export default function BabyDev() {
                     </div>
                 </div>
             )}
-
-            {/* EDIT PROFILE MODAL */}
-            <EditProfileModal
-                isOpen={isEditOpen}
-                onClose={() => setIsEditOpen(false)}
-            />
 
             {/* MODAL INSERIMENTO PESO */}
             {showWeightModal && (

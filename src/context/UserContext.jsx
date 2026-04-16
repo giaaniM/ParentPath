@@ -191,6 +191,7 @@ export function UserProvider({ children }) {
     };
 
     const [sharedDataLoaded, setSharedDataLoaded] = useState(false);
+    const lastWriteAt = useRef(0); // guard contro self-echo realtime → evita flickering lista task
 
     // refreshFromSupabase: invalida la query → React Query ricarica dal DB → useEffect sotto sincronizza lo stato
     const refreshFromSupabase = useCallback(() => {
@@ -247,10 +248,11 @@ export function UserProvider({ children }) {
     const syncToSupabase = useCallback(async (field, value) => {
         const pregId = await getPregnancyId();
         if (!pregId) return;
+        lastWriteAt.current = Date.now(); // marca scrittura per bloccare self-echo
         await supabase.from('pregnancies').update({ [field]: value }).eq('id', pregId);
-        // Invalida la query per confermare i dati scritti con il DB
-        queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
-    }, [queryClient]); // eslint-disable-line react-hooks/exhaustive-deps
+        // Non invalidiamo qui: il canale realtime preg_sync gestisce la sincronizzazione
+        // con il partner. L'invalidazione immediata causa il flickering della lista task.
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Realtime: ascolta cambiamenti su pregnancies dal partner e aggiorna stato locale
     const [realtimeNotifications, setRealtimeNotifications] = useState([]);
@@ -279,7 +281,9 @@ export function UserProvider({ children }) {
                     table: 'pregnancies',
                     filter: `id=eq.${pregId}`
                 }, () => {
-                    // Invalida le query → React Query ricarica dal DB → bridge sync aggiorna lo stato
+                    // Salta il self-echo: se noi stessi abbiamo scritto da < 3s, il DB ci rimanda
+                    // l'evento realtime — ignorarlo evita il flickering della lista task.
+                    if (Date.now() - lastWriteAt.current < 3000) return;
                     queryClient.invalidateQueries({ queryKey: [PREGNANCY_DATA_KEY] });
                     queryClient.invalidateQueries({ queryKey: [PARTNER_STATUS_KEY] });
                 });
@@ -478,29 +482,25 @@ export function UserProvider({ children }) {
             const updated = { ...prev, [key]: !wasCompleted };
             syncToSupabase('shared_completed_tasks', updated);
             if (!wasCompleted) {
-                // Notifica il partner solo quando si completa (non quando si de-completa)
-                notifyPartner('partner_task_done', userName || 'Partner', `ha completato il task "${taskLabel || 'Task'}"`);
+                // Logga solo quando si completa (non quando si de-completa)
+                logActivity('partner_task_done', userName || 'Partner', `ha completato il task "${taskLabel || 'Task'}"`);
             }
             return updated;
         });
-    }, [syncToSupabase, notifyPartner, userName]);
+    }, [syncToSupabase, logActivity, userName]);
 
     const isTaskCompleted = useCallback((weekKey, taskId) => {
         return !!completedTasks[`${weekKey}_${taskId}`];
     }, [completedTasks]);
 
-    // Helper per notificare il partner di un'azione
-    const notifyPartner = useCallback(async (type, title, message) => {
-        if (!partnerId) return;
+    // Logga un'attività della coppia: inserisce notifica per sé E per il partner.
+    // Così entrambi vedono lo storico completo delle azioni nella pagina Notifiche.
+    const logActivity = useCallback(async (type, title, message) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-        await supabase.from('notifications').insert({
-            user_id: partnerId,
-            sender_id: session.user.id,
-            type,
-            title,
-            message
-        });
+        const inserts = [{ user_id: session.user.id, sender_id: session.user.id, type, title, message }];
+        if (partnerId) inserts.push({ user_id: partnerId, sender_id: session.user.id, type, title, message });
+        await supabase.from('notifications').insert(inserts);
     }, [partnerId]);
 
     // --- Notes helpers ---
@@ -510,8 +510,8 @@ export function UserProvider({ children }) {
             syncToSupabase('shared_notes', updated);
             return updated;
         });
-        notifyPartner('partner_note', userName || 'Partner', `ha aggiunto una nota`);
-    }, [syncToSupabase, notifyPartner, userName]);
+        logActivity('partner_note', userName || 'Partner', `ha aggiunto una nota`);
+    }, [syncToSupabase, logActivity, userName]);
 
     const removeNote = useCallback((id) => {
         setNotes(prev => {
@@ -540,8 +540,8 @@ export function UserProvider({ children }) {
             syncToSupabase('shared_appointments', updated);
             return updated;
         });
-        notifyPartner('partner_visit', userName || 'Partner', `ha aggiunto la visita "${appt.title || 'Nuova visita'}"`);
-    }, [syncToSupabase, notifyPartner, userName]);
+        logActivity('partner_visit', userName || 'Partner', `ha aggiunto la visita "${appt.name || appt.title || 'Nuova visita'}"`);
+    }, [syncToSupabase, logActivity, userName]);
 
     const removeAppointment = useCallback((id) => {
         setAppointments(prev => {
@@ -566,8 +566,8 @@ export function UserProvider({ children }) {
             syncToSupabase('shared_custom_tasks', updated);
             return updated;
         });
-        notifyPartner('partner_task', userName || 'Partner', `ha aggiunto il task "${task.text || 'Nuovo task'}"`);
-    }, [syncToSupabase, notifyPartner, userName]);
+        logActivity('partner_task', userName || 'Partner', `ha aggiunto il task "${task.text || 'Nuovo task'}"`);
+    }, [syncToSupabase, logActivity, userName]);
 
     const removeCustomTask = useCallback((id) => {
         setCustomTasks(prev => {
@@ -653,11 +653,14 @@ export function UserProvider({ children }) {
         setBabyStatus('gravidanza');
         setOnboardingDone(false);
         setIsDevUser(false);
-        // Pulizia localStorage profilo
+        // Pulizia localStorage — profilo + dati agenda (evita che vecchi dati appaiano per nuovi utenti)
         setBirthDate(null);
+        setNotes([]); setAppointments([]); setCompletedTasks({}); setCustomTasks([]); setDismissedTasks([]);
         ['pp_userRole','pp_userName','pp_babyName','pp_babySex','pp_partnerName',
          'pp_conceptionDate','pp_onboardingDone','pp_babyStatus','pp_birthDate',
-         'pp_inviteCode','pp_partnerId'].forEach(k => localStorage.removeItem(k));
+         'pp_inviteCode','pp_partnerId',
+         'pp_notes','pp_appointments','pp_customTasks','pp_completedTasks','pp_dismissedTasks',
+        ].forEach(k => localStorage.removeItem(k));
     }, []);
 
     // Ripristina sessione Supabase al riavvio dell'app

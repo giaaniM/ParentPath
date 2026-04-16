@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Calendar, Clock, MapPin } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { useToast } from '../context/ToastContext';
+import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 import './AddAppointmentModal.css';
 
 export default function AddAppointmentModal({ 
@@ -14,6 +15,7 @@ export default function AddAppointmentModal({
 }) {
     const { addAppointment, appointments } = useUser();
     const { showToast } = useToast();
+    const keyboardHeight = useKeyboardHeight();
     const [name, setName] = useState(initialName);
     const [date, setDate] = useState('');
     const [time, setTime] = useState('09:00');
@@ -86,13 +88,14 @@ export default function AddAppointmentModal({
 
     return (
         <div className="appt-modal-overlay" onClick={onClose}>
-            <div 
+            <div
                 className={`appt-modal ${isSwiping ? 'swiping' : ''}`}
                 ref={modalRef}
                 onClick={e => e.stopPropagation()}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
+                style={keyboardHeight > 0 ? { paddingBottom: `${keyboardHeight + 24}px` } : undefined}
             >
                 <div className="appt-modal-handle" />
                 <div className="appt-modal-header">
