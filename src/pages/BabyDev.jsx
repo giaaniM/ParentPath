@@ -190,9 +190,7 @@ export default function BabyDev() {
                                         const num = parseInt(w);
                                         if (isNaN(num)) return <><span className="bd-stat-val">{w}</span><span className="bd-stat-lbl">g</span></>;
                                         if (num < 1000) return <><span className="bd-stat-val">{num}</span><span className="bd-stat-lbl">g</span></>;
-                                        const kg = Math.floor(num / 1000);
-                                        const gr = num % 1000;
-                                        return <><span className="bd-stat-val">{gr > 0 ? `${kg}kg ${gr}g` : `${kg}`}</span><span className="bd-stat-lbl">{gr > 0 ? '' : 'kg'}</span></>;
+                                        return <><span className="bd-stat-val">{(num / 1000).toFixed(1)}</span><span className="bd-stat-lbl">kg</span></>;
                                     })()}
                                 </div>
                             </div>
