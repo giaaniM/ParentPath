@@ -48,6 +48,8 @@ export function UserProvider({ children }) {
     });
     const [onboardingDone, setOnboardingDone] = useState(() => loadJSON('pp_onboardingDone', false));
     const [isDevUser, setIsDevUser] = useState(false);
+    // true finché restoreSession non ha completato: evita flash della splash per utenti già loggati
+    const [authLoading, setAuthLoading] = useState(true);
 
     // New Feature States
     // 'nato' è WIP — forziamo sempre 'gravidanza' finché non è pronto
@@ -173,7 +175,7 @@ export function UserProvider({ children }) {
                 setOnboardingDone(true);
             }
         };
-        restoreSession();
+        restoreSession().finally(() => setAuthLoading(false));
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Helper: ottieni pregnancy_id corrente
@@ -295,23 +297,48 @@ export function UserProvider({ children }) {
     // Assegna il listener in realtime a Supabase per le notifiche
     useEffect(() => {
         let channel;
+
+        const formatNotif = (n) => {
+            const d = new Date(n.created_at);
+            const now = new Date();
+            const isToday = d.toDateString() === now.toDateString();
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            const isYesterday = d.toDateString() === yesterday.toDateString();
+            return {
+                ...n,
+                time: d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+                date: isToday ? 'Oggi' : isYesterday ? 'Ieri' : d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }),
+            };
+        };
+
         const attachListener = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) return;
             const userId = session.user.id;
-            
+
+            // Fetch notifiche esistenti dal DB
+            const { data: existing } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(50);
+            if (existing?.length) {
+                setRealtimeNotifications(existing.map(formatNotif));
+            }
+
             // Creiamo il canale e definiamo i listener PRIMA di chiamare subscribe()
             channel = supabase.channel(`notifs_${userId}_${Date.now()}`)
-                .on('postgres_changes', { 
-                    event: 'INSERT', 
-                    schema: 'public', 
-                    table: 'notifications', 
-                    filter: `user_id=eq.${userId}` 
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${userId}`
                 }, (payload) => {
-                    const newNotif = payload.new;
-                    setRealtimeNotifications(prev => [newNotif, ...prev]);
+                    setRealtimeNotifications(prev => [formatNotif(payload.new), ...prev]);
                 });
-            
+
             channel.subscribe();
         };
 
@@ -444,14 +471,19 @@ export function UserProvider({ children }) {
     }, []);
 
     // --- Task helpers ---
-    const toggleTaskCompleted = useCallback((weekKey, taskId) => {
+    const toggleTaskCompleted = useCallback((weekKey, taskId, taskLabel) => {
         const key = `${weekKey}_${taskId}`;
         setCompletedTasks(prev => {
-            const updated = { ...prev, [key]: !prev[key] };
+            const wasCompleted = !!prev[key];
+            const updated = { ...prev, [key]: !wasCompleted };
             syncToSupabase('shared_completed_tasks', updated);
+            if (!wasCompleted) {
+                // Notifica il partner solo quando si completa (non quando si de-completa)
+                notifyPartner('partner_task_done', userName || 'Partner', `ha completato il task "${taskLabel || 'Task'}"`);
+            }
             return updated;
         });
-    }, [syncToSupabase]);
+    }, [syncToSupabase, notifyPartner, userName]);
 
     const isTaskCompleted = useCallback((weekKey, taskId) => {
         return !!completedTasks[`${weekKey}_${taskId}`];
@@ -593,6 +625,13 @@ export function UserProvider({ children }) {
         if (bd) setBirthDate(bd);
         setOnboardingDone(true);
         setIsDevUser(false);
+        // Azzera i dati condivisi: evita che dati di sessioni precedenti (dev o altri account)
+        // appaiano come già completati per un utente appena registrato
+        setNotes([]);
+        setAppointments([]);
+        setCompletedTasks({});
+        setCustomTasks([]);
+        setDismissedTasks([]);
     };
 
     // Main login helper (usato internamente dopo signIn Supabase)
@@ -962,7 +1001,7 @@ export function UserProvider({ children }) {
             userRole, setUserRole, userName, setUserName, babyName, setBabyName,
             babySex, setBabySex, partnerName, setPartnerName,
             conceptionDate, setConceptionDate,
-            onboardingDone, babyStatus, setBabyStatus,
+            onboardingDone, authLoading, babyStatus, setBabyStatus,
             diaryEntries, addDiaryEntry, removeDiaryEntry,
             hospitalBag, toggleBagItem,
             trackers, addTrackerEntry, removeTrackerEntry,
